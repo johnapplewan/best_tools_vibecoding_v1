@@ -175,7 +175,10 @@ function detailHTML(m) {
         ${p.demo_url ? `<a class="btn btn-sm" href="${esc(p.demo_url)}" target="_blank" rel="noopener nofollow">↗ Démo</a>` : ""}
       </div>
     </div></article>`).join("");
-  const contacts = m.networks.map((n) => `<a class="btn btn-sm" href="/c/${esc(m.code)}/${n}" target="_blank" rel="noopener nofollow">${NETWORKS[n]?.icon || ""} ${NETWORKS[n]?.label || n}</a>`).join("");
+  const member = me?.pseudo && !me.needsOnboarding;
+  const contacts = m.networks.map((n) => member
+    ? `<a class="btn btn-sm" href="/c/${esc(m.code)}/${n}" target="_blank" rel="noopener nofollow">${NETWORKS[n]?.icon || ""} ${NETWORKS[n]?.label || n}</a>`
+    : `<a class="btn btn-sm" href="${loginUrl(`/showroom#${m.code}`)}" title="Réservé aux membres connectés">🔒 ${NETWORKS[n]?.label || n}</a>`).join("");
   const recos = m.recommendedBy.map((r) => `<div class="reco"><b>${esc(r.pseudo)}</b> <span class="code">${esc(r.code)}</span>${r.message ? `<br><span class="muted">« ${esc(r.message)} »</span>` : ""}</div>`).join("");
   let actions = "";
   if (m.isMe) actions = `<a class="btn btn-primary" href="/moi">Modifier ma fiche</a>`;
@@ -189,7 +192,7 @@ function detailHTML(m) {
     ${m.bio ? `<p>${esc(m.bio)}</p>` : ""}
     ${m.specialties.length ? `<div class="chips">${m.specialties.map((s) => `<span class="tag">${esc(s)}</span>`).join("")}</div>` : ""}
     ${contacts ? `<div class="section-title">Contacter</div><div class="links">${contacts}</div>
-      <p class="faint" style="margin-top:8px">Les liens s'ouvrent directement dans l'application. Aucun numéro n'est affiché sur ce site.</p>` : ""}
+      <p class="faint" style="margin-top:8px">${member ? "Les liens s'ouvrent directement dans l'application. Aucun numéro n'est affiché sur ce site." : "🔒 Les contacts sont réservés aux membres connectés, pour protéger la communauté des robots."}</p>` : ""}
     <div class="section-title">Projets</div>
     ${projects ? `<div class="projects">${projects}</div>` : `<p class="muted">Pas encore de projet publié.</p>`}
     <div class="section-title">Recommandations (${m.recommendations})</div>

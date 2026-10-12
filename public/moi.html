@@ -130,7 +130,7 @@ function renderProfile(user, options) {
     <div class="field" data-field="specialties"><span style="font-weight:600;font-size:14px;display:block;margin-bottom:6px">Spécialités <span class="faint">(5 max)</span></span>
       <div class="chips" id="specs">${options.specialties.map((s) => `<button type="button" class="chip" data-spec="${esc(s)}" aria-pressed="${user.specialties.includes(s)}">${esc(s)}</button>`).join("")}</div></div>
     <label class="check"><input type="checkbox" name="available" ${user.available ? "checked" : ""}><span>🤝 Je suis disponible pour collaborer sur des projets</span></label>
-    <label class="check"><input type="checkbox" name="githubAvatar" ${user.avatarMode === "github" ? "checked" : ""} ${user.githubAvatar ? "" : "disabled"}><span>Afficher mon avatar GitHub <span class="faint">(sinon, un avatar coloré est généré : rien de personnel)</span></span></label>
+    <label class="check"><input type="checkbox" name="githubAvatar" ${user.avatarMode === "github" ? "checked" : ""} ${user.githubAvatar ? "" : "disabled"}><span>Afficher mon avatar GitHub <span class="faint">(sinon, un avatar coloré est généré : rien de personnel). ⚠️ L'adresse de l'image GitHub permet de retrouver votre compte GitHub.</span></span></label>
 
     <h2 style="margin-top:22px">Me contacter</h2>
     <p class="faint" style="margin-top:0">Uniquement des pseudos ou des liens d'invitation. Les liens s'ouvrent dans l'application au clic, et ne sont jamais écrits dans la page.</p>
