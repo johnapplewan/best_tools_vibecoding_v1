@@ -3,7 +3,7 @@
 // Unicité : un visiteur est reconnu à la fois par un identifiant aléatoire stocké dans son
 // navigateur et par l'empreinte hachée (SHA-256 + sel) de son adresse IP. Si l'un des deux a déjà
 // voté pour cet outil, le vote est refusé. Aucune IP n'est stockée en clair.
-import { TOOL_IDS } from "../../assets/tools.js";
+import { TOOL_IDS } from "../../public/assets/tools.js";
 
 const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS votes (

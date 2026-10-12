@@ -1,17 +1,18 @@
 # best_tools_vibecoding_v1
 Page de référencement d'outils de vibe-coding sympa - A page listing cool vibe-coding tools
 
-👉 La page : [`outils.html`](outils.html) (servie sur `/outils` par Cloudflare Pages)
+👉 La page : [`public/outils.html`](public/outils.html) (servie sur `/outils` par un Worker Cloudflare)
 
 ## Contenu
 
 | Fichier | Rôle |
 |---|---|
-| `outils.html` | La page : recherche, filtres, notes, étoiles GitHub, avis des visiteurs |
-| `assets/tools.js` | **Les données** (72 outils). Pour ajouter ou modifier un outil, c'est ici |
-| `functions/api/ratings.js` | API des avis visiteurs (Cloudflare D1) |
-| `functions/api/stars.js` | API des étoiles GitHub (cache de 12 h) |
-| `wrangler.toml` | Configuration Cloudflare Pages et liaison de la base D1 |
+| `public/outils.html` | La page : recherche, filtres, notes, étoiles GitHub, avis des visiteurs |
+| `public/assets/tools.js` | **Les données** (72 outils). Pour ajouter ou modifier un outil, c'est ici |
+| `src/api/ratings.js` | API des avis visiteurs (Cloudflare D1) |
+| `src/api/stars.js` | API des étoiles GitHub (cache de 12 h dans D1) |
+| `src/worker.js` | Point d'entrée du Worker : l'API, puis les fichiers de `public/` |
+| `wrangler.jsonc` | Configuration du Worker et liaison de la base D1 |
 | `docs/sources/source-A-post-X.md` | Tableau des 25 ressources du post X |
 | `docs/sources/source-B-awesome-vibecoding.md` | Outils d'awesome-vibecoding par tâche, avec accès et date de vérification |
 | `docs/sources/changements-de-politique.md` | Accès retirés, arrêts, bêtas, licences (constat du 12 oct. 2026) |
@@ -22,24 +23,23 @@ Page de référencement d'outils de vibe-coding sympa - A page listing cool vibe
 - **B** — [awesome-vibecoding](https://github.com/Scap-Mehdi/awesome-vibecoding) (`README.fr.md`, vérifié au 18 sept. 2026)
 - **C** — Mes outils
 
-## Déploiement sur Cloudflare Pages
+## Déploiement sur Cloudflare (Workers)
 
-Le dépôt est relié à Cloudflare : chaque push déclenche un déploiement.
+Le dépôt est relié au Worker Cloudflare **`best-tools-vibecoding-v1`** (Workers Builds) : chaque push sur `main` lance `npx wrangler deploy`.
 
-1. **Workers & Pages → Créer → Pages → Connecter à Git** et choisir ce dépôt.
-   - Framework : *Aucun* · Commande de build : *(vide)* · Répertoire de sortie : `/`
-2. C'est tout pour les avis : la base D1 `vibe-ratings` existe déjà, et `wrangler.toml` la lie automatiquement sous le nom **`DB`**.
-3. *(Optionnel)* *Settings → Variables and secrets* :
-   - `RATING_SALT` : une phrase secrète au hasard, pour hacher les IP.
-   - `GITHUB_TOKEN` : un jeton GitHub en lecture seule, pour ne pas atteindre la limite de l'API.
+- Le site est servi depuis `public/`. L'API (`/api/ratings`, `/api/stars`) passe par `src/worker.js`.
+- La base D1 `vibe-ratings` est liée sous le nom **`DB`** dans `wrangler.jsonc`. Les tables sont créées automatiquement.
+- *(Optionnel)* Worker → *Settings → Variables and secrets* :
+  - `RATING_SALT` : une phrase secrète au hasard, pour hacher les IP.
+  - `GITHUB_TOKEN` : un jeton GitHub en lecture seule, pour ne pas atteindre la limite de l'API.
 
-Sans la base `DB`, la page fonctionne quand même : seuls les avis visiteurs affichent « indisponibles ».
+Adresse : `https://best-tools-vibecoding-v1.<votre-sous-domaine>.workers.dev/outils`
 
 ### Tester en local
 
 ```bash
-npx wrangler pages dev .
-# puis ouvrir http://localhost:8788/outils
+npx wrangler@4 dev
+# puis ouvrir http://localhost:8787/outils
 ```
 
 ## Avis visiteurs : comment l'unicité est garantie
