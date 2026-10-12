@@ -6,7 +6,7 @@
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
-    "run_worker_first": ["/", "/index.html", "/api/*"]
+    "run_worker_first": ["/", "/index.html", "/api/*", "/auth/*", "/c/*"]
   },
   "d1_databases": [
     {
@@ -15,5 +15,7 @@
       "database_id": "a90b26da-47ee-43cc-8eb0-fdb21ce7e90f"
     }
   ],
+  // Comptes GitHub administrateurs (séparés par des virgules). Ce n'est pas un secret.
+  "vars": { "ADMIN_GITHUB_LOGINS": "johnapplewan" },
   "observability": { "enabled": true }
 }

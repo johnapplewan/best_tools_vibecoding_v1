@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Showroom Vibe-devs</title>
+<meta name="description" content="L'annuaire des vibe-devs : leurs projets, leurs spécialités et comment les contacter, uniquement par pseudo.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+.toolbar { position: sticky; top: 60px; z-index: 20; padding: 12px 0; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+.toolbar .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.toolbar input[type=search] { flex: 1 1 220px; min-width: 0; }
+.toolbar select { flex: 0 1 220px; }
+.toolbar .chips { margin-top: 10px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.cta { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin: 28px 0 8px; }
+.members { display: grid; gap: 16px; grid-template-columns: 1fr; margin-top: 18px; }
+@media (min-width: 700px) { .members { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1040px) { .members { grid-template-columns: repeat(3, 1fr); } }
+.member { display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 20px; border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow); cursor: pointer; text-align: left; color: inherit; font: inherit; transition: transform .2s, box-shadow .2s; width: 100%; }
+.member:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.member:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.m-head { display: flex; gap: 12px; align-items: center; }
+.m-head h3 { font-size: 17px; }
+.m-bio { margin: 0; color: var(--muted); font-size: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.thumbs span { aspect-ratio: 2 / 1; border-radius: 8px; background: center / cover no-repeat, linear-gradient(135deg, color-mix(in srgb, var(--accent) 35%, transparent), color-mix(in srgb, var(--accent-3) 30%, transparent)); display: block; }
+.m-foot { display: flex; gap: 12px; align-items: center; font-size: 13px; color: var(--faint); margin-top: auto; }
+.empty { text-align: center; padding: 60px 0; color: var(--muted); }
+/* Fiche détaillée */
+.d-head { display: flex; gap: 16px; align-items: center; margin-bottom: 12px; padding-right: 40px; }
+.d-head h2 { margin: 0; }
+.projects { display: grid; gap: 14px; grid-template-columns: 1fr; margin: 16px 0; }
+@media (min-width: 640px) { .projects { grid-template-columns: 1fr 1fr; } }
+.project { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: var(--bg-2); }
+.p-thumb { aspect-ratio: 2 / 1; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 35%, transparent), color-mix(in srgb, var(--accent-3) 30%, transparent)); }
+.project img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.project .p-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.project p { margin: 0; color: var(--muted); font-size: 14px; }
+.links { display: flex; gap: 8px; flex-wrap: wrap; }
+.section-title { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; margin: 20px 0 10px; }
+.reco { border-left: 2px solid color-mix(in srgb, var(--accent) 50%, transparent); padding: 4px 0 4px 12px; margin: 10px 0; font-size: 14px; }
+.reco b { font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+
+<main>
+  <header class="hero wrap">
+    <span class="pill"><b>Communauté</b> Pseudos uniquement · aucune donnée personnelle</span>
+    <h1>Le showroom des <span class="serif grad">vibe-devs</span></h1>
+    <p class="lead">Découvrez ce que la communauté construit avec l'IA, trouvez un binôme pour votre prochain projet et recommandez ceux qui vous ont aidé.</p>
+  </header>
+
+  <div class="toolbar">
+    <div class="wrap">
+      <div class="row">
+        <input id="q" type="search" placeholder="Rechercher un pseudo, un projet, une spécialité…" aria-label="Rechercher">
+        <select id="tool" aria-label="Filtrer par outil utilisé"><option value="">Tous les outils</option></select>
+        <button class="chip" id="dispo" aria-pressed="false">🤝 Dispo pour collaborer</button>
+      </div>
+      <div class="chips" id="specs" aria-label="Filtrer par spécialité"></div>
+    </div>
+  </div>
+
+  <section class="wrap">
+    <div class="cta">
+      <span class="muted" id="count"></span>
+      <span id="cta-slot"></span>
+    </div>
+    <div class="members" id="members"></div>
+    <p class="empty" id="empty" hidden>Aucun membre ne correspond à ces filtres.</p>
+  </section>
+</main>
+
+<dialog id="detail" aria-label="Fiche membre">
+  <form method="dialog"><button class="icon-btn dialog-close" aria-label="Fermer">✕</button></form>
+  <div class="dialog-body" id="detail-body"></div>
+</dialog>
+
+<script type="module">
+import { $, esc, api, loadMe, loginUrl, avatarHTML, renderNav, renderFooter, toast, NETWORKS, GH_ICON } from "/assets/app.js";
+import { TOOLS } from "/assets/tools.js";
+
+renderNav("/showroom");
+renderFooter();
+
+const TOOL_NAMES = Object.fromEntries(TOOLS.map((t) => [t.id, t.name]));
+const state = { q: "", tool: "", dispo: false, specs: new Set() };
+let members = [];
+let me = null;
+
+const norm = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+function filtered() {
+  const q = norm(state.q.trim());
+  return members.filter((m) =>
+    (!state.dispo || m.available) &&
+    (!state.tool || m.projects.some((p) => p.tools.includes(state.tool))) &&
+    [...state.specs].every((s) => m.specialties.includes(s)) &&
+    (!q || norm([m.pseudo, m.code, m.bio, ...m.specialties, ...m.projects.flatMap((p) => [p.title, p.pitch])].join(" ")).includes(q)));
+}
+
+function card(m) {
+  const thumbs = m.projects.slice(0, 4).map((p) => `<span style="${p.thumbnail ? `background-image:url('${esc(p.thumbnail)}'), linear-gradient(135deg, color-mix(in srgb, var(--accent) 35%, transparent), color-mix(in srgb, var(--accent-3) 30%, transparent))` : ""}"></span>`).join("");
+  return `<button class="member" data-code="${esc(m.code)}">
+    <div class="m-head">${avatarHTML(m)}
+      <div style="min-width:0"><h3>${esc(m.pseudo)}</h3><span class="code">${esc(m.code)}</span></div>
+      ${m.available ? '<span class="tag tag-ok" style="margin-left:auto">Dispo</span>' : ""}
+    </div>
+    ${m.bio ? `<p class="m-bio">${esc(m.bio)}</p>` : ""}
+    ${m.specialties.length ? `<div class="chips">${m.specialties.map((s) => `<span class="tag">${esc(s)}</span>`).join("")}</div>` : ""}
+    ${m.projects.length ? `<div class="thumbs">${thumbs}</div>` : ""}
+    <div class="m-foot"><span>📁 ${m.projects.length} projet${m.projects.length > 1 ? "s" : ""}</span><span>👍 ${m.recommendations} recommandation${m.recommendations > 1 ? "s" : ""}</span></div>
+  </button>`;
+}
+
+function render() {
+  const list = filtered();
+  $("#members").innerHTML = list.map(card).join("");
+  $("#empty").hidden = list.length > 0;
+  $("#count").textContent = `${list.length} vibe-dev${list.length > 1 ? "s" : ""}`;
+}
+
+function renderFilters(specialties) {
+  $("#specs").innerHTML = specialties.map((s) => `<button class="chip" data-spec="${esc(s)}" aria-pressed="false">${esc(s)}</button>`).join("");
+  const used = new Set(members.flatMap((m) => m.projects.flatMap((p) => p.tools)));
+  $("#tool").innerHTML = `<option value="">Tous les outils</option>` +
+    TOOLS.filter((t) => used.has(t.id)).sort((a, b) => a.name.localeCompare(b.name, "fr")).map((t) => `<option value="${esc(t.id)}">Fait avec ${esc(t.name)}</option>`).join("");
+}
+
+$("#q").addEventListener("input", (e) => { state.q = e.target.value; render(); });
+$("#tool").addEventListener("change", (e) => { state.tool = e.target.value; render(); });
+$("#dispo").addEventListener("click", (e) => { state.dispo = !state.dispo; e.currentTarget.setAttribute("aria-pressed", state.dispo); render(); });
+$("#specs").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-spec]"); if (!b) return;
+  const s = b.dataset.spec;
+  state.specs.has(s) ? state.specs.delete(s) : state.specs.add(s);
+  b.setAttribute("aria-pressed", state.specs.has(s));
+  render();
+});
+$("#members").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-code]"); if (b) openMember(b.dataset.code);
+});
+
+// ── Fiche détaillée ──
+async function openMember(code) {
+  history.replaceState(null, "", `#${code}`);
+  const body = $("#detail-body");
+  body.innerHTML = `<p class="muted">Chargement…</p>`;
+  $("#detail").showModal();
+  try {
+    const { member: m } = await api(`/api/showroom/${encodeURIComponent(code)}`);
+    body.innerHTML = detailHTML(m);
+  } catch {
+    body.innerHTML = `<p class="muted">Ce profil n'est pas disponible.</p>`;
+  }
+}
+$("#detail").addEventListener("close", () => history.replaceState(null, "", location.pathname));
+
+function detailHTML(m) {
+  const projects = m.projects.map((p) => `<article class="project">
+    <div class="p-thumb">${p.thumbnail ? `<img src="${esc(p.thumbnail)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}</div>
+    <div class="p-body">
+      <h3 style="font-size:16px">${esc(p.title)}</h3>
+      ${p.pitch ? `<p>${esc(p.pitch)}</p>` : ""}
+      ${p.tools.length ? `<div class="chips">${p.tools.map((t) => `<a class="tag tag-tool" href="/outils#${esc(t)}">${esc(TOOL_NAMES[t] || t)}</a>`).join("")}</div>` : ""}
+      <div class="links">
+        ${p.github_url ? `<a class="btn btn-sm" href="${esc(p.github_url)}" target="_blank" rel="noopener nofollow">${GH_ICON} Code</a>` : ""}
+        ${p.demo_url ? `<a class="btn btn-sm" href="${esc(p.demo_url)}" target="_blank" rel="noopener nofollow">↗ Démo</a>` : ""}
+      </div>
+    </div></article>`).join("");
+  const contacts = m.networks.map((n) => `<a class="btn btn-sm" href="/c/${esc(m.code)}/${n}" target="_blank" rel="noopener nofollow">${NETWORKS[n]?.icon || ""} ${NETWORKS[n]?.label || n}</a>`).join("");
+  const recos = m.recommendedBy.map((r) => `<div class="reco"><b>${esc(r.pseudo)}</b> <span class="code">${esc(r.code)}</span>${r.message ? `<br><span class="muted">« ${esc(r.message)} »</span>` : ""}</div>`).join("");
+  let actions = "";
+  if (m.isMe) actions = `<a class="btn btn-primary" href="/moi">Modifier ma fiche</a>`;
+  else if (me?.pseudo && !me.needsOnboarding) actions = `
+    <button class="btn ${m.recommendedByMe ? "" : "btn-primary"}" data-reco="${esc(m.code)}" data-on="${m.recommendedByMe}">${m.recommendedByMe ? "✓ Vous le recommandez (retirer)" : "👍 Je recommande"}</button>
+    <button class="btn btn-sm" data-report="${esc(m.code)}" style="margin-left:auto">⚑ Signaler</button>`;
+  else actions = `<a class="btn btn-dark" href="${loginUrl(`/showroom#${m.code}`)}">${GH_ICON} Se connecter pour recommander</a>`;
+
+  return `<div class="d-head">${avatarHTML(m, "avatar-lg")}
+      <div><h2>${esc(m.pseudo)}</h2><span class="code">${esc(m.code)}</span> ${m.available ? '<span class="tag tag-ok">Dispo pour collaborer</span>' : ""}</div></div>
+    ${m.bio ? `<p>${esc(m.bio)}</p>` : ""}
+    ${m.specialties.length ? `<div class="chips">${m.specialties.map((s) => `<span class="tag">${esc(s)}</span>`).join("")}</div>` : ""}
+    ${contacts ? `<div class="section-title">Contacter</div><div class="links">${contacts}</div>
+      <p class="faint" style="margin-top:8px">Les liens s'ouvrent directement dans l'application. Aucun numéro n'est affiché sur ce site.</p>` : ""}
+    <div class="section-title">Projets</div>
+    ${projects ? `<div class="projects">${projects}</div>` : `<p class="muted">Pas encore de projet publié.</p>`}
+    <div class="section-title">Recommandations (${m.recommendations})</div>
+    ${recos || `<p class="muted">Pas encore de recommandation.</p>`}
+    <div class="links" style="margin-top:20px;align-items:center">${actions}</div>
+    <form class="panel" id="inline-form" hidden style="margin-top:14px">
+      <label class="field"><span id="inline-label"></span>
+        <textarea id="inline-text" maxlength="500" rows="3"></textarea>
+        <small id="inline-hint"></small></label>
+      <div class="links"><button class="btn btn-primary" type="submit">Envoyer</button><button class="btn" type="button" data-cancel>Annuler</button></div>
+    </form>`;
+}
+
+let pending = null; // { kind: "reco" | "report", code }
+
+$("#detail-body").addEventListener("click", async (e) => {
+  const reco = e.target.closest("[data-reco]");
+  const rep = e.target.closest("[data-report]");
+  const form = $("#inline-form");
+  if (e.target.closest("[data-cancel]")) { form.hidden = true; pending = null; return; }
+  if (reco && reco.dataset.on === "true") {
+    try {
+      await api("/api/recommend", { method: "DELETE", body: { code: reco.dataset.reco } });
+      toast("Recommandation retirée");
+      await refresh(); openMember(reco.dataset.reco);
+    } catch (err) { toast(err.message); }
+    return;
+  }
+  if (reco || rep) {
+    pending = reco ? { kind: "reco", code: reco.dataset.reco } : { kind: "report", code: rep.dataset.report };
+    $("#inline-label").textContent = reco ? "Un petit mot pour cette recommandation ? (facultatif)" : "Pourquoi signalez-vous ce profil ?";
+    $("#inline-hint").textContent = reco ? "200 caractères maximum. Pas de numéro ni d'email." : "L'équipe de modération sera prévenue. Le membre ne saura pas qui l'a signalé.";
+    $("#inline-text").maxLength = reco ? 200 : 500;
+    $("#inline-text").value = "";
+    form.hidden = false;
+    $("#inline-text").focus();
+  }
+});
+
+$("#detail-body").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!pending) return;
+  const text = $("#inline-text").value;
+  try {
+    if (pending.kind === "reco") {
+      await api("/api/recommend", { method: "POST", body: { code: pending.code, message: text } });
+      toast("Merci pour la recommandation 👍");
+      await refresh(); openMember(pending.code);
+    } else {
+      await api("/api/report", { method: "POST", body: { code: pending.code, reason: text } });
+      toast("Signalement envoyé, merci");
+      $("#inline-form").hidden = true;
+    }
+    pending = null;
+  } catch (err) { toast(err.message); }
+});
+
+async function refresh() {
+  const data = await api("/api/showroom");
+  members = data.members;
+  return data;
+}
+
+(async () => {
+  const [{ user }, data] = await Promise.all([loadMe(), refresh().catch(() => ({ members: [], options: { specialties: [] } }))]);
+  me = user;
+  renderFilters(data.options?.specialties || []);
+  render();
+  $("#cta-slot").innerHTML = user?.pseudo && !user.needsOnboarding
+    ? `<a class="btn btn-primary" href="/moi">✏️ Gérer ma fiche</a>`
+    : user ? `<a class="btn btn-primary" href="/moi">Terminer mon inscription</a>`
+    : `<a class="btn btn-primary" href="${loginUrl("/moi")}">${GH_ICON} Rejoindre le showroom</a>`;
+  const hash = location.hash.slice(1);
+  if (/^VD-[0-9A-Z]{5}$/.test(hash)) openMember(hash);
+})();
+</script>
+</body>
+</html>

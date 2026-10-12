@@ -11,7 +11,13 @@ Page de référencement d'outils de vibe-coding sympa - A page listing cool vibe
 | `public/assets/tools.js` | **Les données** (72 outils). Pour ajouter ou modifier un outil, c'est ici |
 | `src/api/ratings.js` | API des avis visiteurs (Cloudflare D1) |
 | `src/api/stars.js` | API des étoiles GitHub (cache de 12 h dans D1) |
-| `src/worker.js` | Point d'entrée du Worker : l'API, puis les fichiers de `public/` |
+| `src/worker.js` | Point d'entrée du Worker : routes de l'API et de la connexion, puis les fichiers de `public/` |
+| `src/api/auth.js` | Connexion GitHub (aucune permission demandée, jeton révoqué aussitôt) |
+| `src/api/members.js` | Profil, showroom, recommandations, signalements, modération |
+| `src/lib/` | Sessions, schéma de la base, validations (refus des numéros et emails) |
+| `public/showroom.html` | Le showroom des vibe-devs (`/showroom`) |
+| `public/moi.html` | Mon profil : inscription, fiche, 4 projets, modération (`/moi`) |
+| `public/cgu.html`, `public/charte.html` | Pages légales, rendues depuis `public/legal/*.md` |
 | `wrangler.jsonc` | Configuration du Worker et liaison de la base D1 |
 | `docs/sources/source-A-post-X.md` | Tableau des 25 ressources du post X |
 | `docs/sources/source-B-awesome-vibecoding.md` | Outils d'awesome-vibecoding par tâche, avec accès et date de vérification |
@@ -35,11 +41,14 @@ Le dépôt est relié au Worker Cloudflare **`best-tools-vibecoding-v1`** (Worke
 
 Adresse : https://best-tools-vibecoding-v1.johnapplewan.workers.dev/outils
 
+**Connexion GitHub** : OAuth App avec l'adresse de retour `https://best-tools-vibecoding-v1.johnapplewan.workers.dev/auth/callback`, et les secrets `GITHUB_CLIENT_ID` et `GITHUB_CLIENT_SECRET` (en Production). Les comptes admin sont listés dans `ADMIN_GITHUB_LOGINS` (`wrangler.jsonc`).
+
 ### Tester en local
 
 ```bash
+printf 'DEV_LOGIN=1\nADMIN_GITHUB_LOGINS=dev-user-1\n' > .dev.vars   # connexion factice, locale uniquement
 npx wrangler@4 dev
-# puis ouvrir http://localhost:8787/outils
+# puis ouvrir http://localhost:8787/auth/dev-login?n=1 (membre 1), ?n=2 (membre 2)…
 ```
 
 ## Avis visiteurs : comment l'unicité est garantie
@@ -52,6 +61,6 @@ npx wrangler@4 dev
 ## Plateforme communautaire (en préparation)
 
 - [`docs/plateforme/creer-ici.md`](docs/plateforme/creer-ici.md) : spécification de l'atelier « Créer ici »
-- [`docs/plateforme/cgu.md`](docs/plateforme/cgu.md) : conditions générales d'utilisation (brouillon à faire relire)
-- [`docs/plateforme/charte.md`](docs/plateforme/charte.md) : charte déontologique des membres
+- [`public/legal/cgu.md`](public/legal/cgu.md) : conditions générales d'utilisation, affichées sur `/cgu` (brouillon à faire relire)
+- [`public/legal/charte.md`](public/legal/charte.md) : charte déontologique des membres, affichée sur `/charte`
 - [`docs/plateforme/veille.md`](docs/plateforme/veille.md) : module de veille (raccourci iOS, analyse, feu tricolore, script vidéo)

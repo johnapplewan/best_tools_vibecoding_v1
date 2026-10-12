@@ -169,4 +169,4 @@ Le porteur reprend son rôle **à tout moment** en se reconnectant.
 
 ## Données affichées (rappel de la règle de confidentialité)
 
-Partout sur la plateforme, on n'affiche **que des pseudos** et un **identifiant membre** (ex. `VD-4F7K2`). Aucun nom, aucun email, aucun numéro de téléphone. Voir la [politique de pseudonymat](cgu.md#5-pseudonymat-et-données-personnelles).
+Partout sur la plateforme, on n'affiche **que des pseudos** et un **identifiant membre** (ex. `VD-4F7K2`). Aucun nom, aucun email, aucun numéro de téléphone. Voir la [politique de pseudonymat](/cgu).
