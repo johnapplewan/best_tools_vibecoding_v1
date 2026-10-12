@@ -35,21 +35,30 @@ Le dépôt est relié au Worker Cloudflare **`best-tools-vibecoding-v1`** (Worke
 
 - Le site est servi depuis `public/`. L'API (`/api/ratings`, `/api/stars`) passe par `src/worker.js`.
 - La base D1 `vibe-ratings` est liée sous le nom **`DB`** dans `wrangler.jsonc`. Les tables sont créées automatiquement.
-- *(Optionnel)* Worker → *Settings → Variables and secrets* :
-  - `RATING_SALT` : une phrase secrète au hasard, pour hacher les IP.
+- Worker → *Settings → Variables and secrets* (type **Secret**) :
+  - `RATING_SALT` (**recommandé**) : une longue phrase secrète au hasard, pour hacher les IP (votes et limites anti-abus).
   - `GITHUB_TOKEN` : un jeton GitHub en lecture seule, pour ne pas atteindre la limite de l'API.
 
 Adresse : https://best-tools-vibecoding-v1.johnapplewan.workers.dev/outils
 
-**Connexion GitHub** : OAuth App avec l'adresse de retour `https://best-tools-vibecoding-v1.johnapplewan.workers.dev/auth/callback`, et les secrets `GITHUB_CLIENT_ID` et `GITHUB_CLIENT_SECRET` (en Production). Les comptes admin sont listés dans `ADMIN_GITHUB_LOGINS` (`wrangler.jsonc`).
+**Connexion GitHub** : OAuth App avec l'adresse de retour `https://best-tools-vibecoding-v1.johnapplewan.workers.dev/auth/callback`, et les secrets `GITHUB_CLIENT_ID` et `GITHUB_CLIENT_SECRET` (en Production). Les admins sont désignés par leur **identifiant GitHub numérique** dans `ADMIN_GITHUB_IDS` (`wrangler.jsonc`), qui ne change jamais même si le compte est renommé.
 
 ### Tester en local
 
 ```bash
-printf 'DEV_LOGIN=1\nADMIN_GITHUB_LOGINS=dev-user-1\n' > .dev.vars   # connexion factice, locale uniquement
+printf 'DEV_LOGIN=1\nADMIN_GITHUB_IDS=900001\n' > .dev.vars   # connexion factice, locale uniquement
 npx wrangler@4 dev
 # puis ouvrir http://localhost:8787/auth/dev-login?n=1 (membre 1), ?n=2 (membre 2)…
 ```
+
+## Sécurité
+
+- Connexion GitHub sans aucune permission ; jeton GitHub révoqué aussitôt ; session dans un cookie HttpOnly/Secure/SameSite, seule son empreinte est en base.
+- Toute action qui modifie des données doit venir du site lui-même (contrôle de l'origine).
+- Limites de fréquence par IP hachée (connexion, écritures, recommandations, signalements, avis, lecture du showroom) et quota quotidien de contacts par membre (`src/lib/ratelimit.js`).
+- Liens de contact réservés aux membres connectés, délivrés au clic seulement.
+- En-têtes : CSP stricte (aucune ressource externe sauf polices Google et images GitHub), anti-clickjacking, HSTS (`public/_headers`).
+- Validation serveur : refus des numéros, emails et liens `wa.me/<numéro>` ; tout texte de membre est échappé à l'affichage.
 
 ## Avis visiteurs : comment l'unicité est garantie
 

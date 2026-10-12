@@ -15,8 +15,9 @@
       "database_id": "a90b26da-47ee-43cc-8eb0-fdb21ce7e90f"
     }
   ],
-  // Comptes GitHub administrateurs (séparés par des virgules). Ce n'est pas un secret.
-  "vars": { "ADMIN_GITHUB_LOGINS": "johnapplewan" },
+  // Identifiants GitHub NUMÉRIQUES des administrateurs (séparés par des virgules). Ce n'est pas un secret.
+  // 80370810 = johnapplewan. L'identifiant ne change jamais, même si le compte est renommé.
+  "vars": { "ADMIN_GITHUB_IDS": "80370810" },
   // Garde les variables ajoutées dans le tableau de bord Cloudflare à chaque déploiement.
   "keep_vars": true,
   "observability": { "enabled": true }

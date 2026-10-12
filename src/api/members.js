@@ -1,5 +1,6 @@
 // Profil du membre connecté, showroom public, recommandations, signalements et modération.
 import { json, readJson, HttpError } from "../lib/http.js";
+import { hit } from "../lib/ratelimit.js";
 import { ensureSchema } from "../lib/schema.js";
 import { currentUser, requireUser, isAdmin, destroySession } from "../lib/session.js";
 import {
@@ -192,13 +193,19 @@ export async function getMember(request, env, code) {
   });
 }
 
-// Redirection vers un lien de contact : le lien n'apparaît jamais dans les pages, il n'est donné qu'au clic.
+// Redirection vers un lien de contact. Réservée aux membres connectés (anti-aspiration par des robots),
+// avec un quota quotidien. Le lien n'apparaît jamais dans les pages, il n'est donné qu'au clic.
 export async function contactRedirect(request, env, code, network) {
   await ensureSchema(env.DB);
+  const me = await currentUser(request, env);
+  const go = (location) => new Response(null, { status: 302, headers: { location, "cache-control": "no-store", "x-robots-tag": "noindex, nofollow" } });
+  if (!me) return go(`/auth/login?next=${encodeURIComponent(`/showroom#${code}`)}`);
+  if (!me.pseudo || !me.terms_accepted_at) return go("/moi");
+  await hit(env, `contact:user:${me.id}`, 40, 86400);
   const u = await findVisible(env, code);
   const url = u && CONTACT_NETWORKS.includes(network) ? parse(u.contacts, {})[network] : null;
   if (!url) return new Response("Lien de contact introuvable", { status: 404 });
-  return new Response(null, { status: 302, headers: { location: url, "cache-control": "no-store", "x-robots-tag": "noindex, nofollow" } });
+  return go(url);
 }
 
 // ───────── Recommandations ─────────

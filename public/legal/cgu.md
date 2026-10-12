@@ -51,7 +51,7 @@ La plateforme fonctionne **par pseudonymat**.
 - **WhatsApp** est accepté sous deux formes :
   - un **lien QR de contact** `wa.me/qr/…` ;
   - un lien d'invitation à un groupe ou une chaîne.
-- Le site ne connaît jamais le numéro et ne l'affiche pas. Le lien n'est délivré qu'au moment du clic sur le bouton « Contacter ».
+- Le site ne connaît jamais le numéro et ne l'affiche pas. Les liens de contact sont **réservés aux membres connectés** et ne sont délivrés qu'au moment du clic, dans une limite quotidienne, pour empêcher leur collecte par des robots.
 - ⚠️ Une fois la conversation ouverte dans WhatsApp, **WhatsApp peut montrer votre numéro à la personne qui vous écrit**, selon vos réglages WhatsApp. C'est le fonctionnement de WhatsApp, pas celui de la plateforme. Préférez Telegram ou Signal pour rester totalement pseudonyme.
 
 **Bon à savoir :**
@@ -59,7 +59,7 @@ La plateforme fonctionne **par pseudonymat**.
 - Un pseudo et un identifiant restent des **données personnelles** au sens du RGPD. Ils sont protégés comme telles.
 
 **Données techniques :**
-- Les adresses IP utilisées pour éviter les votes multiples sont **hachées** (rendues illisibles) et jamais stockées en clair.
+- Les adresses IP utilisées pour éviter les votes multiples et limiter les abus (nombre de requêtes) sont **hachées** (rendues illisibles) et jamais stockées en clair. Les compteurs d'abus sont effacés après 48 h.
 - Les données sont hébergées par Cloudflare.
 
 **Vos droits (RGPD) :** accès, rectification, effacement, opposition et portabilité.

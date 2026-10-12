@@ -42,8 +42,10 @@ export async function requireUser(request, env, { onboarded = true } = {}) {
   return user;
 }
 
+// L'admin est reconnu par son identifiant GitHub NUMÉRIQUE (immuable), pas par son nom d'utilisateur
+// (qui peut être renommé puis repris par quelqu'un d'autre). Sans la variable, personne n'est admin.
 export function isAdmin(user, env) {
   if (!user) return false;
-  const admins = String(env.ADMIN_GITHUB_LOGINS || "").toLowerCase().split(",").map((s) => s.trim()).filter(Boolean);
-  return admins.includes(String(user.github_login).toLowerCase());
+  const ids = String(env.ADMIN_GITHUB_IDS || "").split(",").map((s) => s.trim()).filter((s) => /^\d+$/.test(s));
+  return ids.includes(String(user.github_id));
 }
