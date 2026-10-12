@@ -55,6 +55,32 @@ const SCHEMA = [
      created_at INTEGER NOT NULL,
      UNIQUE (reporter, target)
    )`,
+  // Veille : chaque élément envoyé (raccourci iOS, admin, playlist) et sa fiche d'analyse.
+  `CREATE TABLE IF NOT EXISTS veille_items (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     input TEXT NOT NULL,
+     source TEXT NOT NULL DEFAULT 'admin',
+     status TEXT NOT NULL DEFAULT 'pending',   -- pending | running | done | error
+     attempts INTEGER NOT NULL DEFAULT 0,
+     error TEXT,
+     result TEXT,                              -- JSON : { card, github, dossier, model }
+     verdict TEXT,                             -- green | orange | red
+     tool_name TEXT,
+     published INTEGER NOT NULL DEFAULT 0,
+     published_at INTEGER,
+     created_at INTEGER NOT NULL,
+     updated_at INTEGER NOT NULL
+   )`,
+  `CREATE INDEX IF NOT EXISTS veille_status ON veille_items (status, created_at)`,
+  `CREATE INDEX IF NOT EXISTS veille_published ON veille_items (published, published_at)`,
+  // Jetons personnels (raccourci iOS). Seule l'empreinte est stockée.
+  `CREATE TABLE IF NOT EXISTS api_tokens (
+     token_hash TEXT PRIMARY KEY,
+     user_id INTEGER NOT NULL,
+     label TEXT NOT NULL,
+     created_at INTEGER NOT NULL,
+     last_used_at INTEGER
+   )`,
 ];
 
 let ready = false;

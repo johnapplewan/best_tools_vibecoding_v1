@@ -20,5 +20,7 @@
   "vars": { "ADMIN_GITHUB_IDS": "80370810" },
   // Garde les variables ajoutées dans le tableau de bord Cloudflare à chaque déploiement.
   "keep_vars": true,
+  // Toutes les 5 minutes : analyse des éléments de veille en attente.
+  "triggers": { "crons": ["*/5 * * * *"] },
   "observability": { "enabled": true }
 }

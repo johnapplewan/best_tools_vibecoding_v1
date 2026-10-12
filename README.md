@@ -17,6 +17,10 @@ Page de référencement d'outils de vibe-coding sympa - A page listing cool vibe
 | `src/lib/` | Sessions, schéma de la base, validations (refus des numéros et emails) |
 | `public/showroom.html` | Le showroom des vibe-devs (`/showroom`) |
 | `public/moi.html` | Mon profil : inscription, fiche, 4 projets, modération (`/moi`) |
+| `src/api/veille.js` | Veille : réception (raccourci iOS / admin), file d'attente, publication, Actualités |
+| `src/veille/analyze.js` | Analyse par Claude : enquête web, pré-audit, verdict 🟢🟠🔴, script vidéo |
+| `public/actualites.html` | Onglet Actualités public (`/actualites`) |
+| `public/admin.html` | Tableau de bord de la veille, réservé à l'admin (`/admin`) |
 | `public/cgu.html`, `public/charte.html` | Pages légales, rendues depuis `public/legal/*.md` |
 | `wrangler.jsonc` | Configuration du Worker et liaison de la base D1 |
 | `docs/sources/source-A-post-X.md` | Tableau des 25 ressources du post X |
@@ -41,13 +45,16 @@ Le dépôt est relié au Worker Cloudflare **`best-tools-vibecoding-v1`** (Worke
 
 Adresse : https://best-tools-vibecoding-v1.johnapplewan.workers.dev/outils
 
+**Veille** : secret `ANTHROPIC_API_KEY` (clé API Claude). Optionnel : variable `VEILLE_MODEL` pour changer de modèle (par défaut `claude-opus-5-5`). Une tâche planifiée (`triggers.crons`, toutes les 5 min) analyse la file. Coût indicatif : environ 0,25 à 0,50 $ par analyse avec Claude Opus 5.5 (recherche web comprise).
+
 **Connexion GitHub** : OAuth App avec l'adresse de retour `https://best-tools-vibecoding-v1.johnapplewan.workers.dev/auth/callback`, et les secrets `GITHUB_CLIENT_ID` et `GITHUB_CLIENT_SECRET` (en Production). Les admins sont désignés par leur **identifiant GitHub numérique** dans `ADMIN_GITHUB_IDS` (`wrangler.jsonc`), qui ne change jamais même si le compte est renommé.
 
 ### Tester en local
 
 ```bash
-printf 'DEV_LOGIN=1\nADMIN_GITHUB_IDS=900001\n' > .dev.vars   # connexion factice, locale uniquement
-npx wrangler@4 dev
+printf 'DEV_LOGIN=1\nADMIN_GITHUB_IDS=900001\nVEILLE_MOCK=1\n' > .dev.vars   # connexion et analyse factices, locales uniquement
+npm install
+npx wrangler@4 dev --test-scheduled   # puis curl "http://localhost:8787/__scheduled?cron=*/5+*+*+*+*"
 # puis ouvrir http://localhost:8787/auth/dev-login?n=1 (membre 1), ?n=2 (membre 2)…
 ```
 

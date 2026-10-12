@@ -73,7 +73,7 @@ export async function renderNav(active) {
   initTheme();
   const nav = document.createElement("nav");
   nav.className = "top";
-  const links = [["/outils", "Outils"], ["/showroom", "Showroom"]];
+  const links = [["/outils", "Outils"], ["/actualites", "Actualités"], ["/showroom", "Showroom"]];
   nav.innerHTML = `<div class="wrap">
     <a class="logo" href="/outils"><span class="logo-mark">✦</span><span class="label">Vibe Tools</span></a>
     <div class="nav-links">${links.map(([h, l]) => `<a href="${h}"${h === active ? ' aria-current="page"' : ""}>${l}</a>`).join("")}</div>
@@ -84,6 +84,9 @@ export async function renderNav(active) {
   document.body.prepend(nav);
   nav.querySelector("[data-theme-toggle]").addEventListener("click", toggleTheme);
   const { user } = await loadMe();
+  if (user?.isAdmin) {
+    nav.querySelector(".nav-links").insertAdjacentHTML("beforeend", `<a href="/admin"${active === "/admin" ? ' aria-current="page"' : ""}>🛡️ Veille</a>`);
+  }
   const slot = nav.querySelector("[data-me-slot]");
   if (user?.pseudo && !user.needsOnboarding) {
     slot.innerHTML = `<a class="me-chip" href="/moi">${avatarHTML({ code: user.code, pseudo: user.pseudo, avatar: user.avatarMode === "github" ? user.githubAvatar : null }, "avatar-sm")}<span class="label">${esc(user.pseudo)}</span></a>`;
