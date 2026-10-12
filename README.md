@@ -11,6 +11,7 @@ Page de référencement d'outils de vibe-coding sympa - A page listing cool vibe
 | `assets/tools.js` | **Les données** (72 outils). Pour ajouter ou modifier un outil, c'est ici |
 | `functions/api/ratings.js` | API des avis visiteurs (Cloudflare D1) |
 | `functions/api/stars.js` | API des étoiles GitHub (cache de 12 h) |
+| `wrangler.toml` | Configuration Cloudflare Pages et liaison de la base D1 |
 | `docs/sources/source-A-post-X.md` | Tableau des 25 ressources du post X |
 | `docs/sources/source-B-awesome-vibecoding.md` | Outils d'awesome-vibecoding par tâche, avec accès et date de vérification |
 | `docs/sources/changements-de-politique.md` | Accès retirés, arrêts, bêtas, licences (constat du 12 oct. 2026) |
@@ -27,19 +28,17 @@ Le dépôt est relié à Cloudflare : chaque push déclenche un déploiement.
 
 1. **Workers & Pages → Créer → Pages → Connecter à Git** et choisir ce dépôt.
    - Framework : *Aucun* · Commande de build : *(vide)* · Répertoire de sortie : `/`
-2. **Créer la base des avis** : *Storage & Databases → D1 → Create* (par ex. `vibe-ratings`).
-3. **Lier la base** : projet Pages → *Settings → Bindings → Add → D1 database*, nom de variable **`DB`**, puis la base `vibe-ratings` (en Production *et* en Preview).
-4. *(Optionnel)* *Settings → Variables and secrets* :
+2. C'est tout pour les avis : la base D1 `vibe-ratings` existe déjà, et `wrangler.toml` la lie automatiquement sous le nom **`DB`**.
+3. *(Optionnel)* *Settings → Variables and secrets* :
    - `RATING_SALT` : une phrase secrète au hasard, pour hacher les IP.
    - `GITHUB_TOKEN` : un jeton GitHub en lecture seule, pour ne pas atteindre la limite de l'API.
-5. Relancer un déploiement (*Deployments → Retry*). La table est créée automatiquement au premier appel.
 
 Sans la base `DB`, la page fonctionne quand même : seuls les avis visiteurs affichent « indisponibles ».
 
 ### Tester en local
 
 ```bash
-npx wrangler pages dev . --d1 DB=local-db
+npx wrangler pages dev .
 # puis ouvrir http://localhost:8788/outils
 ```
 
