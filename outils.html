@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outils Vibe Coding</title>
+<meta name="description" content="Les meilleurs outils de vibe coding comparés : post X de Himanshu Hingorani, liste awesome-vibecoding et mes outils du quotidien. Notes, étoiles GitHub et avis des visiteurs.">
+<meta name="theme-color" content="#07070c">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f7fb;
+  --bg-2: #ffffff;
+  --card: rgba(255,255,255,.78);
+  --card-solid: #ffffff;
+  --border: rgba(20,20,40,.09);
+  --border-strong: rgba(20,20,40,.16);
+  --text: #0d0d17;
+  --muted: #5d5d73;
+  --faint: #8b8ba0;
+  --accent: #6d5dfc;
+  --accent-2: #ff5fa2;
+  --accent-3: #22c3ee;
+  --star: #f5a524;
+  --ok: #10b981;
+  --warn: #d97706;
+  --glow-a: rgba(109,93,252,.22);
+  --glow-b: rgba(255,95,162,.16);
+  --glow-c: rgba(34,195,238,.14);
+  --shadow: 0 1px 2px rgba(15,15,30,.04), 0 8px 24px -12px rgba(15,15,30,.12);
+  --shadow-hover: 0 2px 4px rgba(15,15,30,.05), 0 24px 48px -20px rgba(80,60,200,.35);
+  --src-a: #0ea5e9; --src-b: #8b5cf6; --src-c: #10b981;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #07070c; --bg-2: #0d0d15; --card: rgba(22,22,34,.66); --card-solid: #14141f;
+    --border: rgba(255,255,255,.07); --border-strong: rgba(255,255,255,.14);
+    --text: #f3f3f8; --muted: #a3a3b8; --faint: #6f6f86;
+    --accent: #8b7dff; --accent-2: #ff6fae; --accent-3: #38d3f5;
+    --glow-a: rgba(124,108,255,.28); --glow-b: rgba(255,95,162,.16); --glow-c: rgba(56,211,245,.12);
+    --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 10px 30px -15px rgba(0,0,0,.6);
+    --shadow-hover: 0 1px 0 rgba(255,255,255,.05) inset, 0 30px 60px -25px rgba(124,108,255,.45);
+    --src-a: #38bdf8; --src-b: #a78bfa; --src-c: #34d399;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #07070c; --bg-2: #0d0d15; --card: rgba(22,22,34,.66); --card-solid: #14141f;
+  --border: rgba(255,255,255,.07); --border-strong: rgba(255,255,255,.14);
+  --text: #f3f3f8; --muted: #a3a3b8; --faint: #6f6f86;
+  --accent: #8b7dff; --accent-2: #ff6fae; --accent-3: #38d3f5;
+  --glow-a: rgba(124,108,255,.28); --glow-b: rgba(255,95,162,.16); --glow-c: rgba(56,211,245,.12);
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 10px 30px -15px rgba(0,0,0,.6);
+  --shadow-hover: 0 1px 0 rgba(255,255,255,.05) inset, 0 30px 60px -25px rgba(124,108,255,.45);
+  --src-a: #38bdf8; --src-b: #a78bfa; --src-c: #34d399;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.55 Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+a { color: inherit; }
+.serif { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -.01em; }
+
+/* Fond aurora + grille */
+.aurora { position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden; }
+.aurora::before, .aurora::after, .aurora span {
+  content: ""; position: absolute; border-radius: 50%; filter: blur(80px); animation: float 22s ease-in-out infinite;
+}
+.aurora::before { width: 60vw; height: 60vw; left: -15vw; top: -25vw; background: var(--glow-a); }
+.aurora::after { width: 50vw; height: 50vw; right: -15vw; top: -10vw; background: var(--glow-b); animation-delay: -8s; }
+.aurora span { width: 45vw; height: 45vw; left: 30vw; top: 30vh; background: var(--glow-c); animation-delay: -14s; }
+.grid-bg {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
+}
+@keyframes float { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(4vw,3vh) scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { .aurora * , .aurora::before, .aurora::after { animation: none !important; } html { scroll-behavior: auto; } }
+
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+@media (min-width: 720px) { .wrap { padding: 0 28px; } }
+
+/* Nav */
+nav.top {
+  position: sticky; top: 0; z-index: 30; backdrop-filter: saturate(160%) blur(16px); -webkit-backdrop-filter: saturate(160%) blur(16px);
+  background: color-mix(in srgb, var(--bg) 70%, transparent); border-bottom: 1px solid var(--border);
+}
+nav.top .wrap { display: flex; align-items: center; gap: 14px; height: 60px; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; letter-spacing: -.01em; }
+.logo-mark {
+  width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: #fff; font-size: 15px;
+  background: conic-gradient(from 210deg, var(--accent), var(--accent-2), var(--accent-3), var(--accent));
+  box-shadow: 0 6px 18px -6px var(--accent);
+}
+.nav-links { display: none; gap: 4px; margin-left: 12px; }
+.nav-links a { text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 10px; border-radius: 8px; }
+.nav-links a:hover { color: var(--text); background: var(--border); }
+@media (min-width: 820px) { .nav-links { display: flex; } }
+.spacer { flex: 1; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--card);
+  color: var(--text); display: grid; place-items: center; cursor: pointer; font-size: 16px;
+}
+.icon-btn:hover { border-color: var(--accent); }
+.gh-btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 10px; font-size: 14px; font-weight: 600;
+  text-decoration: none; background: var(--text); color: var(--bg);
+}
+
+/* Hero */
+header.hero { text-align: center; padding: 72px 0 36px; }
+.pill {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; border-radius: 999px; font-size: 13px; color: var(--muted);
+  border: 1px solid var(--border-strong); background: var(--card); backdrop-filter: blur(8px);
+}
+.pill b { color: #fff; font-weight: 600; font-size: 12px; padding: 3px 9px; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+h1 {
+  font-size: clamp(38px, 7vw, 76px); line-height: 1.02; letter-spacing: -.045em; font-weight: 800; margin: 22px auto 18px; max-width: 900px;
+}
+h1 .serif { font-size: 1.08em; background: linear-gradient(100deg, var(--accent) 10%, var(--accent-2) 55%, var(--accent-3) 95%); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .06em; }
+.lead { font-size: clamp(16px, 2vw, 19px); color: var(--muted); max-width: 680px; margin: 0 auto 34px; }
+
+/* Barre de recherche façon « prompt box » */
+.prompt {
+  max-width: 720px; margin: 0 auto; padding: 1px; border-radius: 20px;
+  background: linear-gradient(120deg, var(--accent), var(--accent-2), var(--accent-3));
+  box-shadow: 0 30px 80px -30px var(--glow-a);
+}
+.prompt-inner { display: flex; align-items: center; gap: 10px; border-radius: 19px; background: var(--card-solid); padding: 8px 8px 8px 18px; }
+.prompt input {
+  flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--text); font: inherit; font-size: 16px; padding: 10px 0;
+}
+.prompt input::placeholder { color: var(--faint); }
+.kbd { font: 500 12px "JetBrains Mono", monospace; color: var(--faint); border: 1px solid var(--border-strong); border-radius: 6px; padding: 2px 6px; display: none; }
+@media (min-width: 640px) { .kbd { display: inline-block; } }
+.prompt select {
+  border: 1px solid var(--border-strong); background: var(--bg-2); color: var(--text); font: inherit; font-size: 13px; font-weight: 500;
+  border-radius: 12px; padding: 9px 10px; cursor: pointer; max-width: 150px;
+}
+
+/* Statistiques */
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 40px auto 0; max-width: 860px; }
+@media (min-width: 720px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+.stat { border: 1px solid var(--border); background: var(--card); border-radius: 16px; padding: 16px 18px; text-align: left; backdrop-filter: blur(10px); }
+.stat strong { display: block; font-size: 28px; letter-spacing: -.03em; font-weight: 800; }
+.stat span { color: var(--muted); font-size: 13px; }
+
+/* Filtres */
+.filters { position: sticky; top: 60px; z-index: 20; padding: 14px 0; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+.chip-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.chip-row::-webkit-scrollbar { display: none; }
+.chip-row + .chip-row { margin-top: 8px; }
+.chip {
+  flex: none; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border-strong); background: var(--card); color: var(--muted);
+  padding: 7px 13px; border-radius: 999px; font: 500 13px Inter, sans-serif; cursor: pointer; transition: .15s; white-space: nowrap;
+}
+.chip:hover { color: var(--text); border-color: var(--accent); }
+.chip[aria-pressed="true"] { color: #fff; background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 60%, var(--accent-2))); border-color: transparent; }
+.chip .n { font-size: 11px; opacity: .7; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+/* Grille de cartes */
+section { scroll-margin-top: 190px; }
+.section-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 44px 0 18px; flex-wrap: wrap; }
+h2 { font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -.035em; margin: 0; font-weight: 800; }
+.section-head p { color: var(--muted); margin: 6px 0 0; max-width: 620px; }
+.count { color: var(--faint); font-size: 14px; }
+.grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 680px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1040px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+.card {
+  position: relative; display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 20px;
+  background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow); backdrop-filter: blur(12px);
+  transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s, border-color .25s; isolation: isolate;
+  animation: rise .5s both;
+}
+.card::before {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; z-index: -1; opacity: 0; transition: opacity .25s;
+  background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 0%), var(--accent), transparent 45%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.card:hover::before { opacity: 1; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.card-top { display: flex; align-items: center; gap: 12px; }
+.favicon {
+  width: 42px; height: 42px; border-radius: 12px; flex: none; display: grid; place-items: center; overflow: hidden;
+  background: var(--bg-2); border: 1px solid var(--border-strong); font-weight: 800; font-size: 16px; color: var(--accent);
+}
+.favicon img { width: 24px; height: 24px; }
+.card h3 { margin: 0; font-size: 17px; letter-spacing: -.02em; line-height: 1.2; }
+.card h3 a { text-decoration: none; }
+.card h3 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 3px; font-size: 12px; color: var(--faint); }
+.tag { font: 500 11px "JetBrains Mono", monospace; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--border-strong); color: var(--muted); }
+.src { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+.src-A { color: var(--src-a); background: color-mix(in srgb, var(--src-a) 14%, transparent); }
+.src-B { color: var(--src-b); background: color-mix(in srgb, var(--src-b) 14%, transparent); }
+.src-C { color: var(--src-c); background: color-mix(in srgb, var(--src-c) 14%, transparent); }
+.warn { font-size: 11px; font-weight: 600; color: var(--warn); background: color-mix(in srgb, var(--warn) 13%, transparent); padding: 2px 8px; border-radius: 999px; }
+.gh {
+  margin-left: auto; align-self: flex-start; display: inline-flex; align-items: center; gap: 5px; font: 600 12px Inter, sans-serif; text-decoration: none;
+  padding: 5px 9px; border-radius: 9px; border: 1px solid var(--border-strong); color: var(--muted); white-space: nowrap;
+}
+.gh:hover { color: var(--text); border-color: var(--text); }
+.gh svg { width: 14px; height: 14px; }
+.desc { margin: 0; color: var(--text); font-size: 14px; }
+.reco { margin: 0; color: var(--muted); font-size: 13.5px; padding-left: 12px; border-left: 2px solid color-mix(in srgb, var(--accent) 50%, transparent); }
+.card-foot { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 14px; border-top: 1px dashed var(--border-strong); }
+.foot-label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; margin-bottom: 4px; }
+.stars { display: inline-flex; align-items: center; gap: 1px; color: var(--star); font-size: 15px; letter-spacing: 0; }
+.stars .val { margin-left: 6px; color: var(--text); font-weight: 700; font-size: 13px; }
+.star-svg { width: 15px; height: 15px; }
+.vote { display: inline-flex; gap: 1px; }
+.vote button {
+  border: 0; background: none; padding: 1px; cursor: pointer; color: var(--border-strong); line-height: 0; border-radius: 4px; transition: transform .12s, color .12s;
+}
+.vote button svg { width: 18px; height: 18px; }
+.vote button.on { color: var(--star); }
+.vote button:hover { transform: scale(1.18); }
+.vote button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.vote[data-done="true"] button { cursor: default; }
+.vote[data-done="true"] button:hover { transform: none; }
+.vote-info { font-size: 12px; color: var(--faint); margin-top: 2px; min-height: 18px; }
+.vote-info b { color: var(--text); }
+
+.empty { text-align: center; color: var(--muted); padding: 60px 0; display: none; }
+
+/* Comparaison */
+.compare { overflow-x: auto; border: 1px solid var(--border); border-radius: 20px; background: var(--card); backdrop-filter: blur(12px); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 720px; }
+th, td { padding: 14px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); }
+thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--faint); }
+tbody tr:last-child td { border-bottom: 0; }
+td:first-child { color: var(--muted); font-weight: 600; white-space: nowrap; }
+.bento { display: grid; gap: 16px; grid-template-columns: 1fr; margin-top: 16px; }
+@media (min-width: 860px) { .bento { grid-template-columns: 1.1fr .9fr; } }
+.panel { border: 1px solid var(--border); border-radius: 20px; background: var(--card); padding: 22px; backdrop-filter: blur(12px); }
+.panel h3 { margin: 0 0 6px; font-size: 18px; letter-spacing: -.02em; }
+.panel p, .panel li { color: var(--muted); font-size: 14px; }
+.panel ul { padding-left: 18px; margin: 10px 0 0; }
+.panel li { margin: 6px 0; }
+.panel li b { color: var(--text); }
+.overlap { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.overlap div { border-radius: 14px; padding: 12px 14px; background: color-mix(in srgb, var(--c) 12%, transparent); border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); }
+.overlap strong { display: block; font-size: 26px; letter-spacing: -.03em; color: var(--c); }
+.overlap span { font-size: 13px; color: var(--muted); }
+
+.policy { display: grid; gap: 12px; grid-template-columns: 1fr; }
+@media (min-width: 720px) { .policy { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1040px) { .policy { grid-template-columns: repeat(4, 1fr); } }
+.policy .panel h3 { display: flex; align-items: center; gap: 8px; font-size: 16px; }
+
+footer { margin-top: 80px; border-top: 1px solid var(--border); padding: 30px 0 50px; color: var(--faint); font-size: 13px; }
+footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wrap: wrap; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 120px); background: var(--text); color: var(--bg); padding: 11px 18px; border-radius: 12px;
+  font-size: 14px; font-weight: 500; transition: transform .3s cubic-bezier(.2,.8,.2,1); z-index: 50; max-width: calc(100% - 32px); box-shadow: 0 20px 40px -10px rgba(0,0,0,.4);
+}
+.toast.show { transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><span></span></div>
+<div class="grid-bg" aria-hidden="true"></div>
+
+<nav class="top">
+  <div class="wrap">
+    <a class="logo" href="#top"><span class="logo-mark">✦</span>Vibe Tools</a>
+    <div class="nav-links">
+      <a href="#outils">Outils</a>
+      <a href="#comparaison">Comparaison</a>
+      <a href="#politiques">Changements</a>
+    </div>
+    <div class="spacer"></div>
+    <button class="icon-btn" id="theme" type="button" aria-label="Changer de thème">◐</button>
+    <a class="gh-btn" href="https://github.com/johnapplewan/best_tools_vibecoding_v1" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      <span>GitHub</span>
+    </a>
+  </div>
+</nav>
+
+<main id="top">
+  <header class="hero wrap">
+    <span class="pill"><b>Nouveau</b> 72 outils · 3 sources comparées · mis à jour le 12 oct. 2026</span>
+    <h1>Les meilleurs outils de <span class="serif">vibe coding</span>, triés pour vous.</h1>
+    <p class="lead">Un post X viral, une liste awesome vérifiée et mon stack du quotidien, réunis dans une seule page. Notes, étoiles GitHub en direct et avis de la communauté.</p>
+
+    <div class="prompt" role="search">
+      <div class="prompt-inner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--faint);flex:none" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Rechercher un outil, ex. « composants React animés »" aria-label="Rechercher un outil" autocomplete="off">
+        <span class="kbd">/</span>
+        <select id="sort" aria-label="Trier">
+          <option value="rating">★ Ma note</option>
+          <option value="community">♥ Avis visiteurs</option>
+          <option value="github">⭐ Étoiles GitHub</option>
+          <option value="name">A → Z</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><strong id="s-total">72</strong><span>outils référencés</span></div>
+      <div class="stat"><strong id="s-overlap">8</strong><span>présents dans 2 sources</span></div>
+      <div class="stat"><strong id="s-stars">—</strong><span>étoiles GitHub cumulées</span></div>
+      <div class="stat"><strong id="s-votes">—</strong><span>avis de visiteurs</span></div>
+    </div>
+  </header>
+
+  <div class="filters" id="outils">
+    <div class="wrap">
+      <div class="chip-row" id="src-chips" aria-label="Filtrer par source"></div>
+      <div class="chip-row" id="cat-chips" aria-label="Filtrer par catégorie"></div>
+    </div>
+  </div>
+
+  <section class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>Le catalogue</h2>
+        <p>Chaque fiche contient ma note sur 5, deux phrases de recommandation et, quand le projet est open source, son nombre d'étoiles GitHub. Notez vous aussi : un avis par outil et par visiteur, sans email.</p>
+      </div>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty">Aucun outil ne correspond. Essayez un autre mot-clé ✨</p>
+  </section>
+
+  <section class="wrap" id="comparaison">
+    <div class="section-head">
+      <div>
+        <h2>Deux sources, deux <span class="serif">philosophies</span></h2>
+        <p>Le post X parle de design. La liste awesome parle de code et de mise en ligne. Mes outils font le lien entre les deux.</p>
+      </div>
+    </div>
+    <div class="compare">
+      <table>
+        <thead><tr><th></th><th><span class="src src-A">A</span> Post X</th><th><span class="src src-B">B</span> awesome-vibecoding</th><th><span class="src src-C">C</span> Mes outils</th></tr></thead>
+        <tbody>
+          <tr><td>Nature</td><td>Post viral sur un réseau social (capture d'écran)</td><td>Liste « awesome » sur GitHub, sous licence CC0, avec des preuves</td><td>Retour d'expérience personnel</td></tr>
+          <tr><td>Auteur et date</td><td>Himanshu Hingorani · 9 oct. 2026</td><td>Communauté, maintenue avec Pi · vérifiée au 18 sept. 2026</td><td>Moi · oct. 2026</td></tr>
+          <tr><td>Vérification</td><td>Aucune. Quelques domaines sont illisibles sur la capture</td><td>Chaque entrée est datée et liée à une revue de cycle de vie</td><td>Testé en conditions réelles</td></tr>
+          <tr><td>Nombre</td><td id="c-a">25 ressources</td><td id="c-b">43 outils (liste principale)</td><td id="c-c">12 outils</td></tr>
+          <tr><td>Focus</td><td>Design, inspiration, composants UI, animations</td><td>Agents de code, prototypage, MCP, tests, déploiement</td><td>Agent + GitHub + backend + déploiement</td></tr>
+          <tr><td>Prix</td><td>Non précisé (certaines ressources sont payantes)</td><td>Accès et licence précisés, sinon « Vérifier le prix »</td><td>Offres gratuites ou d'entrée de gamme</td></tr>
+          <tr><td>Point faible</td><td>Promotionnel (« Save it »), rien n'est daté ni sourcé</td><td>Aucune ressource design/UI : on ne sait pas quoi demander à l'agent</td><td>Subjectif, centré sur mon usage</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bento">
+      <div class="panel">
+        <h3>Outils en commun</h3>
+        <p>Le post X et la liste awesome n'ont <b>aucun outil en commun</b> : ils se complètent. Mes outils recoupent surtout la liste awesome.</p>
+        <div class="overlap">
+          <div style="--c:var(--src-a)"><strong id="v-a">25</strong><span>seulement dans le post X</span></div>
+          <div style="--c:var(--src-b)"><strong id="v-b">35</strong><span>seulement dans awesome-vibecoding</span></div>
+          <div style="--c:var(--src-c)"><strong id="v-c">4</strong><span>seulement dans mes outils</span></div>
+          <div style="--c:var(--accent)"><strong id="v-bc">8</strong><span>dans awesome <em>et</em> mes outils</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Ma recette en 4 étapes</h3>
+        <ul>
+          <li><b>S'inspirer</b> avec Godly, Mobbin ou Component Gallery (A).</li>
+          <li><b>Cadrer</b> avec un DESIGN.md et Context7 pour que l'agent reste cohérent (A + B).</li>
+          <li><b>Construire</b> avec Claude Code ou Blink.new, sur shadcn/ui et Magic UI (B + A + C).</li>
+          <li><b>Vérifier et publier</b> avec Playwright MCP, Prbl, Sentry, puis GitHub → Cloudflare (B + C).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="politiques">
+    <div class="section-head">
+      <div>
+        <h2>Ce qui a <span class="serif">changé</span></h2>
+        <p>Changements de politique signalés par awesome-vibecoding (revue du 18 sept. 2026, dépôt relu le 12 oct. 2026). <a href="https://github.com/johnapplewan/best_tools_vibecoding_v1/blob/main/docs/sources/changements-de-politique.md" target="_blank" rel="noopener">Détail et sources →</a></p>
+      </div>
+    </div>
+    <div class="policy">
+      <div class="panel"><h3>✂️ Grand ménage</h3><p>La liste principale est passée de <b>156 à 40 outils</b> le 18 sept. 2026, puis à 43 avec Delta et Prbl. Les produits arrêtés, archivés ou fermés aux nouveaux utilisateurs ont été écartés.</p></div>
+      <div class="panel"><h3>🚫 Accès retirés</h3><p><b>Gemini CLI</b> : l'accès par abonnement grand public a été retiré le 18 juin 2026 (clé API ou Vertex uniquement). <b>Firebase Studio</b> est fermé aux nouveaux comptes depuis le 22 juin 2026. Cody ne garde que son offre Enterprise.</p></div>
+      <div class="panel"><h3>🪦 Arrêts et renommages</h3><p><b>GitHub Spark</b> est arrêté depuis le 31 août 2026. <b>Windsurf</b> est devenu Devin Desktop. Supermaven et les plugins Amazon Q sont en fin de vie. Roo Code, Void et E2B MCP sont archivés.</p></div>
+      <div class="panel"><h3>💳 Gratuit, bêta, licences</h3><p><b>Delta</b> est gratuit pendant sa bêta. <b>Prbl</b> : le scan est gratuit, le correcteur est payant. Agent QA et Sentry MCP sont sous licence FSL (source disponible, pas open source au sens strict).</p></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Sources : <a href="https://github.com/Scap-Mehdi/awesome-vibecoding" target="_blank" rel="noopener">awesome-vibecoding</a> (CC0) · post X de Himanshu Hingorani · mon expérience. Les notes sont subjectives.</span>
+    <span>Déployé sur Cloudflare Pages · avis anonymes, IP hachées, aucun email.</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module">
+import { TOOLS, CATEGORIES, SOURCES, REPOS } from "/assets/tools.js";
+
+const $ = (s) => document.querySelector(s);
+const STAR = '<svg class="star-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>';
+const GH = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>';
+
+// ── Stockage local (préférences + identifiant anonyme du visiteur) ──
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+};
+function uuid() {
+  if (crypto.randomUUID) return crypto.randomUUID();
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+}
+let device = store.get("vt-device");
+if (!device) { device = uuid(); store.set("vt-device", device); }
+
+// ── Thème ──
+const root = document.documentElement;
+const savedTheme = store.get("vt-theme");
+if (savedTheme) root.dataset.theme = savedTheme;
+$("#theme").addEventListener("click", () => {
+  const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+  store.set("vt-theme", root.dataset.theme);
+});
+
+// ── État ──
+const state = { q: "", src: "all", cat: "all", sort: "rating" };
+let ghStars = {};
+let community = {};   // { toolId: { count, avg } }
+let mine = {};        // { toolId: stars }
+let ratingsOnline = true;
+
+const fmt = (n) => n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(".0", "") + " k" : String(n);
+const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+function starsHTML(r) {
+  let h = "";
+  for (let i = 1; i <= 5; i++) {
+    const fill = Math.max(0, Math.min(1, r - (i - 1)));
+    h += `<span style="position:relative;display:inline-block;width:15px;height:15px">
+      <span style="position:absolute;inset:0;color:var(--border-strong)">${STAR}</span>
+      <span style="position:absolute;inset:0;overflow:hidden;width:${fill * 100}%">${STAR}</span></span>`;
+  }
+  return h;
+}
+
+// ── Chips ──
+function chips() {
+  const srcCounts = { all: TOOLS.length };
+  for (const t of TOOLS) for (const s of t.src) srcCounts[s] = (srcCounts[s] || 0) + 1;
+  srcCounts.multi = TOOLS.filter(t => t.src.length > 1).length;
+  const srcDefs = [
+    ["all", "Toutes les sources", ""],
+    ["A", SOURCES.A.label, "var(--src-a)"],
+    ["B", SOURCES.B.label, "var(--src-b)"],
+    ["C", SOURCES.C.label, "var(--src-c)"],
+    ["multi", "Dans plusieurs sources", "linear-gradient(90deg,var(--src-b),var(--src-c))"],
+  ];
+  $("#src-chips").innerHTML = srcDefs.map(([k, l, c]) =>
+    `<button class="chip" data-src="${k}" aria-pressed="${state.src === k}" title="${SOURCES[k]?.long || l}">${c ? `<i class="dot" style="background:${c}"></i>` : ""}${l} <span class="n">${srcCounts[k]}</span></button>`).join("");
+
+  const catCounts = {};
+  for (const t of TOOLS) catCounts[t.cat] = (catCounts[t.cat] || 0) + 1;
+  $("#cat-chips").innerHTML = `<button class="chip" data-cat="all" aria-pressed="${state.cat === "all"}">Toutes les catégories</button>` +
+    Object.entries(CATEGORIES).map(([k, c]) =>
+      `<button class="chip" data-cat="${k}" aria-pressed="${state.cat === k}">${c.emoji} ${c.label} <span class="n">${catCounts[k] || 0}</span></button>`).join("");
+}
+document.addEventListener("click", (e) => {
+  const s = e.target.closest("[data-src]"); const c = e.target.closest("[data-cat]");
+  if (s) { state.src = s.dataset.src; chips(); render(); }
+  if (c) { state.cat = c.dataset.cat; chips(); render(); }
+});
+
+// ── Rendu des cartes ──
+function filtered() {
+  const q = norm(state.q.trim());
+  let list = TOOLS.filter(t =>
+    (state.src === "all" || (state.src === "multi" ? t.src.length > 1 : t.src.includes(state.src))) &&
+    (state.cat === "all" || t.cat === state.cat) &&
+    (!q || norm([t.name, t.desc, t.reco, t.tag, CATEGORIES[t.cat].label, t.url].join(" ")).includes(q)));
+  const by = {
+    rating: (a, b) => b.rating - a.rating || (ghStars[b.repo] || 0) - (ghStars[a.repo] || 0),
+    community: (a, b) => (community[b.id]?.avg || 0) - (community[a.id]?.avg || 0) || (community[b.id]?.count || 0) - (community[a.id]?.count || 0) || b.rating - a.rating,
+    github: (a, b) => (ghStars[b.repo] ?? -1) - (ghStars[a.repo] ?? -1) || b.rating - a.rating,
+    name: (a, b) => a.name.localeCompare(b.name, "fr"),
+  }[state.sort];
+  return list.sort(by);
+}
+
+function host(u) { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } }
+
+function voteInfo(t) {
+  const c = community[t.id];
+  if (!ratingsOnline) return "Avis momentanément indisponibles";
+  if (mine[t.id]) return `Merci ! Votre note : <b>${mine[t.id]}★</b>${c ? ` · moy. <b>${c.avg}</b> (${c.count})` : ""}`;
+  if (!c) return "Soyez le premier à noter";
+  return `<b>${c.avg}</b> / 5 · ${c.count} avis`;
+}
+
+function card(t, i) {
+  const ghCount = t.repo && ghStars[t.repo] != null ? ghStars[t.repo] : null;
+  const my = mine[t.id] || 0;
+  const avg = community[t.id]?.avg || 0;
+  const show = my || Math.round(avg);
+  return `<article class="card" style="animation-delay:${Math.min(i, 12) * 30}ms" data-id="${t.id}">
+    <div class="card-top">
+      <div class="favicon"><img src="https://www.google.com/s2/favicons?domain=${host(t.url)}&sz=64" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode('${t.name[0]}'))"></div>
+      <div style="min-width:0">
+        <h3><a href="${t.url}" target="_blank" rel="noopener">${t.name}</a></h3>
+        <div class="meta"><span class="tag">${t.tag}</span>${t.src.map(s => `<span class="src src-${s}" title="${SOURCES[s].long}">${SOURCES[s].label}</span>`).join("")}${t.unverified ? '<span class="warn" title="Lu sur une capture basse résolution">Lien à vérifier</span>' : ""}</div>
+      </div>
+      ${t.repo ? `<a class="gh" href="https://github.com/${t.repo}" target="_blank" rel="noopener" title="Étoiles GitHub de ${t.repo}">${GH}<span>${ghCount != null ? fmt(ghCount) : "GitHub"}</span></a>` : ""}
+    </div>
+    <p class="desc">${CATEGORIES[t.cat].emoji} ${t.desc}</p>
+    <p class="reco">${t.reco}</p>
+    <div class="card-foot">
+      <div><div class="foot-label">Ma note</div><span class="stars" aria-label="${t.rating} sur 5">${starsHTML(t.rating)}<span class="val">${t.rating.toFixed(1)}</span></span></div>
+      <div><div class="foot-label">Votre avis</div>
+        <div class="vote" role="radiogroup" aria-label="Noter ${t.name}" data-tool="${t.id}" data-done="${!!my}">
+          ${[1,2,3,4,5].map(n => `<button type="button" data-v="${n}" class="${n <= show ? "on" : ""}" aria-label="${n} étoile${n > 1 ? "s" : ""}" ${my ? "disabled" : ""}>${STAR}</button>`).join("")}
+        </div>
+        <div class="vote-info">${voteInfo(t)}</div>
+      </div>
+    </div>
+  </article>`;
+}
+
+function render() {
+  const list = filtered();
+  $("#grid").innerHTML = list.map(card).join("");
+  $("#empty").style.display = list.length ? "none" : "block";
+  $("#count").textContent = `${list.length} outil${list.length > 1 ? "s" : ""}`;
+}
+
+// Effet de lueur qui suit la souris
+$("#grid").addEventListener("pointermove", (e) => {
+  const c = e.target.closest(".card"); if (!c) return;
+  const r = c.getBoundingClientRect();
+  c.style.setProperty("--mx", `${e.clientX - r.left}px`);
+  c.style.setProperty("--my", `${e.clientY - r.top}px`);
+});
+
+// Survol des étoiles de vote
+$("#grid").addEventListener("pointerover", (e) => {
+  const b = e.target.closest(".vote button"); if (!b) return;
+  const g = b.parentElement; if (g.dataset.done === "true") return;
+  g.querySelectorAll("button").forEach(x => x.classList.toggle("on", +x.dataset.v <= +b.dataset.v));
+});
+$("#grid").addEventListener("pointerout", (e) => {
+  const g = e.target.closest(".vote"); if (!g || g.contains(e.relatedTarget) || g.dataset.done === "true") return;
+  const avg = Math.round(community[g.dataset.tool]?.avg || 0);
+  g.querySelectorAll("button").forEach(x => x.classList.toggle("on", +x.dataset.v <= avg));
+});
+
+// Envoi d'un vote
+$("#grid").addEventListener("click", async (e) => {
+  const b = e.target.closest(".vote button"); if (!b) return;
+  const g = b.parentElement; const tool = g.dataset.tool; const stars = +b.dataset.v;
+  if (g.dataset.done === "true") return;
+  g.dataset.done = "true";
+  try {
+    const res = await fetch("/api/ratings", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ tool, stars, device }) });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      mine[tool] = stars; community[tool] = data.stats;
+      toast("Merci pour votre avis ⭐");
+    } else if (data.error === "already_voted") {
+      mine[tool] = mine[tool] || stars;
+      toast("Vous avez déjà noté cet outil 🙂");
+    } else {
+      g.dataset.done = "false";
+      toast("Les avis sont indisponibles pour le moment");
+    }
+  } catch {
+    g.dataset.done = "false";
+    toast("Connexion impossible, réessayez plus tard");
+  }
+  updateTotals(); render();
+});
+
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+function updateTotals() {
+  const sum = Object.values(ghStars).reduce((a, b) => a + b, 0);
+  // Total affiché seulement si la majorité des dépôts a répondu (sinon chiffre trompeur).
+  $("#s-stars").textContent = Object.keys(ghStars).length >= REPOS.length / 2 ? fmt(sum) : "—";
+  const votes = Object.values(community).reduce((a, c) => a + (c?.count || 0), 0);
+  $("#s-votes").textContent = ratingsOnline ? String(votes) : "—";
+}
+
+function overlaps() {
+  const only = (s) => TOOLS.filter(t => t.src.length === 1 && t.src[0] === s).length;
+  const bc = TOOLS.filter(t => t.src.includes("B") && t.src.includes("C")).length;
+  $("#s-total").textContent = TOOLS.length;
+  $("#s-overlap").textContent = TOOLS.filter(t => t.src.length > 1).length;
+  $("#v-a").textContent = only("A"); $("#v-b").textContent = only("B"); $("#v-c").textContent = only("C");
+  $("#v-bc").textContent = bc;
+}
+
+// ── Recherche, tri, raccourci clavier ──
+$("#q").addEventListener("input", (e) => { state.q = e.target.value; render(); });
+$("#sort").addEventListener("change", (e) => { state.sort = e.target.value; render(); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "/" && document.activeElement !== $("#q")) { e.preventDefault(); $("#q").focus(); }
+});
+
+// ── Chargement ──
+chips(); overlaps(); render();
+
+fetch("/api/stars").then(r => r.ok ? r.json() : null).then(d => {
+  if (d?.stars) { ghStars = d.stars; updateTotals(); render(); }
+}).catch(() => {});
+
+fetch(`/api/ratings?device=${encodeURIComponent(device)}`).then(r => r.ok ? r.json() : Promise.reject()).then(d => {
+  community = d.stats || {}; mine = d.mine || {}; ratingsOnline = true; updateTotals(); render();
+}).catch(() => { ratingsOnline = false; updateTotals(); render(); });
+</script>
+</body>
+</html>
