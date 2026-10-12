@@ -33,7 +33,7 @@ Le dépôt est relié au Worker Cloudflare **`best-tools-vibecoding-v1`** (Worke
   - `RATING_SALT` : une phrase secrète au hasard, pour hacher les IP.
   - `GITHUB_TOKEN` : un jeton GitHub en lecture seule, pour ne pas atteindre la limite de l'API.
 
-Adresse : `https://best-tools-vibecoding-v1.<votre-sous-domaine>.workers.dev/outils`
+Adresse : https://best-tools-vibecoding-v1.johnapplewan.workers.dev/outils
 
 ### Tester en local
 
@@ -48,3 +48,9 @@ npx wrangler@4 dev
 - Un identifiant aléatoire est enregistré dans le navigateur, **et** l'adresse IP est hachée (SHA-256 + sel). L'IP n'est jamais stockée en clair.
 - Un seul vote par outil : si l'identifiant **ou** l'IP a déjà voté, le vote est refusé (contrainte `UNIQUE` dans D1).
 - Limite connue : deux personnes derrière la même connexion (bureau, box) ne peuvent pas noter le même outil.
+
+## Plateforme communautaire (en préparation)
+
+- [`docs/plateforme/creer-ici.md`](docs/plateforme/creer-ici.md) : spécification de l'atelier « Créer ici »
+- [`docs/plateforme/cgu.md`](docs/plateforme/cgu.md) : conditions générales d'utilisation (brouillon à faire relire)
+- [`docs/plateforme/charte.md`](docs/plateforme/charte.md) : charte déontologique des membres
