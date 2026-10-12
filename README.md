@@ -54,3 +54,4 @@ npx wrangler@4 dev
 - [`docs/plateforme/creer-ici.md`](docs/plateforme/creer-ici.md) : spécification de l'atelier « Créer ici »
 - [`docs/plateforme/cgu.md`](docs/plateforme/cgu.md) : conditions générales d'utilisation (brouillon à faire relire)
 - [`docs/plateforme/charte.md`](docs/plateforme/charte.md) : charte déontologique des membres
+- [`docs/plateforme/veille.md`](docs/plateforme/veille.md) : module de veille (raccourci iOS, analyse, feu tricolore, script vidéo)

@@ -40,4 +40,4 @@ La décision est expliquée au membre, qui peut la contester.
 ---
 
 ☐ **J'ai lu et j'accepte la charte déontologique et les [conditions d'utilisation](cgu.md).**
-☐ **J'ai au moins 15 ans.**
+☐ **J'ai 18 ans ou plus.**

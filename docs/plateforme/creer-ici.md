@@ -1,6 +1,6 @@
 # « Créer ici » — l'atelier de création à plusieurs
 
-Spécification fonctionnelle · version 1 · 12 oct. 2026
+Spécification fonctionnelle · version 2 · 12 oct. 2026
 
 ## L'idée en une phrase
 
@@ -9,7 +9,9 @@ Un membre propose un outil à construire. Il en devient le **porteur de projet (
 ## Les règles de base
 
 - Seul un membre connecté avec GitHub peut proposer un projet ou y participer.
-- Le **porteur** gère l'équipe, valide les contributions et décide de la mise en ligne. Il peut nommer un **co-porteur** qui le remplace en cas d'absence.
+- Le **porteur** gère l'équipe, valide les contributions et décide de la mise en ligne.
+- Un **co-porteur est obligatoire** pour passer le projet en « En cours ». Il est prévenu de son rôle et doit l'accepter explicitement.
+- À la création du projet, le porteur lit et accepte les **règles de continuité** (voir § 9 bis) et télécharge ses **codes de récupération**.
 - Un projet mis en ligne reçoit le label **« Créé ici »**.
 - Chaque participant peut l'afficher comme **5ᵉ projet bonus** sur sa fiche du showroom. Seuls les projets « Créé ici » peuvent occuper cette place.
 - Pour l'afficher en bonus, il faut **avoir été membre de l'équipe au moment de la mise en ligne**, avec au moins une mission terminée.
@@ -52,7 +54,7 @@ Proposition → Recrutement → Cadrage → Réalisation → Recette → Mise en
 ### 2. L'équipe et les rôles
 
 - **Porteur (CDP)** : anime l'équipe, priorise, accepte les membres, publie. Il est le seul à pouvoir mettre en ligne.
-- **Co-porteur** (conseillé) : remplace le porteur et reprend le projet si celui-ci part.
+- **Co-porteur** (obligatoire) : assure l'intérim si le porteur est injoignable, selon la procédure du § 9 bis. Il ne peut **jamais** prendre le rôle de porteur seul.
 - **Contributeurs** : prennent des missions.
 - **Relecteur** : au moins une personne différente de l'auteur relit chaque PR.
 - Les **candidatures** passent par un court message (« pourquoi moi, ce que je sais faire, mon temps dispo »). Le porteur répond sous 7 jours.
@@ -114,10 +116,50 @@ Les décisions importantes sont aussi reportées dans un **journal des décision
 - **Réunion de lancement** obligatoire : chacun se présente, et on fixe ensemble la charte d'équipe.
 - **Météo hebdo** en 30 secondes, pour repérer tôt la fatigue ou le blocage.
 - **Reconnaissance** : remerciements publics dans la fiche, badge « Créé ici » sur le profil, crédits définitifs.
-- **Pas de silence** : une mission sans activité depuis 14 jours déclenche une relance amicale. Sans réponse 7 jours plus tard, le porteur peut la réattribuer.
+- **Pas de silence (missions)** : une mission sans activité depuis 14 jours déclenche une relance amicale. Sans réponse 7 jours plus tard, le porteur peut la réattribuer.
 - **Droit de partir** : on peut quitter un projet à tout moment, en prévenant et en transmettant ses missions. Les contributions faites restent créditées.
 - **Conflits** : on en parle d'abord en équipe. Sinon, on fait appel à la **médiation de l'admin**, qui reste neutre et confidentielle.
-- **Porteur absent** depuis plus de 21 jours : le co-porteur prend le relais. Sans co-porteur, l'admin propose une reprise à l'équipe.
+- **Porteur absent** : voir la procédure sécurisée ci-dessous.
+
+### 9 bis. Continuité et protection du porteur
+
+Objectif : qu'un projet ne meure pas si son porteur disparaît, **sans jamais permettre de lui voler son projet**.
+
+**Prévenu dès le départ.** À la création du projet, le porteur accepte ces règles, et le co-porteur les accepte en rejoignant son rôle. Les deux voient le calendrier des relances.
+
+**Codes de récupération.** À la création, le porteur reçoit **8 codes à usage unique**, à garder hors ligne (comme les codes de secours d'une double authentification). Ils servent à :
+- **reprendre son rôle depuis un autre compte GitHub** s'il a perdu l'accès au sien ;
+- **déclencher une alerte « je suis indisponible »** depuis une page publique, sans être connecté. Le projet est alors **gelé** : aucun transfert possible, et l'équipe et l'admin sont prévenus.
+
+**Relances (si le porteur n'a aucune activité sur la plateforme ni sur le dépôt) :**
+
+| Jour | Ce qui se passe |
+|---|---|
+| J+14 | **Relance 1** au porteur (notification sur le site, et sur Telegram s'il a activé l'alerte) |
+| J+21 | **Relance 2** au porteur et information du co-porteur |
+| J+28 | **Relance 3** au porteur et **alerte à l'équipe**, qui peut tenter de le joindre par ses propres moyens |
+| J+35 | Le co-porteur peut **demander l'intérim** |
+
+**Intérim, et non transfert.** Pour que l'intérim démarre, il faut à la fois :
+1. les 3 relances restées sans réponse ;
+2. la demande du co-porteur ;
+3. l'accord de la **majorité de l'équipe** ;
+4. la **validation de l'admin** ;
+5. un **délai d'opposition de 7 jours**, pendant lequel le porteur peut tout annuler en un clic, ou avec un code de récupération.
+
+Pendant l'intérim, le co-porteur gère les missions et l'équipe. Il **ne peut pas** :
+- changer la licence ;
+- supprimer le projet ou le dépôt ;
+- retirer le porteur de l'équipe ou des crédits.
+
+Le porteur reprend son rôle **à tout moment** en se reconnectant.
+
+**Transfert définitif** : seulement après **90 jours d'intérim** sans retour du porteur, avec un nouveau vote de l'équipe et une nouvelle validation de l'admin. Le porteur d'origine reste **crédité à vie** comme fondateur.
+
+**Garde-fous :**
+- Les dépôts appartiennent à l'**organisation GitHub de la plateforme**, pas à un individu. Personne ne peut partir avec.
+- **Aucune éjection** du porteur par un vote seul. L'admin ne peut retirer un porteur que pour une violation grave de la charte, avec une décision motivée et contestable.
+- Chaque changement de rôle est inscrit dans un **journal public du projet** et notifié à tous les membres.
 
 ### 10. La rétrospective et la clôture
 

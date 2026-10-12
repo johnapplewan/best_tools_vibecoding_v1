@@ -25,7 +25,7 @@ Créer un compte vaut acceptation de ces CGU et de la [charte déontologique](ch
 
 - La consultation du catalogue, des actualités et du showroom est libre et gratuite.
 - L'inscription se fait **uniquement avec un compte GitHub**. La plateforme ne gère aucun mot de passe.
-- Il faut avoir **au moins 15 ans** pour créer un compte.
+- Il faut être **majeur (18 ans ou plus)** pour créer un compte. Les membres s'engagent dans des projets, acceptent des licences et sont responsables de leurs contributions et de leurs échanges.
 - Un compte est personnel. Il est interdit de créer plusieurs comptes pour contourner une règle, par exemple pour voter plusieurs fois.
 - À l'inscription, le membre choisit un **pseudo**. La plateforme lui attribue aussi un **identifiant membre** unique (ex. `VD-4F7K2`).
 
@@ -46,9 +46,13 @@ La plateforme fonctionne **par pseudonymat**.
 
 **Ce que la plateforme reçoit de GitHub :** l'identifiant numérique GitHub et le nom d'utilisateur GitHub, rien d'autre. Elle **ne demande pas l'accès à l'email** et ne conserve pas le nom affiché sur GitHub.
 
-**Liens de contact :** ils doivent passer par un **pseudo** (Telegram `@pseudo`, nom d'utilisateur Signal, X, Instagram, LinkedIn, site web…).
-- Les liens contenant un numéro de téléphone sont **refusés**, y compris les liens WhatsApp `wa.me/…`.
-- WhatsApp n'est accepté que sous la forme d'un **lien d'invitation à une chaîne ou un groupe**.
+**Liens de contact :** ils doivent passer par un **pseudo** ou un **lien d'invitation** (Telegram `t.me/pseudo`, lien Signal `signal.me/…`, X, Instagram, LinkedIn, site web…).
+- Les liens contenant un numéro de téléphone en clair sont **refusés**, y compris `wa.me/33…`.
+- **WhatsApp** est accepté sous deux formes :
+  - un **lien QR de contact** `wa.me/qr/…` ;
+  - un lien d'invitation à un groupe ou une chaîne.
+- Le site ne connaît jamais le numéro et ne l'affiche pas. Le lien n'est délivré qu'au moment du clic sur le bouton « Contacter ».
+- ⚠️ Une fois la conversation ouverte dans WhatsApp, **WhatsApp peut montrer votre numéro à la personne qui vous écrit**, selon vos réglages WhatsApp. C'est le fonctionnement de WhatsApp, pas celui de la plateforme. Préférez Telegram ou Signal pour rester totalement pseudonyme.
 
 **Bon à savoir :**
 - Un lien vers un dépôt GitHub montre le nom d'utilisateur GitHub. Si celui-ci contient votre vrai nom, il sera visible via vos liens de projets.
