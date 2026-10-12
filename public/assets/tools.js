@@ -376,7 +376,7 @@ export const TOOLS = [
   {
     id: "cloudflare", name: "Cloudflare", url: "https://github.com/cloudflare/mcp-server-cloudflare", cat: "delivery", src: ["B", "C"], tag: "MCP", repo: "cloudflare/mcp-server-cloudflare",
     desc: "Pages, Workers, D1, KV : déploiement et ressources cloud.",
-    reco: "Cette page est déployée sur Cloudflare Pages à chaque push GitHub, avec D1 pour les avis. Rapide, gratuit pour démarrer et très complet.",
+    reco: "Ce site tourne sur un Worker Cloudflare, déployé à chaque push GitHub, avec D1 pour les avis et les profils. Rapide, gratuit pour démarrer et très complet.",
     rating: 5,
   },
   {
