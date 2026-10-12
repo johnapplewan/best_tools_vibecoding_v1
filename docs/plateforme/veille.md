@@ -92,6 +92,18 @@ Il est fourni avec une légende pour le post, des hashtags, et le mot-clé du CT
 
 À étudier dans une étape séparée. Instagram autorise les réponses automatiques aux commentaires, mais seulement par son API officielle : il faut un compte professionnel, une application Meta et la validation de cette application par Meta. C'est faisable sans ManyChat, mais plus long à mettre en place.
 
+## Mise en œuvre (PR B)
+
+- Modèle : `claude-opus-5-5` (modifiable par la variable `VEILLE_MODEL`), avec le repli automatique `fallbacks: "default"` en cas de refus.
+- Étape 1 « enquête » : outils serveur `web_search_20260209` (8 recherches max) et `web_fetch_20260209` (5 lectures max), effort `medium`, reprise automatique après `pause_turn`.
+- Étape 2 « fiche » : sortie JSON stricte (`output_config.format`), effort `low`. Elle est séparée de l'enquête, car les sorties structurées sont incompatibles avec les citations de la recherche web.
+- Enrichissement GitHub déterministe. Garde-fous : un dépôt archivé ou inactif depuis plus de 12 mois fait passer le verdict en orange au minimum.
+- Métadonnées vidéo : oEmbed YouTube et TikTok. Pour Instagram, uniquement le lien.
+- File d'attente D1 (`veille_items`) traitée par une tâche planifiée toutes les 5 minutes (3 éléments par passage, 3 tentatives maximum), ou immédiatement avec le bouton « Analyser ».
+- Le raccourci iOS s'authentifie avec un jeton personnel (`vt_…`), dont seule l'empreinte est stockée, révocable depuis `/admin`.
+- Le script vidéo et le dossier d'enquête restent privés (`/admin`). `/api/actualites` n'expose que les fiches publiées.
+- Coût indicatif : environ 0,25 à 0,50 $ par analyse avec Opus 5.5 ; environ deux fois moins avec `VEILLE_MODEL=claude-sonnet-5-5`.
+
 ## Ce qu'il faudra fournir
 
 - **Une clé API Claude**, ajoutée comme secret du Worker. Elle sert à l'analyse, à la recherche web et à l'écriture (quelques centimes par analyse).

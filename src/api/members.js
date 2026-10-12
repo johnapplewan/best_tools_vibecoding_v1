@@ -1,10 +1,11 @@
 // Profil du membre connecté, showroom public, recommandations, signalements et modération.
-import { json, readJson, HttpError } from "../lib/http.js";
+import { json, readJson, HttpError, randomHex } from "../lib/http.js";
 import { hit } from "../lib/ratelimit.js";
 import { ensureSchema } from "../lib/schema.js";
 import { currentUser, requireUser, isAdmin, destroySession } from "../lib/session.js";
 import {
   TERMS_VERSION, SPECIALTIES, CONTACT_NETWORKS, cleanPseudo, cleanText, cleanSpecialties, cleanContacts, cleanProjects, projectThumbnail,
+  IMAGE_MAX_BYTES, sniffImage,
 } from "../lib/validate.js";
 
 const parse = (s, fallback) => {
@@ -19,16 +20,19 @@ function publicAvatar(u) {
   return u.avatar_mode === "github" && u.github_avatar ? u.github_avatar : null;
 }
 
-function projectOut(p) {
+// Pour un dépôt privé, l'adresse du dépôt n'est jamais exposée publiquement (elle révèle le compte GitHub).
+function projectOut(p, owner = false) {
+  const priv = !!p.repo_private;
   return {
-    title: p.title, pitch: p.pitch, github_url: p.github_url, demo_url: p.demo_url,
-    tools: parse(p.tools, []), thumbnail: projectThumbnail(p.github_url), position: p.position,
+    title: p.title, pitch: p.pitch, github_url: priv && !owner ? null : p.github_url, demo_url: p.demo_url,
+    repo_private: priv, image_id: owner ? p.image_id || null : undefined,
+    tools: parse(p.tools, []), thumbnail: projectThumbnail(p.github_url, p.image_id, priv), position: p.position,
   };
 }
 
-async function projectsOf(env, userId) {
+async function projectsOf(env, userId, owner = false) {
   const { results } = await env.DB.prepare("SELECT * FROM projects WHERE user_id = ?1 ORDER BY position").bind(userId).all();
-  return results.map(projectOut);
+  return results.map((p) => projectOut(p, owner));
 }
 
 // Données publiques d'un membre : pseudo, identifiant, jamais de donnée personnelle.
@@ -63,7 +67,7 @@ export async function getMe(request, env) {
       specialties: parse(user.specialties, []),
       available: !!user.available,
       contacts: parse(user.contacts, {}),
-      projects: await projectsOf(env, user.id),
+      projects: await projectsOf(env, user.id, true),
       hidden: !!user.hidden,
       isAdmin: isAdmin(user, env),
     },
@@ -113,23 +117,74 @@ export async function updateProjects(request, env) {
   const user = await requireUser(request, env);
   const body = await readJson(request, 64 * 1024);
   const projects = cleanProjects(body.projects);
+  // Une image ne peut être utilisée que par son propriétaire.
+  const wanted = projects.map((p) => p.image_id).filter(Boolean);
+  if (wanted.length) {
+    const { results } = await env.DB.prepare(
+      `SELECT id FROM project_images WHERE user_id = ?1 AND id IN (${wanted.map((_, i) => `?${i + 2}`).join(",")})`
+    ).bind(user.id, ...wanted).all();
+    const owned = new Set(results.map((r) => r.id));
+    for (const p of projects) if (p.image_id && !owned.has(p.image_id)) p.image_id = null;
+  }
   const now = Date.now();
   await env.DB.batch([
     env.DB.prepare("DELETE FROM projects WHERE user_id = ?1").bind(user.id),
     ...projects.map((p) =>
       env.DB.prepare(
-        `INSERT INTO projects (user_id, position, title, pitch, github_url, demo_url, tools, created_at)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)`
-      ).bind(user.id, p.position, p.title, p.pitch, p.github_url, p.demo_url, JSON.stringify(p.tools), now)
+        `INSERT INTO projects (user_id, position, title, pitch, github_url, demo_url, tools, image_id, repo_private, created_at)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)`
+      ).bind(user.id, p.position, p.title, p.pitch, p.github_url, p.demo_url, JSON.stringify(p.tools), p.image_id, p.repo_private ? 1 : 0, now)
     ),
+    // Nettoyage : les images qui ne sont plus utilisées (gardées 1 h pour un envoi en cours).
+    env.DB.prepare(
+      `DELETE FROM project_images WHERE user_id = ?1 AND created_at < ?2
+       AND id NOT IN (SELECT image_id FROM projects WHERE user_id = ?1 AND image_id IS NOT NULL)`
+    ).bind(user.id, now - 3600e3),
   ]);
-  return json({ ok: true, projects: await projectsOf(env, user.id) });
+  return json({ ok: true, projects: await projectsOf(env, user.id, true) });
+}
+
+// Envoi d'une image de projet (corps brut). Le recadrage paysage 2:1 et la compression sont faits par le navigateur.
+export async function uploadImage(request, env) {
+  const user = await requireUser(request, env);
+  const buf = new Uint8Array(await request.arrayBuffer());
+  if (!buf.length) throw new HttpError(400, "invalid", { field: "image", reason: "Image vide" });
+  if (buf.length > IMAGE_MAX_BYTES) throw new HttpError(413, "invalid", { field: "image", reason: "Image trop lourde (400 Ko maximum)" });
+  const mime = sniffImage(buf);
+  if (!mime) throw new HttpError(400, "invalid", { field: "image", reason: "Formats acceptés : JPEG, PNG ou WebP" });
+  const { n } = await env.DB.prepare("SELECT COUNT(*) AS n FROM project_images WHERE user_id = ?1").bind(user.id).first();
+  if (n >= 12) throw new HttpError(429, "invalid", { field: "image", reason: "Trop d'images en attente : enregistrez votre fiche puis réessayez" });
+  let bin = "";
+  for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode(...buf.subarray(i, i + 0x8000));
+  const id = `img_${randomHex(16)}`;
+  await env.DB.prepare("INSERT INTO project_images (id, user_id, mime, data, created_at) VALUES (?1, ?2, ?3, ?4, ?5)")
+    .bind(id, user.id, mime, btoa(bin), Date.now()).run();
+  return json({ ok: true, id, url: `/img/${id}` });
+}
+
+// Service public des images (identifiant aléatoire, contenu immuable).
+export async function serveImage(request, env, id) {
+  await ensureSchema(env.DB);
+  const row = await env.DB.prepare("SELECT mime, data FROM project_images WHERE id = ?1").bind(id).first();
+  if (!row) return new Response("Not Found", { status: 404 });
+  const bin = atob(row.data);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Response(bytes, {
+    headers: {
+      "content-type": row.mime,
+      "cache-control": "public, max-age=31536000, immutable",
+      "x-content-type-options": "nosniff",
+      "content-security-policy": "default-src 'none'",
+    },
+  });
 }
 
 export async function deleteMe(request, env) {
   const user = await requireUser(request, env, { onboarded: false });
   await env.DB.batch([
     env.DB.prepare("DELETE FROM projects WHERE user_id = ?1").bind(user.id),
+    env.DB.prepare("DELETE FROM project_images WHERE user_id = ?1").bind(user.id),
     env.DB.prepare("DELETE FROM recommendations WHERE from_user = ?1 OR to_user = ?1").bind(user.id),
     env.DB.prepare("DELETE FROM reports WHERE reporter = ?1 OR target = ?1").bind(user.id),
     env.DB.prepare("DELETE FROM sessions WHERE user_id = ?1").bind(user.id),

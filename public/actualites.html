@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem("vt-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<title>Actualités vibe coding</title>
+<meta name="description" content="Les outils de vibe coding repérés par la veille, analysés et classés : feu vert, feu orange, pré-audit de sécurité.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+.feed { display: grid; gap: 18px; max-width: 860px; margin: 0 auto; }
+.news { border: 1px solid var(--border); border-radius: 22px; background: var(--card); box-shadow: var(--shadow); padding: 22px; backdrop-filter: blur(12px); }
+.news-head { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.news h2 { font-size: clamp(20px, 3vw, 26px); margin: 6px 0 0; }
+.light { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+.light-green { color: #059669; background: color-mix(in srgb, #10b981 16%, transparent); }
+.light-orange { color: #d97706; background: color-mix(in srgb, #f59e0b 18%, transparent); }
+:root[data-theme="dark"] .light-green { color: #34d399; } :root[data-theme="dark"] .light-orange { color: #fbbf24; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .light-green { color: #34d399; } :root:not([data-theme="light"]) .light-orange { color: #fbbf24; } }
+.meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; color: var(--faint); font-size: 13px; }
+.news p { color: var(--muted); }
+.block-title { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; margin: 16px 0 8px; }
+.checks { display: grid; gap: 6px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .checks { grid-template-columns: 1fr 1fr; } }
+.check-row { font-size: 13.5px; padding: 8px 10px; border-radius: 10px; background: var(--bg-2); border: 1px solid var(--border); }
+.check-row b { font-weight: 600; }
+.uses { margin: 0; padding-left: 18px; color: var(--muted); }
+.uses li { margin: 4px 0; }
+.attention { border-left: 3px solid #f59e0b; padding: 8px 12px; border-radius: 0 10px 10px 0; background: color-mix(in srgb, #f59e0b 8%, transparent); font-size: 14px; }
+.filters { display: flex; gap: 8px; justify-content: center; margin: 0 0 22px; flex-wrap: wrap; }
+.empty { text-align: center; color: var(--muted); padding: 40px 0; }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<main>
+  <header class="hero wrap">
+    <span class="pill"><b>Veille</b> Analyse automatique · validée à la main</span>
+    <h1>Les <span class="serif grad">actus</span> du vibe coding</h1>
+    <p class="lead">Chaque outil repéré passe par une enquête, un pré-audit de sécurité et un verdict : 🟢 recommandé ou 🟠 à tester avec précaution.</p>
+  </header>
+  <section class="wrap">
+    <div class="filters" role="group" aria-label="Filtrer par verdict">
+      <button class="chip" data-f="all" aria-pressed="true">Tout</button>
+      <button class="chip" data-f="green" aria-pressed="false">🟢 Feu vert</button>
+      <button class="chip" data-f="orange" aria-pressed="false">🟠 Feu orange</button>
+    </div>
+    <div class="feed" id="feed"><p class="empty">Chargement…</p></div>
+    <p class="faint" style="text-align:center;margin-top:24px">Le pré-audit est automatique et indicatif : ce n'est pas un audit de sécurité professionnel. Vérifiez toujours prix, licence et conditions avant d'utiliser un outil.</p>
+  </section>
+</main>
+<script type="module">
+import { $, esc, api, renderNav, renderFooter } from "/assets/app.js";
+import { CATEGORIES } from "/assets/tools.js";
+renderNav("/actualites");
+renderFooter();
+
+const STATUS = { ok: "✅", warn: "⚠️", bad: "⛔", unknown: "❔" };
+const PRICING = { free: "Gratuit", freemium: "Freemium", paid: "Payant", waitlist: "Liste d'attente", unknown: "Prix à vérifier" };
+let items = [];
+let filter = "all";
+const fmtDate = (t) => new Date(t).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+const fmtStars = (n) => n >= 1000 ? `${(n / 1000).toFixed(1).replace(".0", "")} k` : String(n);
+const safeUrl = (u) => /^https:\/\//.test(u || "") ? u : null;
+
+function card(it) {
+  const cat = CATEGORIES[it.tool.category];
+  const url = safeUrl(it.tool.url);
+  return `<article class="news" id="actu-${it.id}">
+    <div class="news-head">
+      <div style="flex:1;min-width:0">
+        <div class="meta">
+          <span class="light light-${it.verdict}">${it.verdict === "green" ? "🟢 Feu vert" : "🟠 Feu orange"}</span>
+          <span>${fmtDate(it.published_at)}</span>
+          ${cat ? `<span class="tag">${cat.emoji} ${esc(cat.label)}</span>` : ""}
+          <span class="tag tag-tool">${esc(PRICING[it.tool.pricing] || "")}</span>
+          ${it.github ? `<a class="tag tag-tool" href="https://github.com/${esc(it.github.repo)}" target="_blank" rel="noopener">⭐ ${fmtStars(it.github.stars)}${it.github.license ? ` · ${esc(it.github.license)}` : ""}</a>` : ""}
+        </div>
+        <h2>${esc(it.title)}</h2>
+      </div>
+    </div>
+    <p>${esc(it.body)}</p>
+    ${it.verdict === "orange" && it.reasons.length ? `<div class="attention"><b>Points d'attention</b><br>${it.reasons.map(esc).join("<br>")}</div>` : ""}
+    ${it.uses.length ? `<div class="block-title">Usages intéressants</div><ul class="uses">${it.uses.map((u) => `<li>${esc(u)}</li>`).join("")}</ul>` : ""}
+    <div class="block-title">Pré-audit sécurité</div>
+    <div class="checks">${it.checks.map((c) => `<div class="check-row">${STATUS[c.status] || "❔"} <b>${esc(c.label)}</b> — ${esc(c.detail)}</div>`).join("")}</div>
+    <div class="links" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+      ${url ? `<a class="btn btn-sm btn-primary" href="${esc(url)}" target="_blank" rel="noopener nofollow">Découvrir ${esc(it.tool.name)} ↗</a>` : ""}
+      ${it.sources.filter((s) => safeUrl(s.url)).slice(0, 3).map((s) => `<a class="btn btn-sm" href="${esc(s.url)}" target="_blank" rel="noopener nofollow">${esc(s.title || "Source")}</a>`).join("")}
+    </div>
+  </article>`;
+}
+
+function render() {
+  const list = items.filter((i) => filter === "all" || i.verdict === filter);
+  $("#feed").innerHTML = list.length ? list.map(card).join("") : `<p class="empty">Pas encore d'actualité ici. Revenez bientôt ✨</p>`;
+  if (location.hash) document.querySelector(location.hash)?.scrollIntoView();
+}
+
+document.querySelector(".filters").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-f]"); if (!b) return;
+  filter = b.dataset.f;
+  document.querySelectorAll("[data-f]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  render();
+});
+
+try {
+  items = (await api("/api/actualites")).items;
+} catch { items = []; }
+render();
+</script>
+</body>
+</html>

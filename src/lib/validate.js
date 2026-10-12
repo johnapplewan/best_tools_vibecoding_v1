@@ -126,12 +126,26 @@ export function cleanProjects(value) {
       if (!CONTACT_RULES.website.test(demo_url)) throw bad(`${field}.demo_url`, "Adresse https:// invalide");
     }
     const tools = Array.isArray(p?.tools) ? [...new Set(p.tools)].filter((t) => TOOL_IDS.has(t)).slice(0, 8) : [];
-    return { title, pitch, github_url: github_url || null, demo_url: demo_url || null, tools, position: i };
+    const image_id = typeof p?.image_id === "string" && /^img_[a-f0-9]{32}$/.test(p.image_id) ? p.image_id : null;
+    const repo_private = p?.repo_private === true;
+    return { title, pitch, github_url: github_url || null, demo_url: demo_url || null, tools, image_id, repo_private, position: i };
   });
 }
 
-export function projectThumbnail(githubUrl) {
-  if (!githubUrl) return null;
+// Vignette : image envoyée par le membre, sinon aperçu GitHub (dépôt public uniquement), sinon rien.
+export function projectThumbnail(githubUrl, imageId = null, repoPrivate = false) {
+  if (imageId) return `/img/${imageId}`;
+  if (!githubUrl || repoPrivate) return null;
   const path = githubUrl.replace("https://github.com/", "");
   return `https://opengraph.githubassets.com/1/${path}`;
+}
+
+// Image de projet : JPEG, PNG ou WebP uniquement (vérifié sur le contenu, pas sur l'extension), 400 Ko max.
+export const IMAGE_MAX_BYTES = 400 * 1024;
+export function sniffImage(bytes) {
+  const b = bytes;
+  if (b.length > 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return "image/jpeg";
+  if (b.length > 8 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return "image/png";
+  if (b.length > 12 && String.fromCharCode(...b.slice(0, 4)) === "RIFF" && String.fromCharCode(...b.slice(8, 12)) === "WEBP") return "image/webp";
+  return null;
 }

@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem("vt-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<title>Veille Vibe Tools</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+main { max-width: 980px; margin: 0 auto; padding: 0 16px 40px; }
+.page-head { margin: 40px 0 18px; }
+.page-head h1 { font-size: clamp(28px, 5vw, 40px); margin: 0; text-align: left; }
+.send { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.send textarea { flex: 1 1 320px; min-height: 52px; }
+.list { display: grid; gap: 10px; margin-top: 14px; }
+.row { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border); background: var(--bg-2); }
+.row .title { font-weight: 600; }
+.row .sub { font-size: 12.5px; color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.row .acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+@media (max-width: 640px) { .row { grid-template-columns: auto 1fr; } .row .acts { grid-column: 1 / -1; justify-content: flex-start; } }
+.dot { font-size: 22px; line-height: 1; }
+.badge { font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--border); color: var(--muted); }
+.badge.pub { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+.badge.err { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
+.section-title { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; margin: 18px 0 8px; }
+.script { white-space: pre-wrap; font-size: 14px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+details summary { cursor: pointer; color: var(--muted); }
+ol.steps li { margin: 8px 0; color: var(--muted); }
+ol.steps b, ol.steps code { color: var(--text); }
+code { font-family: "JetBrains Mono", monospace; font-size: .88em; background: var(--border); padding: 1px 6px; border-radius: 6px; word-break: break-all; }
+.token { font-family: "JetBrains Mono", monospace; font-size: 14px; padding: 10px 12px; border-radius: 10px; background: var(--bg-2); border: 1px dashed var(--accent); word-break: break-all; }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<main id="app"><p class="muted" style="margin-top:40px">Chargement…</p></main>
+
+<dialog id="detail" aria-label="Fiche d'analyse">
+  <form method="dialog"><button class="icon-btn dialog-close" aria-label="Fermer">✕</button></form>
+  <div class="dialog-body" id="detail-body"></div>
+</dialog>
+
+<script type="module">
+import { $, esc, api, loadMe, loginUrl, renderNav, renderFooter, toast, GH_ICON } from "/assets/app.js";
+renderNav("/admin");
+renderFooter();
+const app = $("#app");
+const LIGHT = { green: "🟢", orange: "🟠", red: "🔴" };
+const STATUS = { pending: "En attente", running: "Analyse en cours…", done: "Terminé", error: "Erreur" };
+const CHECK = { ok: "✅", warn: "⚠️", bad: "⛔", unknown: "❔" };
+let items = [];
+
+const { user } = await loadMe();
+if (!user) {
+  app.innerHTML = `<div class="panel" style="margin-top:48px;text-align:center"><h1 style="font-size:32px">Veille</h1><p class="muted">Réservé à l'administrateur.</p><a class="btn btn-dark" href="${loginUrl("/admin")}">${GH_ICON} Se connecter</a></div>`;
+} else if (!user.isAdmin) {
+  app.innerHTML = `<div class="panel" style="margin-top:48px;text-align:center"><h1 style="font-size:32px">Accès réservé</h1><p class="muted">Cette page est réservée à l'administrateur de la plateforme.</p></div>`;
+} else {
+  renderPage();
+  await refresh();
+  setInterval(() => { if (items.some((i) => i.status === "pending" || i.status === "running")) refresh(); }, 20000);
+}
+
+function renderPage() {
+  app.innerHTML = `<div class="page-head"><h1>🛡️ Veille</h1>
+      <p class="muted">Envoyez n'importe quoi : un nom d'outil, un lien, une vidéo, une phrase. L'analyse (enquête web, pré-audit, verdict, script vidéo) tourne en arrière-plan toutes les 5 minutes, ou tout de suite avec « Analyser ».</p></div>
+    <form class="panel send" id="send">
+      <textarea name="text" maxlength="2000" placeholder="Ex. « bolt.diy », https://github.com/…, une vidéo TikTok, « l'outil de slides vu hier »…" required></textarea>
+      <button class="btn btn-primary" type="submit">Envoyer à la veille</button>
+    </form>
+    <div class="panel"><h2>Éléments analysés</h2><div class="list" id="list"></div></div>
+    <div class="panel" id="shortcut"><h2>📱 Raccourci iOS « Veille Vibe »</h2>
+      <p class="muted" style="margin-top:0">Pour envoyer un lien ou un texte depuis n'importe quelle app (YouTube, Instagram, TikTok, Safari…) via le menu Partager.</p>
+      <div id="token-box"></div>
+      <ol class="steps">
+        <li>Cliquez sur <b>Créer un jeton</b> ci-dessus et copiez-le (il ne s'affiche qu'une fois).</li>
+        <li>Sur l'iPhone, ouvrez l'app <b>Raccourcis</b> → <b>+</b> → nommez-le <b>Veille Vibe</b>.</li>
+        <li>Touchez <b>ⓘ</b> → activez <b>Afficher dans la feuille de partage</b> → types acceptés : <b>URL</b> et <b>Texte</b>.</li>
+        <li>En haut du raccourci, réglez : si aucune entrée → <b>Demander une saisie</b> (pour l'utiliser aussi avec Siri ou en tapant du texte).</li>
+        <li>Ajoutez l'action <b>Obtenir le contenu de l'URL</b> :
+          <br>URL : <code>${esc(location.origin)}/api/veille</code>
+          <br>Méthode : <b>POST</b> · En-têtes : <code>Authorization</code> = <code>Bearer VOTRE_JETON</code>
+          <br>Corps de la requête : <b>JSON</b>, clé <code>text</code> = <b>Entrée du raccourci</b>.</li>
+        <li>Ajoutez <b>Obtenir la valeur du dictionnaire</b> (clé <code>message</code>) puis <b>Afficher la notification</b>.</li>
+        <li>Testez : partagez une vidéo → <b>Veille Vibe</b> → « ✅ Reçu, analyse en cours ».</li>
+      </ol>
+      <p class="faint">Sur Android : utilisez une app comme « HTTP Shortcuts » avec la même requête. Le jeton donne uniquement le droit d'envoyer à la veille ; révoquez-le en cas de perte du téléphone.</p>
+    </div>`;
+  $("#send").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.currentTarget;
+    try {
+      await api("/api/veille", { method: "POST", body: { text: f.text.value } });
+      f.reset(); toast("✅ Reçu, analyse en cours");
+      refresh();
+    } catch (err) { toast(err.message); }
+  });
+  renderTokens();
+}
+
+async function renderTokens(newToken) {
+  const box = $("#token-box");
+  const { tokens } = await api("/api/admin/tokens");
+  box.innerHTML = `${newToken ? `<p><b>Votre jeton</b> (copiez-le maintenant, il ne sera plus affiché) :</p><div class="token">${esc(newToken)}</div>` : ""}
+    <p class="faint">${tokens.length ? `${tokens.length} jeton(s) actif(s)${tokens[0].last_used_at ? ` · dernière utilisation ${new Date(tokens[0].last_used_at).toLocaleString("fr-FR")}` : ""}` : "Aucun jeton actif."}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-primary" id="new-token" type="button">Créer un jeton</button>
+      ${newToken ? `<button class="btn btn-sm" id="copy-token" type="button">Copier</button>` : ""}
+      ${tokens.length ? `<button class="btn btn-sm btn-danger" id="revoke" type="button">Révoquer tous les jetons</button>` : ""}
+    </div>`;
+  $("#new-token").onclick = async () => { const { token } = await api("/api/admin/tokens", { method: "POST" }); renderTokens(token); };
+  if (newToken) $("#copy-token").onclick = () => navigator.clipboard.writeText(newToken).then(() => toast("Jeton copié"));
+  if (tokens.length) $("#revoke").onclick = async () => { if (confirm("Révoquer tous les jetons ? Le raccourci iOS ne fonctionnera plus.")) { await api("/api/admin/tokens", { method: "DELETE" }); renderTokens(); } };
+}
+
+async function refresh() {
+  try { items = (await api("/api/admin/veille")).items; } catch (err) { toast(err.message); return; }
+  const list = $("#list");
+  if (!items.length) { list.innerHTML = `<p class="muted">Rien pour l'instant. Envoyez un premier élément ✨</p>`; return; }
+  list.innerHTML = items.map((i) => `<div class="row">
+      <span class="dot" title="${esc(i.verdict || "")}">${i.status === "done" ? LIGHT[i.verdict] || "⚪" : i.status === "error" ? "⚠️" : "⏳"}</span>
+      <div style="min-width:0">
+        <div class="title">${esc(i.tool_name || i.input.slice(0, 80))}</div>
+        <div class="sub">${esc(i.input)} · ${new Date(i.created_at).toLocaleString("fr-FR")} · ${i.source === "ios" ? "📱" : "💻"}</div>
+        <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
+          <span class="badge ${i.status === "error" ? "err" : ""}">${STATUS[i.status]}${i.status === "error" ? ` (${i.attempts}/3)` : ""}</span>
+          ${i.published ? `<span class="badge pub">Publié</span>` : ""}
+          ${i.error ? `<span class="badge err" title="${esc(i.error)}">${esc(i.error.slice(0, 60))}</span>` : ""}
+        </div>
+      </div>
+      <div class="acts">
+        ${i.status === "done" ? `<button class="btn btn-sm" data-open="${i.id}">Voir la fiche</button>` : ""}
+        ${["pending", "error"].includes(i.status) ? `<button class="btn btn-sm" data-run="${i.id}">Analyser</button>` : ""}
+        ${i.status === "done" && i.verdict !== "red" ? `<button class="btn btn-sm ${i.published ? "" : "btn-primary"}" data-pub="${i.id}" data-v="${!i.published}">${i.published ? "Dépublier" : "Publier"}</button>` : ""}
+        <button class="btn btn-sm btn-danger" data-del="${i.id}" title="Supprimer">✕</button>
+      </div></div>`).join("");
+}
+
+$("#app").addEventListener("click", async (e) => {
+  const t = e.target.closest("[data-open],[data-run],[data-pub],[data-del]"); if (!t) return;
+  try {
+    if (t.dataset.open) openItem(Number(t.dataset.open));
+    if (t.dataset.run) {
+      t.disabled = true; t.textContent = "Analyse… (1 à 3 min)";
+      const { item } = await api(`/api/admin/veille/${t.dataset.run}/run`, { method: "POST" });
+      toast(item.status === "done" ? "Analyse terminée" : `Échec : ${item.error || "inconnu"}`);
+      await refresh();
+    }
+    if (t.dataset.pub) {
+      await api(`/api/admin/veille/${t.dataset.pub}`, { method: "POST", body: { published: t.dataset.v === "true" } });
+      toast(t.dataset.v === "true" ? "Publié dans les Actualités 🎉" : "Retiré des Actualités");
+      await refresh();
+    }
+    if (t.dataset.del && confirm("Supprimer cet élément ?")) {
+      await api(`/api/admin/veille/${t.dataset.del}`, { method: "POST", body: { delete: true } });
+      await refresh();
+    }
+  } catch (err) { toast(err.message); refresh(); }
+});
+
+function openItem(id) {
+  const i = items.find((x) => x.id === id); if (!i?.card) return;
+  const c = i.card, v = c.video;
+  const scriptText = `ACCROCHE : ${v.hook}\n\nDÉMO :\n${v.demo.map((d, n) => `${n + 1}. ${d}`).join("\n")}\n\nVERDICT : ${v.verdict_line}\n\nCTA : ${v.cta}\n\nLÉGENDE : ${v.caption}\n${v.hashtags.join(" ")}`;
+  $("#detail-body").innerHTML = `
+    <h2 style="padding-right:40px">${LIGHT[c.verdict] || ""} ${esc(c.tool.name || i.input)}</h2>
+    ${c.status !== "ok" ? `<div class="notice">Statut : ${esc(c.status)}${c.candidates.length ? ` · candidats : ${c.candidates.map(esc).join(", ")}` : ""}. Précisez l'outil et renvoyez-le à la veille.</div>` : ""}
+    <p>${esc(c.summary)}</p>
+    <p class="faint">Pour : ${esc(c.audience)} · ${esc(c.tool.pricing)} ${c.tool.pricing_note ? `(${esc(c.tool.pricing_note)})` : ""}
+      ${i.github ? ` · ⭐ ${i.github.stars} · ${i.github.archived ? "archivé" : "actif"} · ${esc(i.github.license || "licence ?")}` : ""} · modèle ${esc(i.model || "")}</p>
+    <div class="section-title">Verdict</div>
+    <select id="verdict" style="max-width:240px"><option value="green">🟢 Vert</option><option value="orange">🟠 Orange</option><option value="red">🔴 Rouge</option></select>
+    <ul>${c.verdict_reasons.map((r) => `<li class="muted">${esc(r)}</li>`).join("")}</ul>
+    <div class="section-title">Pré-audit sécurité</div>
+    ${c.security.checks.map((k) => `<div class="muted" style="font-size:14px;margin:4px 0">${CHECK[k.status]} <b>${esc(k.label)}</b> — ${esc(k.detail)}</div>`).join("")}
+    <p class="faint">${esc(c.security.data_policy)}</p>
+    ${c.uses.length ? `<div class="section-title">Usages</div><ul>${c.uses.map((u) => `<li class="muted">${esc(u)}</li>`).join("")}</ul>` : ""}
+    ${c.alternatives.length ? `<div class="section-title">Alternatives</div><ul>${c.alternatives.map((a) => `<li class="muted"><b>${esc(a.name)}</b> : ${esc(a.difference)}</li>`).join("")}</ul>` : ""}
+    <div class="section-title">Actualité (modifiable avant publication)</div>
+    <label class="field"><span>Titre</span><input type="text" id="news-title" maxlength="120" value="${esc(c.news.title)}"></label>
+    <label class="field"><span>Texte</span><textarea id="news-body" rows="4" maxlength="1500">${esc(c.news.body)}</textarea></label>
+    <button class="btn btn-sm btn-primary" id="save-news" type="button">Enregistrer</button>
+    <div class="section-title">🎬 Script vidéo (privé)</div>
+    <div class="script" id="script">${esc(scriptText)}</div>
+    <button class="btn btn-sm" id="copy-script" type="button" style="margin-top:8px">Copier le script</button>
+    <div class="section-title">Sources</div>
+    ${c.sources.map((s) => /^https:\/\//.test(s.url) ? `<div><a href="${esc(s.url)}" target="_blank" rel="noopener nofollow">${esc(s.title || s.url)}</a></div>` : "").join("")}
+    <details style="margin-top:14px"><summary>Dossier d'enquête complet</summary><div class="script" style="margin-top:8px">${esc(i.dossier || "")}</div></details>`;
+  $("#verdict").value = c.verdict;
+  $("#copy-script").onclick = () => navigator.clipboard.writeText(scriptText).then(() => toast("Script copié 🎬"));
+  $("#save-news").onclick = async () => {
+    try {
+      await api(`/api/admin/veille/${id}`, { method: "POST", body: { verdict: $("#verdict").value, news: { title: $("#news-title").value, body: $("#news-body").value } } });
+      toast("Enregistré"); await refresh();
+    } catch (err) { toast(err.message); }
+  };
+  $("#detail").showModal();
+}
+</script>
+</body>
+</html>

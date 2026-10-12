@@ -55,11 +55,59 @@ const SCHEMA = [
      created_at INTEGER NOT NULL,
      UNIQUE (reporter, target)
    )`,
+  // Veille : chaque élément envoyé (raccourci iOS, admin, playlist) et sa fiche d'analyse.
+  `CREATE TABLE IF NOT EXISTS veille_items (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     input TEXT NOT NULL,
+     source TEXT NOT NULL DEFAULT 'admin',
+     status TEXT NOT NULL DEFAULT 'pending',   -- pending | running | done | error
+     attempts INTEGER NOT NULL DEFAULT 0,
+     error TEXT,
+     result TEXT,                              -- JSON : { card, github, dossier, model }
+     verdict TEXT,                             -- green | orange | red
+     tool_name TEXT,
+     published INTEGER NOT NULL DEFAULT 0,
+     published_at INTEGER,
+     created_at INTEGER NOT NULL,
+     updated_at INTEGER NOT NULL
+   )`,
+  `CREATE INDEX IF NOT EXISTS veille_status ON veille_items (status, created_at)`,
+  `CREATE INDEX IF NOT EXISTS veille_published ON veille_items (published, published_at)`,
+  // Images de projets (vignettes paysage), stockées en base64. Identifiant aléatoire non devinable.
+  `CREATE TABLE IF NOT EXISTS project_images (
+     id TEXT PRIMARY KEY,
+     user_id INTEGER NOT NULL,
+     mime TEXT NOT NULL,
+     data TEXT NOT NULL,
+     created_at INTEGER NOT NULL
+   )`,
+  `CREATE INDEX IF NOT EXISTS project_images_user ON project_images (user_id)`,
+  // Jetons personnels (raccourci iOS). Seule l'empreinte est stockée.
+  `CREATE TABLE IF NOT EXISTS api_tokens (
+     token_hash TEXT PRIMARY KEY,
+     user_id INTEGER NOT NULL,
+     label TEXT NOT NULL,
+     created_at INTEGER NOT NULL,
+     last_used_at INTEGER
+   )`,
+];
+
+// Colonnes ajoutées après la création des tables (ALTER TABLE ignoré si la colonne existe déjà).
+const MIGRATIONS = [
+  "ALTER TABLE projects ADD COLUMN image_id TEXT",
+  "ALTER TABLE projects ADD COLUMN repo_private INTEGER NOT NULL DEFAULT 0",
 ];
 
 let ready = false;
 export async function ensureSchema(db) {
   if (ready) return;
   await db.batch(SCHEMA.map((sql) => db.prepare(sql)));
+  for (const sql of MIGRATIONS) {
+    try {
+      await db.prepare(sql).run();
+    } catch (e) {
+      if (!/duplicate column/i.test(String(e?.message || e))) throw e;
+    }
+  }
   ready = true;
 }
