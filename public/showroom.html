@@ -171,7 +171,7 @@ function detailHTML(m) {
       ${p.pitch ? `<p>${esc(p.pitch)}</p>` : ""}
       ${p.tools.length ? `<div class="chips">${p.tools.map((t) => `<a class="tag tag-tool" href="/outils#${esc(t)}">${esc(TOOL_NAMES[t] || t)}</a>`).join("")}</div>` : ""}
       <div class="links">
-        ${p.github_url ? `<a class="btn btn-sm" href="${esc(p.github_url)}" target="_blank" rel="noopener nofollow">${GH_ICON} Code</a>` : ""}
+        ${p.github_url ? `<a class="btn btn-sm" href="${esc(p.github_url)}" target="_blank" rel="noopener nofollow">${GH_ICON} Code</a>` : p.repo_private ? `<span class="tag tag-tool">🔒 Dépôt privé</span>` : ""}
         ${p.demo_url ? `<a class="btn btn-sm" href="${esc(p.demo_url)}" target="_blank" rel="noopener nofollow">↗ Démo</a>` : ""}
       </div>
     </div></article>`).join("");

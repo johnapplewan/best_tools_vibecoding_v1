@@ -24,6 +24,8 @@ const ROUTES = [
   ["PUT", /^\/api\/me\/profile$/, members.updateProfile, true, ["write", 120, 3600]],
   ["PUT", /^\/api\/me\/projects$/, members.updateProjects, true, ["write", 120, 3600]],
   ["POST", /^\/api\/me\/delete$/, members.deleteMe, true],
+  ["POST", /^\/api\/me\/images$/, members.uploadImage, true, ["upload", 30, 3600]],
+  ["GET", /^\/img\/(img_[a-f0-9]{32})$/, members.serveImage],
 
   ["GET", /^\/api\/showroom$/, members.listShowroom, false, ["read", 300, 600]],
   ["GET", /^\/api\/showroom\/(VD-[0-9A-Z]{5})$/, members.getMember, false, ["read", 300, 600]],

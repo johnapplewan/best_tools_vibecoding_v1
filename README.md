@@ -65,6 +65,7 @@ npx wrangler@4 dev --test-scheduled   # puis curl "http://localhost:8787/__sched
 - Limites de fréquence par IP hachée (connexion, écritures, recommandations, signalements, avis, lecture du showroom) et quota quotidien de contacts par membre (`src/lib/ratelimit.js`).
 - Liens de contact réservés aux membres connectés, délivrés au clic seulement.
 - En-têtes : CSP stricte (aucune ressource externe sauf polices Google et images GitHub), anti-clickjacking, HSTS (`public/_headers`).
+- Images de projet (vignettes paysage 2:1) : JPEG/PNG/WebP vérifiés sur leur contenu, 400 Ko max, 12 par membre, stockées dans D1 et servies sur `/img/…` avec une CSP qui bloque tout script. Case « Dépôt privé » : le lien GitHub n'est montré qu'au propriétaire.
 - Validation serveur : refus des numéros, emails et liens `wa.me/<numéro>` ; tout texte de membre est échappé à l'affichage.
 
 ## Avis visiteurs : comment l'unicité est garantie
