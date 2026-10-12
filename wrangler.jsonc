@@ -17,5 +17,7 @@
   ],
   // Comptes GitHub administrateurs (séparés par des virgules). Ce n'est pas un secret.
   "vars": { "ADMIN_GITHUB_LOGINS": "johnapplewan" },
+  // Garde les variables ajoutées dans le tableau de bord Cloudflare à chaque déploiement.
+  "keep_vars": true,
   "observability": { "enabled": true }
 }
