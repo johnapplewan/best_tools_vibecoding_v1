@@ -66,7 +66,7 @@ export async function processItem(env, id) {
   } catch (e) {
     console.error("veille", id, e);
     await env.DB.prepare("UPDATE veille_items SET status = 'error', error = ?2, updated_at = ?3 WHERE id = ?1")
-      .bind(id, String(e?.message || e).slice(0, 500), Date.now()).run();
+      .bind(id, errorText(e), Date.now()).run();
   }
   return id;
 }
@@ -189,3 +189,9 @@ export async function news(request, env) {
   return json({ items }, 200, { "cache-control": "public, max-age=120" });
 }
 
+
+// Message d'erreur lisible : pour une erreur de l'API Claude, le code HTTP et l'explication.
+function errorText(e) {
+  const apiMessage = e?.error?.error?.message;
+  return (apiMessage ? `${e.status} : ${apiMessage}` : String(e?.message || e)).slice(0, 500);
+}
