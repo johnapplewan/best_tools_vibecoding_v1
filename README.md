@@ -25,6 +25,8 @@ Page de référencement d'outils de vibe-coding sympa - A page listing cool vibe
 | `public/atelier.html` | Liste des projets « Créer ici » (`/atelier`) |
 | `public/projet.html` | Un projet et ses onglets (`/projet?id=…`) |
 | `public/indispo.html` | Codes de récupération du porteur : gel ou reprise du rôle (`/indispo`) |
+| `src/api/checkup.js`, `src/checkup/analyze.js` | Check-up : express (pré-diagnostic IA, membres) et demandes de rappel du complet |
+| `public/checkup.html`, `public/checkup-complet.html` | Check-up express (`/checkup`) et landing du Check-up complet (`/checkup-complet`) |
 | `public/cgu.html`, `public/charte.html` | Pages légales, rendues depuis `public/legal/*.md` |
 | `wrangler.jsonc` | Configuration du Worker et liaison de la base D1 |
 | `docs/sources/source-A-post-X.md` | Tableau des 25 ressources du post X |
@@ -87,4 +89,5 @@ npx wrangler@4 dev --test-scheduled   # puis curl "http://localhost:8787/__sched
 - [`docs/plateforme/creer-ici.md`](docs/plateforme/creer-ici.md) : spécification de l'atelier « Créer ici » (en ligne sur `/atelier`, voir « Mise en œuvre »)
 - [`public/legal/cgu.md`](public/legal/cgu.md) : conditions générales d'utilisation, affichées sur `/cgu` (brouillon à faire relire)
 - [`public/legal/charte.md`](public/legal/charte.md) : charte déontologique des membres, affichée sur `/charte`
+- [`docs/plateforme/checkup.md`](docs/plateforme/checkup.md) : Check-up de ton App (express et complet)
 - [`docs/plateforme/veille.md`](docs/plateforme/veille.md) : module de veille (raccourci iOS, analyse, feu tricolore, script vidéo)

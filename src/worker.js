@@ -6,6 +6,7 @@ import * as auth from "./api/auth.js";
 import * as members from "./api/members.js";
 import * as veille from "./api/veille.js";
 import * as atelier from "./api/atelier.js";
+import * as checkup from "./api/checkup.js";
 import { HttpError, assertSameOrigin, json } from "./lib/http.js";
 import { hit, ipKey } from "./lib/ratelimit.js";
 
@@ -58,6 +59,13 @@ const ROUTES = [
   ["POST", /^\/api\/notifications\/read$/, atelier.readNotifications, true, ["write", 120, 3600]],
   ["POST", /^\/api\/admin\/atelier$/, atelier.adminAction, true],
 
+  ["GET", /^\/api\/checkup$/, checkup.mine],
+  ["POST", /^\/api\/checkup\/express$/, checkup.submitExpress, true, ["checkup", 10, 86400]],
+  ["POST", /^\/api\/checkup\/callback$/, checkup.requestCallback, true, ["checkup", 10, 86400]],
+  ["DELETE", /^\/api\/checkup\/callback$/, checkup.cancelCallback, true],
+  ["GET", /^\/api\/admin\/checkups$/, checkup.adminList],
+  ["POST", /^\/api\/admin\/checkups\/(\d+)$/, checkup.adminUpdate, true, ["checkup-admin", 60, 3600]],
+
   ["GET", /^\/api\/admin\/reports$/, members.adminReports],
   ["POST", /^\/api\/admin\/moderate$/, members.adminModerate, true],
 ];
@@ -101,6 +109,7 @@ export default {
   // Tâche planifiée (voir « triggers » dans wrangler.jsonc) : file de veille, puis maintenance de l'atelier.
   async scheduled(controller, env, ctx) {
     await veille.scheduled(env);
+    await checkup.scheduled(env);
     // Relances et intérims de l'atelier « Créer ici » : une fois par heure suffit.
     if (new Date(controller.scheduledTime).getUTCMinutes() < 5 || env.DEV_LOGIN === "1") await atelier.scheduled(env);
   },

@@ -88,6 +88,9 @@ export async function renderNav(active) {
     const a = nav.querySelector('a[href="/atelier"]');
     a.insertAdjacentHTML("beforeend", ` <span class="badge" aria-label="${user.unread} notification(s) non lue(s)">${user.unread > 9 ? "9+" : user.unread}</span>`);
   }
+  if (user?.pseudo && !user.needsOnboarding) {
+    nav.querySelector(".nav-links").insertAdjacentHTML("beforeend", `<a href="/checkup"${active === "/checkup" ? ' aria-current="page"' : ""}>Check-up</a>`);
+  }
   if (user?.isAdmin) {
     nav.querySelector(".nav-links").insertAdjacentHTML("beforeend", `<a href="/admin"${active === "/admin" ? ' aria-current="page"' : ""}>🛡️ Veille</a>`);
   }

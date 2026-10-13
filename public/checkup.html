@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem("vt-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<title>Check-up de ton App</title>
+<meta name="description" content="Check-up de ton App, avec rapport d'analyse critique : un pré-diagnostic de ton projet réservé aux membres Vibe Tools.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+.box { max-width: 860px; margin: 0 auto; }
+.block-title { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; margin: 18px 0 8px; }
+.light { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+.light-green { color: var(--ok); background: color-mix(in srgb, var(--ok) 15%, transparent); }
+.light-orange { color: var(--warn); background: color-mix(in srgb, var(--warn) 16%, transparent); }
+.light-red { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.checks { display: grid; gap: 6px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .checks { grid-template-columns: 1fr 1fr; } }
+.check-row { font-size: 13.5px; padding: 8px 10px; border-radius: 10px; background: var(--bg-2); border: 1px solid var(--border); }
+.check-row small { display: block; color: var(--faint); font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
+.list { margin: 0; padding-left: 18px; color: var(--muted); }
+.list li { margin: 4px 0; }
+.note { margin: 16px 0 0; font-size: 13.5px; color: var(--muted); }
+.cta { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.center { text-align: center; padding: 40px 0; }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<main>
+  <header class="hero wrap">
+    <span class="pill"><b>Check-up</b> Réservé aux membres</span>
+    <h1>Check-up de ton <span class="serif grad">App</span></h1>
+    <p class="lead">avec rapport d'analyse critique</p>
+  </header>
+  <section class="wrap"><div class="box" id="app"><p class="muted center">Chargement…</p></div></section>
+</main>
+
+<script type="module">
+import { $, esc, api, loadMe, loginUrl, renderNav, renderFooter, toast, GH_ICON } from "/assets/app.js";
+renderNav("/checkup");
+renderFooter();
+
+const STATUS = { ok: "🟢", warn: "🟠", bad: "🔴", unknown: "🟠" };
+const LIGHT = { green: "🟢 Feu vert", orange: "🟠 Feu orange", red: "🔴 Feu rouge" };
+const app = $("#app");
+const safe = (u) => /^https:\/\//.test(u || "") ? esc(u) : null;
+const list = (title, items) => items?.length ? `<div class="block-title">${title}</div><ul class="list">${items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+let timer = null;
+
+const completeCta = `<div class="panel cta" style="margin-top:16px">
+  <div><h3>Aller plus loin : le Check-up complet</h3><p class="muted" style="margin:6px 0 0">Business et technique, projections, marketing, sécurité, RGPD… un dossier PDF complet, préparé avec toi et relu par un humain.</p></div>
+  <a class="btn btn-primary" href="/checkup-complet">Découvrir le Check-up complet</a></div>`;
+
+function form() {
+  return `<form class="panel" id="express">
+    <h2>Check-up express</h2>
+    <p class="muted" style="margin-top:0">Un pré-diagnostic rapide de ton app à partir de ce qui est visible publiquement : technique, sécurité, vie privée et RGPD, produit, marché et modèle économique. Gratuit, une fois par membre.</p>
+    <label class="field"><span>Lien de ton app ou de ton dépôt GitHub public *</span><input type="url" name="url" placeholder="https://mon-app.com ou github.com/compte/depot" required></label>
+    <label class="field"><span>Décris ton app en quelques phrases *</span><textarea name="description" maxlength="800" rows="4" placeholder="Ce qu'elle fait, pour qui, où tu en es (idée, bêta, en ligne), ce qui t'inquiète…" required></textarea>
+      <small>Pas de nom, d'email ni de numéro. Seules les informations publiques sont analysées : rien n'est testé ni forcé.</small></label>
+    <button class="btn btn-primary" type="submit">Lancer mon Check-up express</button>
+  </form>`;
+}
+
+function report(x) {
+  if (x.status === "pending" || x.status === "running") {
+    return `<div class="panel center"><h2>⏳ Analyse en cours</h2><p class="muted">Ton Check-up express tourne en arrière-plan : compte quelques minutes. Cette page se met à jour toute seule.</p><p class="faint">${esc(x.input.url)}</p></div>`;
+  }
+  if (x.status === "error" || !x.result) {
+    return `<div class="panel center"><h2>Un instant…</h2><p class="muted">${esc(x.error || "L'analyse n'a pas encore abouti.")}</p></div>`;
+  }
+  const c = x.result;
+  return `<article class="panel">
+    <div class="chips"><span class="light light-${c.verdict}">${LIGHT[c.verdict] || ""}</span><span class="faint">${new Date(x.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span></div>
+    <h2 style="margin-top:10px">Ton Check-up express</h2>
+    <p class="faint" style="margin:0">${safe(x.input.url) ? `<a href="${safe(x.input.url)}" target="_blank" rel="noopener nofollow">${esc(x.input.url)}</a>` : ""}</p>
+    <p>${esc(c.summary)}</p>
+    <ul class="list">${c.verdict_reasons.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
+    <div class="block-title">Points analysés</div>
+    <div class="checks">${c.checks.map((k) => `<div class="check-row"><small>${esc(k.area)}</small>${STATUS[k.status] || "🟠"} <b>${esc(k.label)}</b> — ${esc(k.detail)}</div>`).join("")}</div>
+    ${list("Points intéressants", c.highlights)}
+    ${list("Points risqués", c.risks)}
+    ${list("Incertitudes", c.uncertainties)}
+    ${list("Axes d'amélioration à surveiller", c.improvements)}
+    ${c.next_steps?.length ? `<div class="block-title">Tes 3 priorités</div><ol class="list">${c.next_steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>` : ""}
+    ${list("Angles morts à éclaircir", c.blind_spots)}
+    ${c.sources?.length ? `<div class="block-title">Sources</div><div class="chips">${c.sources.filter((s) => safe(s.url)).map((s) => `<a class="btn btn-sm" href="${safe(s.url)}" target="_blank" rel="noopener nofollow">${esc(s.title || "Source")}</a>`).join("")}</div>` : ""}
+    <p class="note">Note : <b>${String(c.score).replace(".", ",")}/10</b></p>
+    <p class="faint" style="margin-top:10px">Pré-diagnostic IA à partir d'informations publiques, pas une certification ni un audit de sécurité professionnel.</p>
+  </article>`;
+}
+
+async function load() {
+  const { user } = await loadMe();
+  if (!user) { app.innerHTML = `<div class="panel center"><p class="muted">Le Check-up est réservé aux membres de la communauté.</p><a class="btn btn-dark" href="${loginUrl("/checkup")}">${GH_ICON} Se connecter avec GitHub</a></div>`; return; }
+  if (!user.pseudo || user.needsOnboarding) { app.innerHTML = `<div class="panel center"><p class="muted">Termine ton inscription pour accéder au Check-up.</p><a class="btn btn-primary" href="/moi">Terminer mon inscription</a></div>`; return; }
+  let data;
+  try { data = await api("/api/checkup"); } catch (err) { app.innerHTML = `<p class="muted center">${esc(err.message)}</p>`; return; }
+  const last = data.express[0];
+  app.innerHTML = (data.canExpress && !last ? form() : "") + (last ? report(last) : "") + (data.canExpress && last ? form() : "") + completeCta;
+  $("#express")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    f.querySelector("button").disabled = true;
+    try {
+      await api("/api/checkup/express", { method: "POST", body: { url: f.url.value, description: f.description.value } });
+      toast("C'est parti 🚀");
+      load();
+    } catch (err) { toast(err.message); f.querySelector("button").disabled = false; }
+  });
+  clearTimeout(timer);
+  if (last && ["pending", "running"].includes(last.status)) timer = setTimeout(load, 20000);
+}
+load();
+</script>
+</body>
+</html>
