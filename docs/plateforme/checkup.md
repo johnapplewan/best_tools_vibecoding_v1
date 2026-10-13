@@ -1,5 +1,7 @@
 # Check-up de ton App, avec rapport d'analyse critique
 
+Référentiel du Check-up complet (plan du dossier, questions de l'appel, check-list de l'analyste) : [`checkup-referentiel.md`](checkup-referentiel.md).
+
 ## Check-up express (`/checkup`)
 - Réservé aux membres connectés et inscrits ; **1 par membre** (illimité pour l'admin).
 - Le membre donne le lien de son app ou de son dépôt public, puis une description.
