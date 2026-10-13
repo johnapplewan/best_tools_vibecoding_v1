@@ -149,3 +149,58 @@ export function sniffImage(bytes) {
   if (b.length > 12 && String.fromCharCode(...b.slice(0, 4)) === "RIFF" && String.fromCharCode(...b.slice(8, 12)) === "WEBP") return "image/webp";
   return null;
 }
+
+// Texte sur plusieurs lignes (descriptions, comptes rendus) : garde les retours à la ligne.
+export function cleanMultiline(value, field, max) {
+  const text = String(value ?? "").replace(/\r\n?/g, "\n").split("\n").map((l) => l.replace(/[ \t]+/g, " ").trimEnd()).join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  if (text.length > max) throw bad(field, `${max} caractères maximum`);
+  if (containsPersonalData(text)) throw bad(field, "Pas de numéro de téléphone ni d'email");
+  return text;
+}
+
+export function cleanDay(value, field, required = true) {
+  const v = String(value ?? "").trim();
+  if (!v && !required) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(v) || Number.isNaN(Date.parse(`${v}T00:00:00Z`))) throw bad(field, "Date attendue : AAAA-MM-JJ");
+  return v;
+}
+
+export function cleanGithubRepo(value, field) {
+  let url = String(value ?? "").trim().replace(/\/+$/, "").replace(/\.git$/, "");
+  if (!url) return null;
+  if (!/^https?:\/\//.test(url)) url = `https://${url}`;
+  url = url.replace(/^http:\/\//, "https://").replace("://www.github.com", "://github.com");
+  if (!/^https:\/\/github\.com\/[A-Za-z0-9-]{1,39}\/[A-Za-z0-9._-]{1,100}$/.test(url)) throw bad(field, "Format attendu : github.com/compte/depot");
+  return url;
+}
+
+// Lien vers une issue ou une PR GitHub.
+export function cleanGithubItem(value, field) {
+  let url = String(value ?? "").trim().replace(/\/+$/, "");
+  if (!url) return null;
+  if (!/^https?:\/\//.test(url)) url = `https://${url}`;
+  url = url.replace(/^http:\/\//, "https://").replace("://www.github.com", "://github.com");
+  if (!/^https:\/\/github\.com\/[A-Za-z0-9-]{1,39}\/[A-Za-z0-9._-]{1,100}\/(?:pull|issues)\/\d{1,7}$/.test(url)) throw bad(field, "Format attendu : github.com/compte/depot/pull/12 ou /issues/12");
+  return url;
+}
+
+export function cleanHttps(value, field) {
+  let url = String(value ?? "").trim();
+  if (!url) return null;
+  if (!/^https?:\/\//.test(url)) url = `https://${url}`;
+  url = url.replace(/^http:\/\//, "https://");
+  if (!CONTACT_RULES.website.test(url)) throw bad(field, "Adresse https:// invalide");
+  if (containsPersonalData(url)) throw bad(field, "Pas de numéro de téléphone ni d'email");
+  return url;
+}
+
+// Canal de discussion d'une équipe : lien d'invitation de groupe uniquement (jamais un numéro).
+export function cleanChannel(value, field) {
+  let url = String(value ?? "").trim();
+  if (!url) return null;
+  if (!/^https?:\/\//.test(url)) url = `https://${url}`;
+  url = url.replace(/^http:\/\//, "https://");
+  const ok = /^https:\/\/(?:t\.me\/(?:\+[A-Za-z0-9_-]+|joinchat\/[A-Za-z0-9_-]+|[A-Za-z][A-Za-z0-9_]{4,31})|signal\.group\/#[A-Za-z0-9_\-+/=]+|chat\.whatsapp\.com\/[A-Za-z0-9]{10,}|discord\.gg\/[A-Za-z0-9-]{2,32}|(?:www\.)?discord\.com\/invite\/[A-Za-z0-9-]{2,32})\/?$/.test(url);
+  if (!ok) throw bad(field, "Lien de groupe Telegram, Signal, WhatsApp ou Discord attendu");
+  return url;
+}

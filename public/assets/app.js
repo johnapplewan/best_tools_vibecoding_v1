@@ -73,7 +73,7 @@ export async function renderNav(active) {
   initTheme();
   const nav = document.createElement("nav");
   nav.className = "top";
-  const links = [["/outils", "Outils"], ["/actualites", "Actualités"], ["/showroom", "Showroom"]];
+  const links = [["/outils", "Outils"], ["/actualites", "Actualités"], ["/showroom", "Showroom"], ["/atelier", "Créer ici"]];
   nav.innerHTML = `<div class="wrap">
     <a class="logo" href="/outils"><span class="logo-mark">✦</span><span class="label">Vibe Tools</span></a>
     <div class="nav-links">${links.map(([h, l]) => `<a href="${h}"${h === active ? ' aria-current="page"' : ""}>${l}</a>`).join("")}</div>
@@ -84,6 +84,10 @@ export async function renderNav(active) {
   document.body.prepend(nav);
   nav.querySelector("[data-theme-toggle]").addEventListener("click", toggleTheme);
   const { user } = await loadMe();
+  if (user?.unread) {
+    const a = nav.querySelector('a[href="/atelier"]');
+    a.insertAdjacentHTML("beforeend", ` <span class="badge" aria-label="${user.unread} notification(s) non lue(s)">${user.unread > 9 ? "9+" : user.unread}</span>`);
+  }
   if (user?.isAdmin) {
     nav.querySelector(".nav-links").insertAdjacentHTML("beforeend", `<a href="/admin"${active === "/admin" ? ' aria-current="page"' : ""}>🛡️ Veille</a>`);
   }
@@ -126,3 +130,33 @@ export const NETWORKS = {
   linkedin: { label: "LinkedIn", icon: "💼" },
   website: { label: "Site web", icon: "🌐" },
 };
+
+// Image paysage 2:1 : recadrage au centre, 1280×640 max, WebP (ou JPEG) de moins de 400 Ko.
+export async function toLandscape(file) {
+  let bmp;
+  try { bmp = await createImageBitmap(file); } catch { throw new Error("Format d'image non pris en charge"); }
+  const ratio = 2;
+  let sw = bmp.width, sh = Math.round(bmp.width / ratio);
+  if (sh > bmp.height) { sh = bmp.height; sw = Math.round(sh * ratio); }
+  const sx = Math.round((bmp.width - sw) / 2), sy = Math.round((bmp.height - sh) / 2);
+  const W = Math.min(1280, sw), H = Math.round(W / ratio);
+  const canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  canvas.getContext("2d").drawImage(bmp, sx, sy, sw, sh, 0, 0, W, H);
+  const encode = (type, q) => new Promise((r) => canvas.toBlob(r, type, q));
+  for (const q of [0.85, 0.75, 0.6, 0.45]) {
+    let blob = await encode("image/webp", q);
+    if (!blob || blob.type !== "image/webp") blob = await encode("image/jpeg", q);
+    if (blob && blob.size <= 400 * 1024) return blob;
+  }
+  throw new Error("Image trop lourde même compressée");
+}
+
+// Envoie une image (déjà recadrée) et renvoie { id, url }.
+export async function uploadLandscape(file) {
+  const blob = await toLandscape(file);
+  const res = await fetch("/api/me/images", { method: "POST", headers: { "content-type": blob.type }, body: blob, credentials: "same-origin" });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.reason || "Envoi impossible");
+  return data;
+}

@@ -21,6 +21,10 @@ Page de référencement d'outils de vibe-coding sympa - A page listing cool vibe
 | `src/veille/analyze.js` | Analyse par Claude : enquête web, pré-audit, verdict 🟢🟠🔴, script vidéo |
 | `public/actualites.html` | Onglet Actualités public (`/actualites`) |
 | `public/admin.html` | Tableau de bord de la veille, réservé à l'admin (`/admin`) |
+| `src/api/atelier.js` | Atelier « Créer ici » : projets, équipe, missions, calendrier, réunions, continuité du porteur |
+| `public/atelier.html` | Liste des projets « Créer ici » (`/atelier`) |
+| `public/projet.html` | Un projet et ses onglets (`/projet?id=…`) |
+| `public/indispo.html` | Codes de récupération du porteur : gel ou reprise du rôle (`/indispo`) |
 | `public/cgu.html`, `public/charte.html` | Pages légales, rendues depuis `public/legal/*.md` |
 | `wrangler.jsonc` | Configuration du Worker et liaison de la base D1 |
 | `docs/sources/source-A-post-X.md` | Tableau des 25 ressources du post X |
@@ -45,6 +49,8 @@ Le dépôt est relié au Worker Cloudflare **`best-tools-vibecoding-v1`** (Worke
 
 Adresse : https://best-tools-vibecoding-v1.johnapplewan.workers.dev/outils
 
+**Créer ici** : rien à configurer. Une tâche planifiée horaire (le même déclencheur que la veille) envoie les relances du porteur et des missions, et active les intérims à la fin du délai d'opposition.
+
 **Veille** : secret `ANTHROPIC_API_KEY` (clé API Claude). Optionnel : variable `VEILLE_MODEL` pour changer de modèle (par défaut `claude-opus-5-5`). Une tâche planifiée (`triggers.crons`, toutes les 5 min) analyse la file. Coût indicatif : environ 0,25 à 0,50 $ par analyse avec Claude Opus 5.5 (recherche web comprise).
 
 **Connexion GitHub** : OAuth App avec l'adresse de retour `https://best-tools-vibecoding-v1.johnapplewan.workers.dev/auth/callback`, et les secrets `GITHUB_CLIENT_ID` et `GITHUB_CLIENT_SECRET` (en Production). Les admins sont désignés par leur **identifiant GitHub numérique** dans `ADMIN_GITHUB_IDS` (`wrangler.jsonc`), qui ne change jamais même si le compte est renommé.
@@ -66,6 +72,7 @@ npx wrangler@4 dev --test-scheduled   # puis curl "http://localhost:8787/__sched
 - Liens de contact réservés aux membres connectés, délivrés au clic seulement.
 - En-têtes : CSP stricte (aucune ressource externe sauf polices Google et images GitHub), anti-clickjacking, HSTS (`public/_headers`).
 - Images de projet (vignettes paysage 2:1) : JPEG/PNG/WebP vérifiés sur leur contenu, 400 Ko max, 12 par membre, stockées dans D1 et servies sur `/img/…` avec une CSP qui bloque tout script. Case « Dépôt privé » : le lien GitHub n'est montré qu'au propriétaire.
+- « Créer ici » : codes de récupération du porteur stockés sous forme d'empreinte, à usage unique et limités en nombre d'essais ; intérim encadré (vote, admin, 7 jours d'opposition) ; jamais d'éjection du porteur par un vote.
 - Validation serveur : refus des numéros, emails et liens `wa.me/<numéro>` ; tout texte de membre est échappé à l'affichage.
 
 ## Avis visiteurs : comment l'unicité est garantie
@@ -77,7 +84,7 @@ npx wrangler@4 dev --test-scheduled   # puis curl "http://localhost:8787/__sched
 
 ## Plateforme communautaire (en préparation)
 
-- [`docs/plateforme/creer-ici.md`](docs/plateforme/creer-ici.md) : spécification de l'atelier « Créer ici »
+- [`docs/plateforme/creer-ici.md`](docs/plateforme/creer-ici.md) : spécification de l'atelier « Créer ici » (en ligne sur `/atelier`, voir « Mise en œuvre »)
 - [`public/legal/cgu.md`](public/legal/cgu.md) : conditions générales d'utilisation, affichées sur `/cgu` (brouillon à faire relire)
 - [`public/legal/charte.md`](public/legal/charte.md) : charte déontologique des membres, affichée sur `/charte`
 - [`docs/plateforme/veille.md`](docs/plateforme/veille.md) : module de veille (raccourci iOS, analyse, feu tricolore, script vidéo)

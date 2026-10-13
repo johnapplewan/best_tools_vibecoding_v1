@@ -7,6 +7,7 @@ import {
   TERMS_VERSION, SPECIALTIES, CONTACT_NETWORKS, cleanPseudo, cleanText, cleanSpecialties, cleanContacts, cleanProjects, projectThumbnail,
   IMAGE_MAX_BYTES, sniffImage,
 } from "../lib/validate.js";
+import { bonusFor, unreadCount } from "./atelier.js";
 
 const parse = (s, fallback) => {
   try {
@@ -70,6 +71,7 @@ export async function getMe(request, env) {
       projects: await projectsOf(env, user.id, true),
       hidden: !!user.hidden,
       isAdmin: isAdmin(user, env),
+      unread: await unreadCount(env, user.id),
     },
     options: { specialties: SPECIALTIES, networks: CONTACT_NETWORKS, termsVersion: TERMS_VERSION },
   });
@@ -138,7 +140,8 @@ export async function updateProjects(request, env) {
     // Nettoyage : les images qui ne sont plus utilisées (gardées 1 h pour un envoi en cours).
     env.DB.prepare(
       `DELETE FROM project_images WHERE user_id = ?1 AND created_at < ?2
-       AND id NOT IN (SELECT image_id FROM projects WHERE user_id = ?1 AND image_id IS NOT NULL)`
+       AND id NOT IN (SELECT image_id FROM projects WHERE user_id = ?1 AND image_id IS NOT NULL)
+       AND id NOT IN (SELECT image_id FROM cp_projects WHERE image_id IS NOT NULL)`
     ).bind(user.id, now - 3600e3),
   ]);
   return json({ ok: true, projects: await projectsOf(env, user.id, true) });
@@ -182,9 +185,18 @@ export async function serveImage(request, env, id) {
 
 export async function deleteMe(request, env) {
   const user = await requireUser(request, env, { onboarded: false });
+  const owned = await env.DB.prepare("SELECT name FROM cp_projects WHERE owner_id = ?1 AND status NOT IN ('archived', 'live')").bind(user.id).first();
+  if (owned) throw new HttpError(409, "invalid", { reason: `Vous portez le projet « ${owned.name} » dans « Créer ici » : transmettez votre rôle au co-porteur ou archivez le projet avant de supprimer votre compte.` });
   await env.DB.batch([
+    env.DB.prepare("UPDATE cp_missions SET assignee_id = NULL, status = CASE WHEN status = 'done' THEN status ELSE 'todo' END WHERE assignee_id = ?1").bind(user.id),
+    env.DB.prepare("UPDATE cp_projects SET co_id = NULL, co_accepted_at = NULL, interim_status = NULL WHERE co_id = ?1").bind(user.id),
+    env.DB.prepare("DELETE FROM cp_members WHERE user_id = ?1").bind(user.id),
+    env.DB.prepare("DELETE FROM cp_applications WHERE user_id = ?1").bind(user.id),
+    env.DB.prepare("DELETE FROM cp_votes WHERE user_id = ?1").bind(user.id),
+    env.DB.prepare("DELETE FROM cp_weather WHERE user_id = ?1").bind(user.id),
+    env.DB.prepare("DELETE FROM notifications WHERE user_id = ?1").bind(user.id),
     env.DB.prepare("DELETE FROM projects WHERE user_id = ?1").bind(user.id),
-    env.DB.prepare("DELETE FROM project_images WHERE user_id = ?1").bind(user.id),
+    env.DB.prepare("DELETE FROM project_images WHERE user_id = ?1 AND id NOT IN (SELECT image_id FROM cp_projects WHERE image_id IS NOT NULL)").bind(user.id),
     env.DB.prepare("DELETE FROM recommendations WHERE from_user = ?1 OR to_user = ?1").bind(user.id),
     env.DB.prepare("DELETE FROM reports WHERE reporter = ?1 OR target = ?1").bind(user.id),
     env.DB.prepare("DELETE FROM sessions WHERE user_id = ?1").bind(user.id),
@@ -215,8 +227,12 @@ export async function listShowroom(request, env) {
     byUser.get(p.user_id).push(projectOut(p));
   }
   const counts = new Map(recos.map((r) => [r.to_user, r.n]));
+  const bonus = await bonusFor(env, users.map((u) => u.id));
   const members = users.map((u) =>
-    memberOut(u, byUser.get(u.id) || [], { recommendations: counts.get(u.id) || 0, recommendedByMe: mine.has(u.id), isMe: me?.id === u.id })
+    memberOut(u, byUser.get(u.id) || [], {
+      recommendations: counts.get(u.id) || 0, recommendedByMe: mine.has(u.id), isMe: me?.id === u.id,
+      bonus: bonus.get(u.id)?.project || null, createdHere: bonus.get(u.id)?.count || 0,
+    })
   );
   return json({ members, options: { specialties: SPECIALTIES } });
 }
@@ -238,12 +254,15 @@ export async function getMember(request, env, code) {
     .bind(u.id)
     .all();
   const recommendedByMe = me ? !!(await env.DB.prepare("SELECT 1 FROM recommendations WHERE from_user = ?1 AND to_user = ?2").bind(me.id, u.id).first()) : false;
+  const bonus = (await bonusFor(env, [u.id])).get(u.id);
   return json({
     member: memberOut(u, await projectsOf(env, u.id), {
       recommendations: results.length,
       recommendedBy: results.map((r) => ({ pseudo: r.pseudo, code: r.code, message: r.message, at: r.created_at })),
       recommendedByMe,
       isMe: me?.id === u.id,
+      bonus: bonus?.project || null,
+      createdHere: bonus?.count || 0,
     }),
   });
 }

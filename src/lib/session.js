@@ -27,12 +27,18 @@ export async function currentUser(request, env) {
   await ensureSchema(env.DB);
   const token = parseCookies(request)[SESSION_COOKIE];
   if (!token || !/^[a-f0-9]{64}$/.test(token)) return null;
-  return env.DB.prepare(
+  const user = await env.DB.prepare(
     `SELECT u.* FROM sessions s JOIN users u ON u.id = s.user_id
      WHERE s.token_hash = ?1 AND s.expires_at > ?2`
   )
     .bind(await sha256(token), Date.now())
     .first();
+  // Dernière activité (au plus une écriture par heure) : sert aux relances du porteur dans « Créer ici ».
+  if (user && (!user.last_seen_at || Date.now() - user.last_seen_at > 3600e3)) {
+    user.last_seen_at = Date.now();
+    await env.DB.prepare("UPDATE users SET last_seen_at = ?1 WHERE id = ?2").bind(user.last_seen_at, user.id).run();
+  }
+  return user;
 }
 
 export async function requireUser(request, env, { onboarded = true } = {}) {

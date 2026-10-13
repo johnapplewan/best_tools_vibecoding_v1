@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem("vt-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<title>Projet Créer ici</title>
+<meta name="description" content="Un projet de l'atelier « Créer ici » : fiche, équipe, missions, calendrier et journal.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+.page { max-width: 980px; margin: 0 auto; padding-top: 28px; }
+.banner.empty { aspect-ratio: auto; height: 96px; }
+.banner { aspect-ratio: 4 / 1; border-radius: 22px; background: center / cover no-repeat, linear-gradient(120deg, color-mix(in srgb, var(--accent) 45%, transparent), color-mix(in srgb, var(--accent-2) 35%, transparent), color-mix(in srgb, var(--accent-3) 30%, transparent)); border: 1px solid var(--border); }
+@media (max-width: 600px) { .banner { aspect-ratio: 2.5 / 1; } }
+.head { margin: 18px 0 8px; display: flex; flex-direction: column; gap: 10px; }
+.head h1 { font-size: clamp(28px, 5vw, 44px); margin: 0; text-align: left; max-width: none; }
+.head .lead { margin: 0; text-align: left; max-width: none; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); margin: 22px 0 18px; position: sticky; top: 60px; z-index: 10; background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.tabs button { border: 0; background: none; color: var(--muted); font: 600 14px Inter, sans-serif; padding: 12px 12px; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+.kv { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 720px) { .kv { grid-template-columns: 1fr 1fr; } }
+.kv div > b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; margin-bottom: 4px; }
+.pre { white-space: pre-wrap; margin: 0; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.person { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.person:last-child { border-bottom: 0; }
+.person .grow { flex: 1; min-width: 0; }
+.kanban { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 900px) { .kanban { grid-template-columns: repeat(4, 1fr); } }
+.col h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 8px; }
+.mission { border: 1px solid var(--border); border-radius: 14px; background: var(--card); padding: 12px; margin-bottom: 10px; font-size: 14px; }
+.mission h4 { margin: 0 0 6px; font-size: 15px; }
+.mission .meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; color: var(--faint); font-size: 12.5px; margin-bottom: 8px; }
+.timeline { position: relative; height: 64px; margin: 10px 0 24px; }
+.timeline .line { position: absolute; left: 0; right: 0; top: 30px; height: 4px; border-radius: 4px; background: var(--border-strong); }
+.timeline .progress { position: absolute; left: 0; top: 30px; height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.timeline .dot { position: absolute; top: 24px; width: 16px; height: 16px; margin-left: -8px; border-radius: 999px; background: var(--card-solid); border: 3px solid var(--accent); }
+.timeline .dot.done { background: var(--accent); }
+.timeline .lbl { position: absolute; top: 0; transform: translateX(-50%); font-size: 11.5px; color: var(--muted); white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+.timeline .lbl.low { top: 46px; }
+.timeline .today { position: absolute; top: 18px; height: 28px; width: 2px; background: var(--accent-2); }
+.list-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.list-item:last-child { border-bottom: 0; }
+.codes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 14px 0; }
+.codes code { font: 600 15px "JetBrains Mono", monospace; padding: 10px; border-radius: 10px; background: var(--bg-2); border: 1px solid var(--border-strong); text-align: center; letter-spacing: .04em; }
+.rules { font-size: 14px; color: var(--muted); padding-left: 18px; margin: 8px 0; }
+.rules li { margin: 4px 0; }
+.thumb-prev { aspect-ratio: 2 / 1; max-width: 360px; border-radius: 12px; border: 1px solid var(--border-strong); background: center / cover no-repeat, linear-gradient(135deg, color-mix(in srgb, var(--accent) 30%, transparent), color-mix(in srgb, var(--accent-3) 25%, transparent)); display: grid; place-items: center; color: var(--faint); font-size: 13px; }
+.roles-row { display: grid; grid-template-columns: 1fr 90px auto; gap: 8px; margin-bottom: 8px; }
+.act-row { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
+@media (min-width: 720px) { .act-row { grid-template-columns: 2fr 1fr 1fr auto; border: 0; padding: 0; } }
+.mood button { font-size: 20px; width: 44px; height: 40px; }
+fieldset { border: 0; padding: 0; margin: 0 0 16px; }
+legend { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+.center { text-align: center; padding: 60px 0; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<main class="wrap"><div class="page" id="app"><p class="center">Chargement…</p></div></main>
+
+<dialog id="codes-dialog" aria-label="Codes de récupération">
+  <div class="dialog-body" id="codes-body"></div>
+</dialog>
+
+<script type="module">
+import { $, esc, api, loadMe, loginUrl, avatarHTML, renderNav, renderFooter, toast, GH_ICON, uploadLandscape } from "/assets/app.js";
+import { TOOLS } from "/assets/tools.js";
+renderNav("/atelier");
+renderFooter();
+
+const TOOL_NAMES = Object.fromEntries(TOOLS.map((t) => [t.id, t.name]));
+const LEVEL = { all: "Tous niveaux", beginner: "Débutant bienvenu", intermediate: "Intermédiaire", advanced: "Avancé" };
+const LICENSES = ["MIT", "Apache-2.0", "GPL-3.0", "AGPL-3.0", "MPL-2.0", "CC-BY-4.0", "Autre"];
+const ROLE = { owner: "Porteur", co: "Co-porteur", co_invited: "Co-porteur (invité)", contributor: "Contributeur" };
+const MSTATUS = { todo: "À faire", doing: "En cours", review: "En revue", done: "Terminée" };
+const MOOD = { sun: "☀️", cloud: "⛅", rain: "🌧️" };
+const KIND = { milestone: "🏁 Jalon", cycle: "🔁 Cycle", meeting: "📅 Réunion" };
+const CHECKLIST = {
+  goal: "L'objectif du projet est atteint ou explicitement revu",
+  readme: "Le README explique quoi, pour qui et comment l'utiliser",
+  license: "La licence est présente et les crédits de l'équipe sont listés (pseudos)",
+  secrets: "Aucun secret dans le dépôt, et un scan de sécurité est passé",
+  privacy: "Si l'outil collecte des données : page confidentialité, minimum de données, aucune donnée personnelle exposée",
+  demo: "Le lien de démo fonctionne et une vignette est disponible",
+  review: "Une relecture a été faite par quelqu'un qui n'a pas codé la fonctionnalité",
+};
+const RULES = `<ul class="rules">
+  <li>Le porteur reçoit <b>8 codes de récupération</b> à garder hors ligne : ils permettent de reprendre son rôle depuis un autre compte GitHub, ou de geler le projet (« je suis indisponible ») sans être connecté.</li>
+  <li>Si le porteur n'a <b>aucune activité</b> sur le site : relance à J+14, J+21 (co-porteur informé), J+28 (équipe alertée).</li>
+  <li>À J+35, le co-porteur peut demander un <b>intérim</b> : il faut la majorité de l'équipe, la validation de l'admin, puis <b>7 jours d'opposition</b> pendant lesquels le porteur peut tout annuler.</li>
+  <li>Pendant l'intérim, le co-porteur gère l'équipe et les missions, mais ne peut <b>ni changer la licence, ni supprimer le projet, ni retirer le porteur</b>. Le porteur reprend son rôle dès son retour sur le site.</li>
+  <li>Aucune éjection du porteur par un simple vote. Chaque changement de rôle est inscrit au journal public du projet.</li>
+</ul>`;
+
+const params = new URLSearchParams(location.search);
+const isNew = params.has("new");
+const id = Number(params.get("id"));
+const app = $("#app");
+let D = null; // réponse de l'API
+let me = null;
+let tab = (location.hash.slice(1) || "fiche");
+let editing = null; // { kind, data }
+
+const fmtDay = (d) => d ? new Date(`${d}T12:00:00`).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : "";
+const fmtTime = (t) => new Date(t).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+const today = () => new Date().toISOString().slice(0, 10);
+const who = (code) => { const m = D?.team.find((t) => t.code === code); return m ? esc(m.pseudo) : code ? `<span class="code">${esc(code)}</span>` : "—"; };
+const safe = (u) => /^https:\/\//.test(u || "") ? esc(u) : null;
+
+// ───────── Formulaire de la fiche (création et modification) ─────────
+function ficheForm(p = {}, creating = false) {
+  const roles = (p.roles?.length ? p.roles : [{ role: "", slots: 1 }]);
+  const tools = new Set(p.tools || []);
+  return `<form id="fiche-form" class="panel">
+    <h2>${creating ? "Proposer un projet" : "Modifier la fiche"}</h2>
+    <p class="muted" style="margin-top:0">Pseudos uniquement : aucun nom, email ni numéro de téléphone dans les textes.</p>
+    <div class="grid-2">
+      <label class="field"><span>Nom du projet *</span><input type="text" name="name" maxlength="60" required value="${esc(p.name || "")}"></label>
+      <label class="field"><span>Pitch en une phrase *</span><input type="text" name="pitch" maxlength="140" value="${esc(p.pitch || "")}"><small>Donner envie en 5 secondes.</small></label>
+    </div>
+    <label class="field"><span>Problème résolu, et pour qui</span><textarea name="problem" maxlength="600" rows="3">${esc(p.problem || "")}</textarea></label>
+    <label class="field"><span>Objectif mesurable *</span><input type="text" name="objective" maxlength="200" placeholder="ex. 50 utilisateurs en 1 mois" value="${esc(p.objective || "")}"></label>
+    <div class="grid-2">
+      <label class="field"><span>Ce qu'on fait</span><textarea name="scope_in" maxlength="800" rows="4">${esc(p.scope_in || "")}</textarea></label>
+      <label class="field"><span>Ce qu'on ne fait pas</span><textarea name="scope_out" maxlength="800" rows="4">${esc(p.scope_out || "")}</textarea><small>Pour éviter que le projet gonfle sans fin.</small></label>
+    </div>
+    <fieldset><legend>Rôles recherchés *</legend>
+      <div id="roles">${roles.map(roleRow).join("")}</div>
+      <button class="btn btn-sm" type="button" data-add-role>+ Ajouter un rôle</button>
+    </fieldset>
+    <div class="grid-2">
+      <label class="field"><span>Engagement attendu</span><input type="text" name="commitment" maxlength="60" placeholder="ex. 3 h par semaine" value="${esc(p.commitment || "")}"></label>
+      <label class="field"><span>Durée estimée</span><input type="text" name="duration" maxlength="60" placeholder="ex. 6 semaines" value="${esc(p.duration || "")}"></label>
+      <label class="field"><span>Niveau</span><select name="level">${Object.entries(LEVEL).map(([k, v]) => `<option value="${k}"${p.level === k ? " selected" : ""}>${v}</option>`).join("")}</select></label>
+      <label class="field"><span>Licence</span><select name="license" ${!creating && D && !D.viewer.owner ? "disabled" : ""}>${LICENSES.map((l) => `<option${(p.license || "MIT") === l ? " selected" : ""}>${l}</option>`).join("")}</select><small>MIT conseillée. Choisie dès le départ pour éviter tout conflit.</small></label>
+    </div>
+    <fieldset><legend>Outils prévus</legend>
+      <div class="row"><select id="tool-pick" style="max-width:320px"><option value="">Ajouter un outil du catalogue…</option>${TOOLS.slice().sort((a, b) => a.name.localeCompare(b.name, "fr")).map((t) => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("")}</select></div>
+      <div class="chips" id="tools" style="margin-top:8px">${[...tools].map(toolChip).join("")}</div>
+    </fieldset>
+    <div class="grid-2">
+      <label class="field"><span>Canal de discussion de l'équipe</span><input type="url" name="channel_url" placeholder="t.me/+… · signal.group/#… · discord.gg/…" value="${esc(p.channel_url || "")}"><small>Lien de groupe uniquement. Visible par l'équipe seulement.</small></label>
+      <label class="field"><span>Dépôt GitHub</span><input type="url" name="repo_url" placeholder="github.com/compte/depot" value="${esc(p.repo_url || "")}"></label>
+      <label class="field"><span>Lien de démo</span><input type="url" name="demo_url" placeholder="https://…" value="${esc(p.demo_url || "")}"></label>
+    </div>
+    ${creating ? "" : `<fieldset><legend>Vignette (format paysage)</legend>
+      <div class="thumb-prev" id="thumb-prev" data-image-id="${esc(p.image_id || "")}" style="${p.thumbnail ? `background-image:url('${esc(p.thumbnail)}')` : ""}">${p.thumbnail ? "" : "<span>Aucune image</span>"}</div>
+      <div class="row" style="margin-top:8px"><label class="btn btn-sm">📷 Choisir une image<input type="file" accept="image/*" id="thumb-input" hidden></label>
+      <button class="btn btn-sm btn-danger" type="button" id="thumb-clear">Retirer</button></div></fieldset>`}
+    ${creating ? `<div class="notice notice-info"><b>Règles de continuité et protection du porteur</b>${RULES}</div>
+      <label class="check"><input type="checkbox" name="acceptRules"> <span>J'ai lu et j'accepte ces règles. Je garderai mes codes de récupération hors ligne.</span></label>` : ""}
+    <div class="row" style="margin-top:12px">
+      <button class="btn btn-primary" type="submit">${creating ? "Créer le brouillon" : "Enregistrer"}</button>
+      ${creating ? `<a class="btn" href="/atelier">Annuler</a>` : `<button class="btn" type="button" data-cancel-edit>Annuler</button>`}
+    </div>
+  </form>`;
+}
+const roleRow = (r) => `<div class="roles-row"><input type="text" maxlength="40" placeholder="ex. Front-end, Design, Test…" value="${esc(r.role)}" data-role><input type="number" min="1" max="10" value="${Number(r.slots) || 1}" data-slots aria-label="Nombre de places"><button class="btn btn-sm" type="button" data-del-role aria-label="Retirer">✕</button></div>`;
+const toolChip = (t) => `<button class="chip" type="button" aria-pressed="true" data-tool="${esc(t)}">${esc(TOOL_NAMES[t] || t)} ✕</button>`;
+
+function readFiche(f) {
+  return {
+    name: f.name.value, pitch: f.pitch.value, problem: f.problem.value, objective: f.objective.value,
+    scope_in: f.scope_in.value, scope_out: f.scope_out.value,
+    roles: [...f.querySelectorAll(".roles-row")].map((r) => ({ role: r.querySelector("[data-role]").value, slots: Number(r.querySelector("[data-slots]").value) })),
+    commitment: f.commitment.value, duration: f.duration.value, level: f.level.value, license: f.license.value,
+    tools: [...f.querySelectorAll("[data-tool]")].map((b) => b.dataset.tool),
+    channel_url: f.channel_url.value, repo_url: f.repo_url.value, demo_url: f.demo_url.value,
+    image_id: $("#thumb-prev")?.dataset.imageId || null,
+    acceptRules: f.acceptRules?.checked,
+  };
+}
+
+function bindFicheForm(creating) {
+  const f = $("#fiche-form");
+  f.addEventListener("click", (e) => {
+    if (e.target.closest("[data-add-role]")) { if (f.querySelectorAll(".roles-row").length < 8) $("#roles").insertAdjacentHTML("beforeend", roleRow({ role: "", slots: 1 })); }
+    if (e.target.closest("[data-del-role]")) e.target.closest(".roles-row").remove();
+    if (e.target.closest("[data-tool]")) e.target.closest("[data-tool]").remove();
+    if (e.target.closest("[data-cancel-edit]")) { editing = null; render(); }
+    if (e.target.closest("#thumb-clear")) { const p = $("#thumb-prev"); p.dataset.imageId = ""; p.style.backgroundImage = ""; p.innerHTML = "<span>Aucune image</span>"; }
+  });
+  $("#tool-pick").addEventListener("change", (e) => {
+    const v = e.target.value; e.target.value = "";
+    if (!v || f.querySelector(`[data-tool="${CSS.escape(v)}"]`)) return;
+    if (f.querySelectorAll("[data-tool]").length >= 10) return toast("10 outils maximum");
+    $("#tools").insertAdjacentHTML("beforeend", toolChip(v));
+  });
+  $("#thumb-input")?.addEventListener("change", async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const prev = $("#thumb-prev");
+    prev.style.opacity = ".5";
+    try {
+      const img = await uploadLandscape(file);
+      prev.dataset.imageId = img.id; prev.style.backgroundImage = `url('${img.url}')`; prev.innerHTML = "";
+      toast("Image ajoutée : pensez à enregistrer");
+    } catch (err) { toast(err.message); }
+    finally { prev.style.opacity = ""; e.target.value = ""; }
+  });
+  f.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const body = readFiche(f);
+    try {
+      if (creating) {
+        if (!body.acceptRules) return toast("Acceptez les règles de continuité pour continuer");
+        const res = await api("/api/atelier", { method: "POST", body });
+        showCodes(res.recoveryCodes, res.id, true);
+      } else {
+        await api(`/api/atelier/${id}`, { method: "PUT", body });
+        toast("Fiche enregistrée");
+        editing = null; await load();
+      }
+    } catch (err) { toast(err.message); }
+  });
+}
+
+// ───────── Codes de récupération ─────────
+function showCodes(codes, pid, created) {
+  const text = `Codes de récupération — projet n° ${pid} (Créer ici)\nÀ garder hors ligne. Chaque code ne sert qu'une fois.\nPage « je suis indisponible » : ${location.origin}/indispo\n\n${codes.join("\n")}\n`;
+  $("#codes-body").innerHTML = `<h2>🔑 Vos codes de récupération</h2>
+    <p class="muted">Projet n° <b>${pid}</b>. Notez-les ou téléchargez-les maintenant : <b>ils ne seront plus jamais affichés</b>. Chaque code ne sert qu'une fois.</p>
+    <div class="codes">${codes.map((c) => `<code>${esc(c)}</code>`).join("")}</div>
+    <p class="faint">Ils permettent de reprendre votre rôle depuis un autre compte GitHub, ou de geler le projet depuis la page publique <b>/indispo</b> sans être connecté. Ne les partagez avec personne.</p>
+    <div class="row"><button class="btn" type="button" id="codes-dl">⬇️ Télécharger (.txt)</button><button class="btn" type="button" id="codes-copy">Copier</button></div>
+    <label class="check" style="margin-top:14px"><input type="checkbox" id="codes-ok"> <span>J'ai mis mes codes en lieu sûr.</span></label>
+    <button class="btn btn-primary" type="button" id="codes-done" disabled>Continuer</button>`;
+  const dlg = $("#codes-dialog");
+  dlg.addEventListener("cancel", (e) => e.preventDefault());
+  dlg.showModal();
+  $("#codes-dl").onclick = () => download(`codes-recuperation-projet-${pid}.txt`, text, "text/plain");
+  $("#codes-copy").onclick = () => navigator.clipboard.writeText(text).then(() => toast("Copié"), () => toast("Copie impossible : téléchargez-les"));
+  $("#codes-ok").onchange = (e) => { $("#codes-done").disabled = !e.target.checked; };
+  $("#codes-done").onclick = () => { dlg.close(); if (created) location.href = `/projet?id=${pid}`; else load(); };
+}
+
+function download(name, content, type) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([content], { type }));
+  a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+// ───────── Export agenda (.ics) ─────────
+function icsFor(events) {
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+  const escI = (s) => String(s).replace(/[\\;,]/g, (c) => `\\${c}`).replace(/\n/g, "\\n");
+  const d = (day) => day.replace(/-/g, "");
+  const next = (day) => { const t = new Date(`${day}T12:00:00Z`); t.setUTCDate(t.getUTCDate() + 1); return t.toISOString().slice(0, 10).replace(/-/g, ""); };
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Vibe Tools//Creer ici//FR", "CALSCALE:GREGORIAN"];
+  for (const e of events) {
+    lines.push("BEGIN:VEVENT", `UID:cp-${D.project.id}-${e.id}@vibetools`, `DTSTAMP:${stamp}`, `SUMMARY:${escI(`${D.project.name} · ${e.title}`)}`);
+    if (e.kind === "meeting" && e.time) lines.push(`DTSTART:${d(e.day)}T${e.time.replace(":", "")}00`, "DURATION:PT1H");
+    else lines.push(`DTSTART;VALUE=DATE:${d(e.day)}`, `DTEND;VALUE=DATE:${next(e.end_day || e.day)}`);
+    lines.push(`URL:${location.origin}/projet?id=${D.project.id}`, "END:VEVENT");
+  }
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
+}
+
+// ───────── Rendu ─────────
+async function load() {
+  try {
+    D = await api(`/api/atelier/${id}`);
+  } catch (err) {
+    app.innerHTML = `<p class="center">${err.status === 404 ? "Projet introuvable." : err.status === 403 ? esc(err.message) : "Chargement impossible."}<br><br><a class="btn" href="/atelier">← Retour à l'atelier</a></p>`;
+    return;
+  }
+  document.title = `${D.project.name} · Créer ici`;
+  render();
+}
+
+function tabsFor() {
+  const v = D.viewer, p = D.project;
+  const t = [["fiche", "Fiche"], ["equipe", `Équipe (${D.team.filter((m) => m.active).length})`]];
+  if (v.member || v.admin) t.push(["missions", "Missions"]);
+  t.push(["calendrier", "Calendrier"]);
+  if (v.member || v.admin) t.push(["reunions", "Réunions"], ["decisions", "Décisions"]);
+  t.push(["journal", "Journal"]);
+  if (["testing", "launch_review", "live", "archived"].includes(p.status) && (v.member || v.admin || p.createdHere)) t.push(["lancement", p.createdHere ? "Rétrospective" : "Mise en ligne"]);
+  if (v.owner || v.co) t.push(["continuite", "Continuité"]);
+  return t;
+}
+
+function render() {
+  const p = D.project, v = D.viewer;
+  const tabs = tabsFor();
+  if (!tabs.some(([k]) => k === tab)) tab = "fiche";
+  app.innerHTML = `
+    <a class="faint" href="/atelier" style="text-decoration:none">← Créer ici</a>
+    <div class="banner ${p.thumbnail ? "" : "empty"}" style="margin-top:10px;${p.thumbnail ? `background-image:url('${esc(p.thumbnail)}')` : ""}"></div>
+    <div class="head">
+      <div class="chips">${p.createdHere ? '<span class="tag tag-here">✦ Créé ici</span>' : ""}<span class="tag ${p.status === "recruiting" ? "tag-ok" : ""}">${esc(p.statusLabel)}</span>
+        ${p.frozen ? '<span class="tag tag-warn">❄️ Gelé : porteur indisponible</span>' : ""}${p.interim ? `<span class="tag tag-danger">Intérim : ${{ voting: "vote de l'équipe", admin: "validation admin", opposition: "délai d'opposition", active: "actif" }[p.interim]}</span>` : ""}
+        <span class="code">n° ${p.id}</span></div>
+      <h1>${esc(p.name)}</h1>
+      ${p.pitch ? `<p class="lead">${esc(p.pitch)}</p>` : ""}
+      <div class="actions">${headerActions()}</div>
+    </div>
+    ${notices()}
+    <div class="tabs" role="tablist">${tabs.map(([k, l]) => `<button role="tab" data-tab="${k}" aria-selected="${k === tab}">${l}</button>`).join("")}</div>
+    <div id="panel">${editing?.kind === "fiche" ? ficheForm({ ...p, channel_url: p.channel_url }) : panel()}</div>`;
+  if (editing?.kind === "fiche") bindFicheForm(false);
+}
+
+function headerActions() {
+  const p = D.project, v = D.viewer, out = [];
+  if (!v.loggedIn && ["recruiting", "active"].includes(p.status)) out.push(`<a class="btn btn-dark" href="${loginUrl(location.pathname + location.search)}">${GH_ICON} Se connecter pour candidater</a>`);
+  if (v.loggedIn && !v.onboarded) out.push(`<a class="btn btn-primary" href="/moi">Terminer mon inscription</a>`);
+  if (v.onboarded && !v.member && ["recruiting", "active"].includes(p.status)) {
+    out.push(v.application === "pending" ? `<span class="tag tag-warn">Candidature en attente</span>` : `<button class="btn btn-primary" data-go="equipe" data-apply>🙋 Candidater</button>`);
+  }
+  if (v.lead) {
+    if (p.status === "draft" && v.owner) out.push(`<button class="btn btn-primary" data-act="submit">Envoyer en validation</button>`);
+    if (p.status === "recruiting") out.push(`<button class="btn btn-primary" data-act="start">▶ Démarrer le projet</button>`);
+    if (p.status === "paused") out.push(`<button class="btn btn-primary" data-act="start">▶ Reprendre</button>`);
+    if (p.status === "active") out.push(`<button class="btn btn-primary" data-act="testing">Passer en recette</button>`, `<button class="btn" data-act="pause">⏸ Pause</button>`, `<button class="btn" data-act="recruit">Rouvrir le recrutement</button>`);
+    if (p.status === "testing") out.push(`<button class="btn" data-act="back_to_work">Retour en réalisation</button>`);
+    if (["draft", "recruiting", "active", "paused", "testing"].includes(p.status)) out.push(`<button class="btn" data-edit-fiche>✏️ Modifier la fiche</button>`);
+  }
+  if (v.owner && p.status === "draft") out.push(`<button class="btn btn-danger" data-act="delete_draft" data-confirm="Supprimer définitivement ce brouillon ?">Supprimer</button>`);
+  if (v.owner && !["draft", "review", "archived"].includes(p.status)) out.push(`<button class="btn btn-sm" data-act="archive" data-confirm="Archiver le projet ? Il restera visible, mais ne pourra plus évoluer.">Archiver</button>`);
+  if (v.admin) {
+    if (p.status === "review") out.push(`<button class="btn btn-primary" data-admin="approve">🛡️ Valider et publier</button>`, `<button class="btn" data-admin="reject" data-note>🛡️ À compléter</button>`);
+    if (p.status === "launch_review") out.push(`<button class="btn btn-primary" data-admin="launch_ok">🛡️ Valider la mise en ligne</button>`, `<button class="btn" data-admin="launch_no" data-note>🛡️ À revoir</button>`);
+    if (p.interim === "admin") out.push(`<button class="btn btn-primary" data-admin="interim_ok">🛡️ Valider l'intérim</button>`, `<button class="btn" data-admin="interim_no" data-note>🛡️ Refuser l'intérim</button>`);
+  }
+  return out.join("");
+}
+
+function notices() {
+  const p = D.project, v = D.viewer, out = [];
+  if (p.adminNote && (v.member || v.admin)) out.push(`<div class="notice">🛡️ Message de l'admin : ${esc(p.adminNote)}</div>`);
+  if (p.status === "draft" && v.owner) out.push(`<div class="notice notice-info">Brouillon visible par vous seul. Complétez le pitch, l'objectif et les rôles, puis envoyez-le en validation.</div>`);
+  if (p.status === "review" && v.member) out.push(`<div class="notice notice-info">En attente de validation par l'admin (anti-spam).</div>`);
+  if (p.status === "recruiting" && v.lead && !D.team.some((m) => m.role === "co")) out.push(`<div class="notice">Un <b>co-porteur ayant accepté son rôle</b> est obligatoire pour démarrer. Choisissez-le dans l'onglet Équipe.</div>`);
+  if (v.coInvited) out.push(`<div class="notice notice-info"><b>On vous propose d'être co-porteur.</b> Votre rôle : assurer l'intérim si le porteur est injoignable, sans jamais pouvoir prendre le projet seul.${RULES}
+    <label class="check"><input type="checkbox" id="co-rules"> <span>J'ai lu et j'accepte ces règles.</span></label>
+    <div class="row"><button class="btn btn-primary" data-co="accept">J'accepte le rôle</button><button class="btn" data-co="decline">Je décline</button></div></div>`);
+  if (p.frozen && v.owner) out.push(`<div class="notice">❄️ Vous avez signalé votre indisponibilité : le projet est gelé. <button class="btn btn-sm btn-primary" data-act="unfreeze">Je suis de retour</button></div>`);
+  if (p.interim && v.owner) out.push(`<div class="notice">Une procédure d'intérim est en cours. Vous pouvez l'annuler à tout moment. <button class="btn btn-sm btn-primary" data-act="interim_cancel">Annuler l'intérim et reprendre mon rôle</button></div>`);
+  if (p.status === "launch_review") out.push(`<div class="notice notice-info">Mise en ligne en cours de vérification par l'admin.</div>`);
+  return out.join("");
+}
+
+function panel() {
+  return ({ fiche, equipe, missions, calendrier, reunions, decisions, journal, lancement, continuite }[tab] || fiche)();
+}
+
+// ── Fiche ──
+function fiche() {
+  const p = D.project;
+  const block = (label, val, pre) => val ? `<div><b>${label}</b>${pre ? `<p class="pre">${esc(val)}</p>` : esc(val)}</div>` : "";
+  const links = [
+    safe(p.repo_url) && `<a class="btn btn-sm" href="${safe(p.repo_url)}" target="_blank" rel="noopener nofollow">${GH_ICON} Dépôt</a>`,
+    safe(p.demo_url) && `<a class="btn btn-sm" href="${safe(p.demo_url)}" target="_blank" rel="noopener nofollow">↗ Démo</a>`,
+    safe(p.channel_url) && `<a class="btn btn-sm" href="${safe(p.channel_url)}" target="_blank" rel="noopener nofollow">💬 Canal de l'équipe</a>`,
+  ].filter(Boolean).join("");
+  return `<div class="panel">
+    <div class="kv">
+      ${block("Objectif", p.objective)}
+      ${block("Problème résolu, pour qui", p.problem, true)}
+      ${block("Ce qu'on fait", p.scope_in, true)}
+      ${block("Ce qu'on ne fait pas", p.scope_out, true)}
+      ${block("Engagement attendu", p.commitment)}
+      ${block("Durée estimée", p.duration)}
+      ${block("Niveau", LEVEL[p.level])}
+      ${block("Licence", p.license)}
+    </div>
+    ${p.roles.length ? `<div style="margin-top:16px"><b class="faint" style="text-transform:uppercase;letter-spacing:.08em;font-size:12px">Rôles recherchés</b><div class="chips" style="margin-top:6px">${p.roles.map((r) => `<span class="tag">${esc(r.role)}${r.slots > 1 ? ` ×${r.slots}` : ""}</span>`).join("")}</div></div>` : ""}
+    ${p.tools.length ? `<div style="margin-top:16px"><b class="faint" style="text-transform:uppercase;letter-spacing:.08em;font-size:12px">Outils prévus</b><div class="chips" style="margin-top:6px">${p.tools.map((t) => `<a class="tag tag-tool" href="/outils#${esc(t)}">${esc(TOOL_NAMES[t] || t)}</a>`).join("")}</div></div>` : ""}
+    ${links ? `<div class="row" style="margin-top:18px">${links}</div>` : ""}
+    <p class="faint" style="margin-top:16px">Fondé par ${who(p.founder)} · créé le ${fmtTime(p.created_at)}${p.live_at ? ` · en ligne depuis le ${fmtTime(p.live_at)}` : ""}</p>
+  </div>`;
+}
+
+// ── Équipe ──
+function equipe() {
+  const p = D.project, v = D.viewer;
+  const active = D.team.filter((m) => m.active);
+  const people = active.map((m) => `<div class="person">${avatarHTML(m, "")}
+    <div class="grow"><b>${esc(m.pseudo)}</b> <span class="code">${esc(m.code)}</span><br>
+      <span class="chips" style="margin-top:4px"><span class="tag ${m.role === "owner" || m.role === "co" ? "" : "tag-tool"}">${ROLE[m.role]}</span>${m.founder && m.role !== "owner" ? '<span class="tag tag-tool">Fondateur</span>' : ""}<span class="tag tag-tool">${esc(m.skill)}</span>
+      ${p.charterVersion ? (m.charterSigned ? '<span class="tag tag-ok">Charte signée</span>' : '<span class="tag tag-warn">Charte à signer</span>') : ""}
+      ${D.weather?.find((w) => w.code === m.code) ? `<span title="Météo de la semaine">${MOOD[D.weather.find((w) => w.code === m.code).mood]}</span>` : ""}</span></div>
+    <div class="row">
+      ${v.owner && m.role === "contributor" && p.status !== "live" ? `<button class="btn btn-sm" data-act="invite_co" data-code="${esc(m.code)}" data-confirm="Proposer à ${esc(m.pseudo)} d'être co-porteur ?">Proposer co-porteur</button>` : ""}
+      ${v.owner && m.role === "co" ? `<button class="btn btn-sm" data-act="handover" data-code="${esc(m.code)}" data-confirm="Transmettre définitivement votre rôle de porteur à ${esc(m.pseudo)} ? Vous resterez crédité comme fondateur si vous l'êtes.">Lui transmettre mon rôle</button>` : ""}
+      ${v.lead && m.role !== "owner" && m.code !== v.code ? `<button class="btn btn-sm btn-danger" data-act="remove_member" data-code="${esc(m.code)}" data-confirm="Retirer ${esc(m.pseudo)} de l'équipe ? Ses missions en cours seront libérées.">Retirer</button>` : ""}
+    </div></div>`).join("");
+  const former = D.team.filter((m) => !m.active).map((m) => `${esc(m.pseudo)}${m.credited ? " ✦" : ""}`).join(", ");
+
+  let apps = "";
+  if (v.lead && D.applications?.length) apps = `<div class="panel"><h3>Candidatures (${D.applications.length})</h3>${D.applications.map((a) => `<div class="list-item">
+      <b>${esc(a.pseudo)}</b> <span class="code">${esc(a.code)}</span> · <span class="tag">${esc(a.skill)}</span> <span class="faint">${fmtTime(a.created_at)}</span>
+      <p class="pre muted" style="margin:6px 0 8px">${esc(a.message)}</p>
+      <div class="row"><button class="btn btn-sm btn-primary" data-answer="${a.id}" data-accept="true">Accepter</button><button class="btn btn-sm" data-answer="${a.id}" data-accept="false">Refuser</button>
+      <a class="btn btn-sm" href="/showroom#${esc(a.code)}" target="_blank">Voir sa fiche</a></div></div>`).join("")}<p class="faint">Merci de répondre sous 7 jours.</p></div>`;
+
+  let apply = "";
+  if (v.onboarded && !v.member && ["recruiting", "active"].includes(p.status) && v.application !== "pending") {
+    apply = `<form class="panel" id="apply-form"><h3>Candidater</h3>
+      <label class="field"><span>Rôle</span><select name="skill">${p.roles.map((r) => `<option>${esc(r.role)}</option>`).join("")}<option>Autre</option></select></label>
+      <label class="field"><span>Votre message</span><textarea name="message" maxlength="600" rows="4" placeholder="Pourquoi moi, ce que je sais faire, mon temps disponible…"></textarea><small>Le porteur répond sous 7 jours. Pas de numéro ni d'email.</small></label>
+      <button class="btn btn-primary" type="submit">Envoyer ma candidature</button></form>`;
+  }
+
+  const ch = p.charter || {};
+  let charter = "";
+  if (v.member || v.admin) {
+    const filled = p.charterVersion > 0;
+    const meSigned = D.team.find((m) => m.code === v.code)?.charterSigned;
+    charter = `<div class="panel"><div class="row" style="justify-content:space-between"><h3>📜 Charte d'équipe</h3>${v.lead ? `<button class="btn btn-sm" data-edit-charter>${filled ? "Modifier" : "Rédiger"}</button>` : ""}</div>
+      ${editing?.kind === "charter" ? charterForm(ch) : filled ? `<div class="kv" style="margin-top:10px">
+        ${["hours:Temps donné par chacun", "channel:Canal principal", "delay:Délai de réponse attendu", "code:Règles de code", "ai:Transparence sur l'IA", "decisions:Prise de décision", "leaving:Quitter le projet"].map((x) => { const [k, l] = x.split(":"); return ch[k] ? `<div><b>${l}</b><p class="pre">${esc(ch[k])}</p></div>` : ""; }).join("")}</div>
+        ${v.member ? (meSigned ? `<p class="tag tag-ok" style="margin-top:10px">✓ Vous avez signé cette version</p>` : `<button class="btn btn-primary" data-act="sign_charter" style="margin-top:10px">✍️ Je signe la charte</button>`) : ""}`
+      : `<p class="muted">La charte se rédige au cadrage : temps de chacun, canal, délai de réponse, règles de code, transparence sur l'IA, décisions, départ.</p>`}</div>`;
+  }
+
+  const mood = v.member ? `<div class="panel"><h3>Météo de la semaine</h3><p class="muted" style="margin:4px 0 10px">En 30 secondes : comment ça va sur le projet ?</p>
+    <div class="row mood">${Object.entries(MOOD).map(([k, e]) => `<button class="btn ${D.weather?.find((w) => w.code === v.code)?.mood === k ? "btn-primary" : ""}" data-mood="${k}" aria-label="${k}">${e}</button>`).join("")}</div></div>` : "";
+
+  let interim = "";
+  if (p.interim && (v.member || v.admin)) {
+    const iv = D.interimVotes || { yes: 0, no: 0, voters: 0 };
+    interim = `<div class="panel"><h3>Intérim du co-porteur</h3>
+      <p class="muted">${{ voting: `Vote de l'équipe en cours : ${iv.yes} pour, ${iv.no} contre, sur ${iv.voters} membres (hors porteur). La majorité est nécessaire.`, admin: "La majorité de l'équipe soutient l'intérim. En attente de la validation de l'admin.", opposition: `Validé par l'admin. Délai d'opposition jusqu'au ${fmtTime(p.interimUntil)} : le porteur peut tout annuler.`, active: "Intérim actif. Le porteur reprend son rôle dès son retour sur le site." }[p.interim]}</p>
+      ${p.interim === "voting" && v.member && !v.owner ? `<div class="row"><button class="btn ${iv.mine === 1 ? "btn-primary" : ""}" data-vote="true">👍 Pour</button><button class="btn ${iv.mine === 0 ? "btn-primary" : ""}" data-vote="false">👎 Contre</button></div>` : ""}
+      ${v.co ? `<button class="btn btn-sm" data-act="interim_cancel" style="margin-top:8px">Retirer ma demande</button>` : ""}</div>`;
+  }
+
+  return `<div class="panel"><h3>L'équipe</h3>${people || '<p class="muted">Personne pour l\'instant.</p>'}
+      ${former ? `<p class="faint" style="margin-top:10px">Ont participé : ${former}</p>` : ""}
+      ${v.member && !v.owner ? `<button class="btn btn-sm" data-act="leave" data-confirm="Quitter l'équipe ? Vos missions en cours seront libérées. Vos contributions restent créditées." style="margin-top:10px">Quitter le projet</button>` : ""}</div>
+    ${apps}${apply}${interim}${charter}${mood}`;
+}
+
+function charterForm(ch) {
+  const d = {
+    hours: ch.hours || "", channel: ch.channel || "", delay: ch.delay || "48 h",
+    code: ch.code || "Une branche par mission, PR obligatoire, au moins une relecture par quelqu'un d'autre, aucun secret dans le dépôt.",
+    ai: ch.ai || "On indique quand du code est généré par l'IA, et on le relit avant de le fusionner.",
+    decisions: ch.decisions || "Par consensus ; sinon, le porteur tranche.",
+    leaving: ch.leaving || "On prévient l'équipe et on transmet ses missions en cours.",
+  };
+  return `<form id="charter-form" style="margin-top:10px">
+    <div class="grid-2">
+      <label class="field"><span>Temps donné par chacun</span><input type="text" name="hours" maxlength="80" value="${esc(d.hours)}" placeholder="ex. 3 h par semaine"></label>
+      <label class="field"><span>Canal principal</span><input type="text" name="channel" maxlength="120" value="${esc(d.channel)}" placeholder="ex. groupe Telegram du projet"></label>
+      <label class="field"><span>Délai de réponse attendu</span><input type="text" name="delay" maxlength="40" value="${esc(d.delay)}"></label>
+    </div>
+    <label class="field"><span>Règles de code</span><textarea name="code" maxlength="600" rows="2">${esc(d.code)}</textarea></label>
+    <label class="field"><span>Transparence sur l'IA</span><textarea name="ai" maxlength="400" rows="2">${esc(d.ai)}</textarea></label>
+    <label class="field"><span>Prise de décision</span><textarea name="decisions" maxlength="300" rows="2">${esc(d.decisions)}</textarea></label>
+    <label class="field"><span>Quitter le projet</span><textarea name="leaving" maxlength="300" rows="2">${esc(d.leaving)}</textarea></label>
+    <p class="faint">Enregistrer une nouvelle version demande à chaque membre de la signer à nouveau.</p>
+    <div class="row"><button class="btn btn-primary" type="submit">Enregistrer la charte</button><button class="btn" type="button" data-cancel-edit>Annuler</button></div></form>`;
+}
+
+// ── Missions ──
+function missions() {
+  const v = D.viewer, p = D.project;
+  const open = ["recruiting", "active", "paused", "testing", "launch_review", "live"].includes(p.status) && v.member;
+  const team = D.team.filter((m) => m.active);
+  const card = (m) => {
+    const mine = m.assignee === v.code;
+    return `<div class="mission">
+      <h4>${esc(m.title)}</h4>
+      <div class="meta"><span class="tag tag-tool" title="Taille">Taille ${m.size}</span>${m.due ? `<span>📅 ${fmtDay(m.due)}</span>` : ""}<span>👤 ${m.assignee ? who(m.assignee) : "libre"}</span>${m.nudged && m.status !== "done" ? '<span class="tag tag-warn">relancée</span>' : ""}</div>
+      ${m.description ? `<p class="pre muted" style="margin:0 0 6px">${esc(m.description)}</p>` : ""}
+      ${m.done_when ? `<p class="pre" style="margin:0 0 8px;font-size:13px"><b>C'est fini quand :</b> ${esc(m.done_when)}</p>` : ""}
+      <div class="row">${safe(m.issue_url) ? `<a class="btn btn-sm" href="${safe(m.issue_url)}" target="_blank" rel="noopener nofollow">Issue</a>` : ""}${safe(m.pr_url) ? `<a class="btn btn-sm" href="${safe(m.pr_url)}" target="_blank" rel="noopener nofollow">PR</a>` : ""}</div>
+      ${open ? `<div class="row" style="margin-top:8px">
+        ${!m.assignee && m.status !== "done" ? `<button class="btn btn-sm btn-primary" data-m="take" data-id="${m.id}">Je prends</button>` : ""}
+        ${(mine || v.lead) && m.status !== "done" ? `<select data-mstatus="${m.id}" aria-label="Statut" style="width:auto;padding:4px 8px;font-size:13px">${Object.entries(MSTATUS).map(([k, l]) => `<option value="${k}"${m.status === k ? " selected" : ""}>${l}</option>`).join("")}</select>` : ""}
+        ${mine && m.status !== "done" ? `<button class="btn btn-sm" data-m="release" data-id="${m.id}">Libérer</button>` : ""}
+        ${v.lead && m.status !== "done" && m.reassignable ? `<select data-massign="${m.id}" aria-label="Attribuer" style="width:auto;padding:4px 8px;font-size:13px"><option value="">Attribuer à…</option>${team.map((t) => `<option value="${esc(t.code)}">${esc(t.pseudo)}</option>`).join("")}</select>` : ""}
+        ${mine || v.lead || m.createdBy === v.code ? `<button class="btn btn-sm" data-medit="${m.id}">Modifier</button>` : ""}
+        ${v.lead ? `<button class="btn btn-sm btn-danger" data-m="delete" data-id="${m.id}" data-confirm="Supprimer cette mission ?">✕</button>` : ""}
+      </div>` : ""}
+    </div>`;
+  };
+  const form = editing?.kind === "mission" ? missionForm(editing.data) : "";
+  return `${open ? `<div class="row" style="margin-bottom:14px"><button class="btn btn-primary" data-new-mission>+ Nouvelle mission</button><span class="faint">Une mission = une issue GitHub du dépôt (collez son lien). Relance amicale automatique après 14 jours sans activité.</span></div>` : ""}
+    ${form}
+    <div class="kanban">${Object.entries(MSTATUS).map(([k, l]) => { const list = D.missions.filter((m) => m.status === k); return `<div class="col"><h3>${l} (${list.length})</h3>${list.map(card).join("") || '<p class="faint">—</p>'}</div>`; }).join("")}</div>`;
+}
+
+function missionForm(m = {}) {
+  const team = D.team.filter((t) => t.active);
+  return `<form class="panel" id="mission-form" style="margin-bottom:16px"><h3>${m.id ? "Modifier la mission" : "Nouvelle mission"}</h3>
+    <label class="field"><span>Titre *</span><input type="text" name="title" maxlength="100" value="${esc(m.title || "")}" required></label>
+    <label class="field"><span>Description</span><textarea name="description" maxlength="1500" rows="3">${esc(m.description || "")}</textarea></label>
+    <label class="field"><span>C'est fini quand…</span><textarea name="done_when" maxlength="600" rows="2">${esc(m.done_when || "")}</textarea></label>
+    <div class="grid-2">
+      <label class="field"><span>Taille</span><select name="size">${["S", "M", "L"].map((s) => `<option${(m.size || "M") === s ? " selected" : ""}>${s}</option>`).join("")}</select></label>
+      <label class="field"><span>Échéance</span><input type="date" name="due" value="${esc(m.due || "")}"></label>
+      <label class="field"><span>Issue GitHub</span><input type="url" name="issue_url" value="${esc(m.issue_url || "")}" placeholder="github.com/…/issues/12"></label>
+      ${m.id ? `<label class="field"><span>PR qui la termine</span><input type="url" name="pr_url" value="${esc(m.pr_url || "")}" placeholder="github.com/…/pull/34"></label>`
+        : `<label class="field"><span>Responsable</span><select name="assignee"><option value="">Personne pour l'instant</option>${team.filter((t) => D.viewer.lead || t.code === D.viewer.code).map((t) => `<option value="${esc(t.code)}"${m.assignee === t.code ? " selected" : ""}>${esc(t.pseudo)}</option>`).join("")}</select></label>`}
+    </div>
+    <div class="row"><button class="btn btn-primary" type="submit">${m.id ? "Enregistrer" : "Créer la mission"}</button><button class="btn" type="button" data-cancel-edit>Annuler</button></div></form>`;
+}
+
+// ── Calendrier ──
+function calendrier() {
+  const v = D.viewer;
+  const evs = D.events;
+  const ms = evs.filter((e) => e.kind === "milestone");
+  let tl = "";
+  if (ms.length) {
+    const days = ms.map((e) => Date.parse(`${e.day}T00:00:00Z`));
+    const t0 = Date.parse(`${today()}T00:00:00Z`);
+    const min = Math.min(...days, t0), max = Math.max(...days, t0);
+    const pos = (t) => max === min ? 50 : 4 + ((t - min) / (max - min)) * 92;
+    tl = `<div class="panel"><h3>Frise des jalons</h3><div class="timeline">
+      <div class="line"></div><div class="progress" style="width:${pos(t0)}%"></div>
+      ${ms.map((e, i) => `<span class="dot ${e.done ? "done" : ""}" style="left:${pos(Date.parse(`${e.day}T00:00:00Z`))}%" title="${esc(e.title)} · ${fmtDay(e.day)}"></span><span class="lbl ${i % 2 ? "low" : ""}" style="left:${pos(Date.parse(`${e.day}T00:00:00Z`))}%">${e.done ? "✓ " : ""}${esc(e.title)}</span>`).join("")}
+      <span class="today" style="left:${pos(t0)}%" title="Aujourd'hui"></span>
+    </div></div>`;
+  }
+  const list = evs.map((e) => `<div class="list-item row" style="justify-content:space-between">
+      <span>${KIND[e.kind]} · <b>${esc(e.title)}</b> <span class="muted">${fmtDay(e.day)}${e.end_day ? ` → ${fmtDay(e.end_day)}` : ""}${e.time ? ` à ${esc(e.time)}` : ""}</span>${e.done ? ' <span class="tag tag-ok">fait</span>' : ""}</span>
+      <span class="row">${v.member ? `<button class="btn btn-sm" data-ics="${e.id}">📅 .ics</button>` : ""}${v.lead && e.kind === "milestone" ? `<button class="btn btn-sm" data-ev="toggle" data-id="${e.id}">${e.done ? "Rouvrir" : "✓ Atteint"}</button>` : ""}${v.lead ? `<button class="btn btn-sm btn-danger" data-ev="delete" data-id="${e.id}" aria-label="Supprimer">✕</button>` : ""}</span></div>`).join("");
+  const add = v.lead ? `<form class="panel" id="event-form"><h3>Ajouter au calendrier</h3>
+      <div class="chips" style="margin-bottom:10px">${["Cadrage", "Version testable (MVP)", "Recette", "Mise en ligne"].map((s) => `<button class="chip" type="button" data-suggest="${s}">🏁 ${s}</button>`).join("")}</div>
+      <div class="grid-2">
+        <label class="field"><span>Type</span><select name="kind">${Object.entries(KIND).map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select></label>
+        <label class="field"><span>Titre</span><input type="text" name="title" maxlength="100" required></label>
+        <label class="field"><span>Date</span><input type="date" name="day" required value="${today()}"></label>
+        <label class="field" data-only="cycle" hidden><span>Fin du cycle</span><input type="date" name="end_day"></label>
+        <label class="field" data-only="meeting" hidden><span>Heure</span><input type="time" name="time" value="18:00"></label>
+      </div><button class="btn btn-primary" type="submit">Ajouter</button></form>` : "";
+  return `${tl}<div class="panel"><div class="row" style="justify-content:space-between"><h3>${v.member ? "Jalons, cycles et réunions" : "Jalons"}</h3>${v.member && evs.length ? `<button class="btn btn-sm" data-ics="all">📅 Tout exporter (.ics)</button>` : ""}</div>
+    ${list || '<p class="muted">Rien de planifié pour l\'instant.</p>'}</div>${add}`;
+}
+
+// ── Réunions ──
+function reunions() {
+  const v = D.viewer;
+  if (editing?.kind === "meeting") return meetingForm(editing.data);
+  const list = D.meetings.map((m) => `<div class="panel">
+      <div class="row" style="justify-content:space-between"><h3>Réunion du ${fmtDay(m.day)}</h3>
+        <span class="row">${m.createdBy === v.code || v.lead ? `<button class="btn btn-sm" data-mtedit="${m.id}">Modifier</button><button class="btn btn-sm btn-danger" data-mt="delete" data-id="${m.id}" data-confirm="Supprimer cette fiche de réunion ?">✕</button>` : ""}</span></div>
+      ${m.participants.length ? `<p class="muted" style="margin:6px 0">${m.participants.map((x) => `${who(x.code)} ${x.weather ? MOOD[x.weather] : ""}`).join(" · ")}</p>` : ""}
+      ${m.agenda ? `<b class="faint">Ordre du jour</b><p class="pre">${esc(m.agenda)}</p>` : ""}
+      ${m.decisions ? `<b class="faint">Décisions</b><p class="pre">${esc(m.decisions)}</p>` : ""}
+      ${m.actions.length ? `<b class="faint">Actions</b>${m.actions.map((a, i) => `<div class="list-item row" style="justify-content:space-between"><span>${esc(a.what)} · ${a.who ? who(a.who) : "—"}${a.due ? ` · avant le ${fmtDay(a.due)}` : ""}</span>
+        ${a.mission_id ? '<span class="tag tag-ok">mission créée</span>' : v.member ? `<button class="btn btn-sm" data-tomission="${m.id}" data-i="${i}">→ Créer la mission</button>` : ""}</div>`).join("")}` : ""}
+    </div>`).join("");
+  return `${v.member ? `<div class="row" style="margin-bottom:14px"><button class="btn btn-primary" data-new-meeting>+ Nouvelle fiche de réunion</button></div>` : ""}
+    ${list || '<div class="panel"><p class="muted" style="margin:0">Aucune réunion pour l\'instant. Commencez par la réunion de lancement : chacun se présente et on fixe la charte d\'équipe.</p></div>'}`;
+}
+
+function meetingForm(m = {}) {
+  const team = D.team.filter((t) => t.active);
+  const part = new Map((m.participants || team.map((t) => ({ code: t.code, weather: null }))).map((x) => [x.code, x.weather]));
+  const actions = m.actions?.length ? m.actions : [{ what: "", who: "", due: "" }];
+  return `<form class="panel" id="meeting-form" data-id="${m.id || ""}"><h3>${m.id ? "Modifier la fiche" : "Nouvelle fiche de réunion"}</h3>
+    <label class="field" style="max-width:220px"><span>Date</span><input type="date" name="day" value="${esc(m.day || today())}" required></label>
+    <fieldset><legend>Participants et météo de chacun</legend>
+      ${team.map((t) => `<div class="row" style="margin-bottom:6px"><label class="check" style="margin:0;min-width:160px"><input type="checkbox" data-part="${esc(t.code)}" ${part.has(t.code) ? "checked" : ""}> <span>${esc(t.pseudo)}</span></label>
+        <select data-weather="${esc(t.code)}" style="width:auto">${[["", "météo…"], ...Object.entries(MOOD)].map(([k, e]) => `<option value="${k}"${(part.get(t.code) || "") === k ? " selected" : ""}>${e}</option>`).join("")}</select></div>`).join("")}
+    </fieldset>
+    <label class="field"><span>Ordre du jour</span><textarea name="agenda" maxlength="2000" rows="3">${esc(m.agenda || "")}</textarea></label>
+    <label class="field"><span>Décisions prises</span><textarea name="decisions" maxlength="2000" rows="3" placeholder="Une décision par ligne">${esc(m.decisions || "")}</textarea></label>
+    <label class="check"><input type="checkbox" name="logDecisions" checked> <span>Reporter les décisions dans le journal des décisions</span></label>
+    <fieldset><legend>Actions : quoi, qui, pour quand</legend><div id="actions">${actions.map(actionRow).join("")}</div>
+      <button class="btn btn-sm" type="button" data-add-action>+ Ajouter une action</button></fieldset>
+    <div class="row"><button class="btn btn-primary" type="submit">Enregistrer</button><button class="btn" type="button" data-cancel-edit>Annuler</button></div></form>`;
+}
+function actionRow(a = {}) {
+  const team = D.team.filter((t) => t.active);
+  return `<div class="act-row" data-mission-id="${a.mission_id || ""}"><input type="text" maxlength="160" placeholder="Quoi" value="${esc(a.what || "")}" data-what>
+    <select data-who><option value="">Qui</option>${team.map((t) => `<option value="${esc(t.code)}"${a.who === t.code ? " selected" : ""}>${esc(t.pseudo)}</option>`).join("")}</select>
+    <input type="date" value="${esc(a.due || "")}" data-due aria-label="Pour quand"><button class="btn btn-sm" type="button" data-del-action aria-label="Retirer">✕</button></div>`;
+}
+
+// ── Décisions ──
+function decisions() {
+  const v = D.viewer;
+  const rows = D.decisions.map((d) => `<div class="list-item row" style="justify-content:space-between;align-items:flex-start">
+    <span><span class="faint">${fmtDay(d.day)}</span> · <b>${esc(d.decision)}</b>${d.reason ? `<br><span class="muted">Pourquoi : ${esc(d.reason)}</span>` : ""}${d.meeting_id ? ' <span class="tag tag-tool">réunion</span>' : ""}</span>
+    ${v.lead ? `<button class="btn btn-sm btn-danger" data-dec="delete" data-id="${d.id}" data-confirm="Retirer cette décision du journal ?" aria-label="Retirer">✕</button>` : ""}</div>`).join("");
+  return `<div class="panel"><h3>Journal des décisions</h3>${rows || '<p class="muted">Aucune décision consignée.</p>'}</div>
+    ${v.member ? `<form class="panel" id="decision-form"><h3>Consigner une décision</h3><div class="grid-2">
+      <label class="field"><span>Date</span><input type="date" name="day" value="${today()}" required></label>
+      <label class="field"><span>Décision</span><input type="text" name="decision" maxlength="300" required></label></div>
+      <label class="field"><span>Raison</span><input type="text" name="reason" maxlength="500"></label>
+      <button class="btn btn-primary" type="submit">Ajouter</button></form>` : ""}`;
+}
+
+// ── Journal public ──
+function journal() {
+  return `<div class="panel"><h3>Journal public du projet</h3><p class="faint" style="margin-top:0">Chaque changement de rôle et d'état est inscrit ici.</p>
+    ${D.journal.map((j) => `<div class="list-item"><span class="faint">${new Date(j.created_at).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}</span><br>${esc(j.text)}</div>`).join("") || '<p class="muted">Vide.</p>'}</div>`;
+}
+
+// ── Mise en ligne et rétrospective ──
+function lancement() {
+  const p = D.project, v = D.viewer;
+  if (p.createdHere) {
+    const r = p.retro || {};
+    const credits = D.team.filter((m) => m.credited).map((m) => `<span class="tag">${esc(m.pseudo)}</span>`).join("");
+    const NEXT = { maintenance: "Maintenance", v2: "Nouvelle version", archive: "Archivage" };
+    return `<div class="panel"><h3>✦ Crédits « Créé ici »</h3><div class="chips" style="margin-top:8px">${credits || "—"}</div>
+      <p class="faint">Crédits figés à la mise en ligne : membres présents avec au moins une mission terminée, et le porteur.</p></div>
+      ${v.lead && editing?.kind === "retro" ? `<form class="panel" id="retro-form"><h3>Rétrospective</h3>
+        <label class="field"><span>Qu'est-ce qui a marché ?</span><textarea name="worked" maxlength="1000" rows="3">${esc(r.worked || "")}</textarea></label>
+        <label class="field"><span>Qu'est-ce qu'on change ?</span><textarea name="change" maxlength="1000" rows="3">${esc(r.change || "")}</textarea></label>
+        <label class="field"><span>Qu'est-ce qu'on a appris ?</span><textarea name="learned" maxlength="1000" rows="3">${esc(r.learned || "")}</textarea></label>
+        <div class="grid-2"><label class="field"><span>La suite</span><select name="next">${Object.entries(NEXT).map(([k, l]) => `<option value="${k}"${r.next === k ? " selected" : ""}>${l}</option>`).join("")}</select></label>
+        <label class="field"><span>Qui s'occupe de la maintenance ? (pseudo)</span><input type="text" name="maintainer" maxlength="60" value="${esc(r.maintainer || "")}"></label></div>
+        <div class="row"><button class="btn btn-primary" type="submit">Enregistrer</button><button class="btn" type="button" data-cancel-edit>Annuler</button></div></form>`
+      : `<div class="panel"><div class="row" style="justify-content:space-between"><h3>Rétrospective</h3>${v.lead && p.status === "live" ? `<button class="btn btn-sm" data-edit-retro>${r.worked ? "Modifier" : "Rédiger"}</button>` : ""}</div>
+        ${r.worked || r.change || r.learned ? `<div class="kv" style="margin-top:10px">${r.worked ? `<div><b>Ce qui a marché</b><p class="pre">${esc(r.worked)}</p></div>` : ""}${r.change ? `<div><b>Ce qu'on change</b><p class="pre">${esc(r.change)}</p></div>` : ""}${r.learned ? `<div><b>Ce qu'on a appris</b><p class="pre">${esc(r.learned)}</p></div>` : ""}<div><b>La suite</b>${NEXT[r.next] || "—"}${r.maintainer ? ` · ${esc(r.maintainer)}` : ""}</div></div>` : '<p class="muted">Pas encore rédigée.</p>'}</div>`}`;
+  }
+  const list = p.checklist || {};
+  const can = v.lead && p.status === "testing";
+  return `<div class="panel"><h3>Checklist de mise en ligne</h3>
+    ${Object.entries(CHECKLIST).map(([k, l]) => `<label class="check"><input type="checkbox" data-check="${k}" ${list[k] ? "checked" : ""} ${can ? "" : "disabled"}> <span>${l}</span></label>`).join("")}
+    ${v.owner && p.status === "testing" ? `<button class="btn btn-primary" data-act="request_launch" style="margin-top:12px">🚀 Demander la mise en ligne</button><p class="faint">Il faut toute la checklist cochée, le lien du dépôt et le lien de démo. L'admin vérifie, puis le projet reçoit le label « Créé ici ».</p>` : ""}
+    ${p.status === "launch_review" ? '<p class="muted">Vérification par l\'admin en cours.</p>' : ""}</div>`;
+}
+
+// ── Continuité ──
+function continuite() {
+  const p = D.project, v = D.viewer, c = D.continuity || {};
+  const stage = p.reminderStage || 0;
+  return `<div class="panel"><h3>Continuité et protection du porteur</h3>${RULES}
+    <p>Dernière activité du porteur : il y a <b>${c.ownerInactiveDays ?? "?"} jour(s)</b> · relances envoyées : <b>${stage}/3</b>.</p></div>
+    ${v.owner ? `<div class="panel"><h3>🔑 Mes codes de récupération</h3>
+      <p class="muted">Il vous reste <b>${c.codesLeft}</b> code(s) inutilisé(s). En cas de besoin : page publique <a href="/indispo">/indispo</a> (sans connexion) pour geler le projet, ou y <b>reprendre votre rôle</b> depuis un autre compte GitHub si vous perdez l'accès à celui-ci.</p>
+      <button class="btn" data-act="regen_codes" data-confirm="Générer 8 nouveaux codes ? Les anciens ne fonctionneront plus.">Générer de nouveaux codes</button></div>` : ""}
+    ${v.co ? `<div class="panel"><h3>Demander l'intérim</h3>
+      <p class="muted">Possible seulement après les 3 relances, à J+35 sans activité du porteur, et si le projet n'est pas gelé. Ensuite : vote de l'équipe, validation de l'admin et 7 jours d'opposition.</p>
+      <button class="btn ${!p.interim && !p.frozen && stage >= 3 && (c.ownerInactiveDays || 0) >= 35 ? "btn-primary" : ""}" data-act="interim_request" ${p.interim || p.frozen || stage < 3 || (c.ownerInactiveDays || 0) < 35 ? "disabled" : ""} data-confirm="Demander l'intérim ? L'équipe va voter.">Demander l'intérim</button></div>` : ""}`;
+}
+
+// ───────── Événements ─────────
+async function act(action, extra = {}) {
+  const res = await api(`/api/atelier/${id}/action`, { method: "POST", body: { action, ...extra } });
+  if (res.deleted) { location.href = "/atelier"; return res; }
+  if (res.recoveryCodes) { showCodes(res.recoveryCodes, id, false); return res; }
+  await load();
+  return res;
+}
+const post = (kind, body) => api(`/api/atelier/${id}/${kind}`, { method: "POST", body });
+
+app.addEventListener("click", async (e) => {
+  const t = e.target;
+  const tabBtn = t.closest("[data-tab]");
+  if (tabBtn) { tab = tabBtn.dataset.tab; editing = null; history.replaceState(null, "", `#${tab}`); render(); return; }
+  const go = t.closest("[data-go]");
+  if (go) { tab = go.dataset.go; history.replaceState(null, "", `#${tab}`); render(); $("#apply-form")?.scrollIntoView({ behavior: "smooth" }); return; }
+  const el = t.closest("[data-confirm]");
+  if (el && !confirm(el.dataset.confirm)) return;
+  try {
+    const a = t.closest("[data-act]");
+    if (a) { await act(a.dataset.act, a.dataset.code ? { code: a.dataset.code, confirm: true } : { confirm: true }); toast("C'est fait"); return; }
+    const co = t.closest("[data-co]");
+    if (co) {
+      if (co.dataset.co === "accept" && !$("#co-rules")?.checked) return toast("Cochez les règles pour accepter");
+      await act(co.dataset.co === "accept" ? "accept_co" : "decline_co", { acceptRules: true }); return;
+    }
+    const ad = t.closest("[data-admin]");
+    if (ad) {
+      const note = ad.hasAttribute("data-note") ? prompt("Message pour l'équipe (ce qu'il faut revoir) :") : "";
+      if (note === null) return;
+      await api("/api/admin/atelier", { method: "POST", body: { project: id, action: ad.dataset.admin, note } });
+      toast("C'est fait"); await load(); return;
+    }
+    if (t.closest("[data-edit-fiche]")) { editing = { kind: "fiche" }; render(); window.scrollTo({ top: $("#panel").offsetTop - 120, behavior: "smooth" }); return; }
+    if (t.closest("[data-edit-charter]")) { editing = { kind: "charter" }; render(); return; }
+    if (t.closest("[data-edit-retro]")) { editing = { kind: "retro" }; render(); return; }
+    if (t.closest("[data-cancel-edit]")) { editing = null; render(); return; }
+    const ans = t.closest("[data-answer]");
+    if (ans) { await act("answer", { id: Number(ans.dataset.answer), accept: ans.dataset.accept === "true" }); return; }
+    const mood = t.closest("[data-mood]");
+    if (mood) { await act("weather", { mood: mood.dataset.mood }); toast("Merci 🙏"); return; }
+    const vote = t.closest("[data-vote]");
+    if (vote) { await act("interim_vote", { yes: vote.dataset.vote === "true" }); toast("Vote enregistré"); return; }
+    // Missions
+    if (t.closest("[data-new-mission]")) { editing = { kind: "mission", data: {} }; render(); return; }
+    const me_ = t.closest("[data-medit]");
+    if (me_) { editing = { kind: "mission", data: D.missions.find((m) => m.id === Number(me_.dataset.medit)) }; render(); window.scrollTo({ top: $("#mission-form").offsetTop - 120, behavior: "smooth" }); return; }
+    const mb = t.closest("[data-m]");
+    if (mb) { await post("mission", { op: mb.dataset.m, id: Number(mb.dataset.id) }); await load(); return; }
+    // Calendrier
+    const ev = t.closest("[data-ev]");
+    if (ev) { await post("event", { op: ev.dataset.ev, id: Number(ev.dataset.id) }); await load(); return; }
+    const sg = t.closest("[data-suggest]");
+    if (sg) { const f = $("#event-form"); f.kind.value = "milestone"; f.title.value = sg.dataset.suggest; f.kind.dispatchEvent(new Event("change", { bubbles: true })); f.day.focus(); return; }
+    const ics = t.closest("[data-ics]");
+    if (ics) {
+      const list = ics.dataset.ics === "all" ? D.events : D.events.filter((x) => x.id === Number(ics.dataset.ics));
+      download(`${D.project.name.replace(/[^\w-]+/g, "-")}.ics`, icsFor(list), "text/calendar"); return;
+    }
+    // Réunions
+    if (t.closest("[data-new-meeting]")) { editing = { kind: "meeting", data: {} }; render(); return; }
+    const mte = t.closest("[data-mtedit]");
+    if (mte) { editing = { kind: "meeting", data: D.meetings.find((m) => m.id === Number(mte.dataset.mtedit)) }; render(); return; }
+    const mt = t.closest("[data-mt]");
+    if (mt) { await post("meeting", { op: "delete", id: Number(mt.dataset.id) }); await load(); return; }
+    if (t.closest("[data-add-action]")) { $("#actions").insertAdjacentHTML("beforeend", actionRow()); return; }
+    if (t.closest("[data-del-action]")) { t.closest(".act-row").remove(); return; }
+    const tm = t.closest("[data-tomission]");
+    if (tm) {
+      const m = D.meetings.find((x) => x.id === Number(tm.dataset.tomission));
+      const a = m.actions[Number(tm.dataset.i)];
+      await post("mission", { op: "create", title: a.what, due: a.due, assignee: a.who || "", meeting_id: m.id, action_index: Number(tm.dataset.i), description: `Action décidée en réunion le ${fmtDay(m.day)}.` });
+      toast("Mission créée"); await load(); return;
+    }
+    const dec = t.closest("[data-dec]");
+    if (dec) { await post("decision", { op: "delete", id: Number(dec.dataset.id) }); await load(); return; }
+  } catch (err) { toast(err.message); }
+});
+
+app.addEventListener("change", async (e) => {
+  const t = e.target;
+  try {
+    if (t.dataset.mstatus) {
+      const m = D.missions.find((x) => x.id === Number(t.dataset.mstatus));
+      await post("mission", { op: "update", ...m, status: t.value }); toast("Statut mis à jour"); await load(); return;
+    }
+    if (t.dataset.massign && t.value) { await post("mission", { op: "assign", id: Number(t.dataset.massign), assignee: t.value }); toast("Mission attribuée"); await load(); return; }
+    if (t.dataset.check) {
+      const list = Object.fromEntries([...document.querySelectorAll("[data-check]")].map((c) => [c.dataset.check, c.checked]));
+      await act("checklist", { checklist: list }); return;
+    }
+    if (t.name === "kind" && t.form?.id === "event-form") {
+      t.form.querySelectorAll("[data-only]").forEach((x) => { x.hidden = x.dataset.only !== t.value; });
+    }
+  } catch (err) { toast(err.message); await load(); }
+});
+
+app.addEventListener("submit", async (e) => {
+  const f = e.target;
+  if (f.id === "fiche-form") return; // géré par bindFicheForm
+  e.preventDefault();
+  try {
+    if (f.id === "apply-form") { await act("apply", { skill: f.skill.value, message: f.message.value }); toast("Candidature envoyée 🙌"); }
+    if (f.id === "charter-form") { await act("charter", { charter: Object.fromEntries(new FormData(f)) }); editing = null; toast("Charte enregistrée"); await load(); }
+    if (f.id === "retro-form") { await act("retro", { retro: Object.fromEntries(new FormData(f)) }); editing = null; await load(); }
+    if (f.id === "mission-form") {
+      const body = Object.fromEntries(new FormData(f));
+      if (editing.data?.id) await post("mission", { ...editing.data, ...body, op: "update", id: editing.data.id });
+      else await post("mission", { ...body, op: "create" });
+      editing = null; toast("Mission enregistrée"); await load();
+    }
+    if (f.id === "event-form") {
+      const body = Object.fromEntries(new FormData(f));
+      await post("event", { op: "create", ...body }); toast("Ajouté au calendrier"); await load();
+    }
+    if (f.id === "meeting-form") {
+      const participants = [...f.querySelectorAll("[data-part]")].filter((c) => c.checked).map((c) => ({ code: c.dataset.part, weather: f.querySelector(`[data-weather="${CSS.escape(c.dataset.part)}"]`).value || null }));
+      const actions = [...f.querySelectorAll(".act-row")].map((r) => ({ what: r.querySelector("[data-what]").value, who: r.querySelector("[data-who]").value, due: r.querySelector("[data-due]").value, mission_id: Number(r.dataset.missionId) || null }));
+      await post("meeting", { id: Number(f.dataset.id) || null, day: f.day.value, participants, agenda: f.agenda.value, decisions: f.decisions.value, actions, logDecisions: f.logDecisions.checked });
+      editing = null; toast("Fiche de réunion enregistrée"); await load();
+    }
+    if (f.id === "decision-form") { await post("decision", Object.fromEntries(new FormData(f))); toast("Décision consignée"); await load(); }
+  } catch (err) { toast(err.message); }
+});
+
+// Liens vers un onglet (#missions, #equipe…) depuis la même page, par exemple une notification.
+addEventListener("hashchange", () => {
+  const t = location.hash.slice(1);
+  if (D && t && t !== tab) { tab = t; editing = null; render(); }
+});
+
+// ───────── Démarrage ─────────
+({ user: me } = await loadMe());
+if (isNew) {
+  document.title = "Proposer un projet · Créer ici";
+  if (!me) app.innerHTML = `<p class="center">Connectez-vous pour proposer un projet.<br><br><a class="btn btn-dark" href="${loginUrl("/projet?new")}">${GH_ICON} Se connecter avec GitHub</a></p>`;
+  else if (!me.pseudo || me.needsOnboarding) app.innerHTML = `<p class="center">Terminez votre inscription pour proposer un projet.<br><br><a class="btn btn-primary" href="/moi">Terminer mon inscription</a></p>`;
+  else { app.innerHTML = `<a class="faint" href="/atelier" style="text-decoration:none">← Créer ici</a><div style="margin-top:14px">${ficheForm({}, true)}</div>`; bindFicheForm(true); }
+} else if (!id) {
+  location.replace("/atelier");
+} else {
+  await load();
+}
+</script>
+</body>
+</html>

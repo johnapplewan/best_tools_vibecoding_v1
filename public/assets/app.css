@@ -37,6 +37,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 Inter, system-ui, -apple-system, Segoe UI, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 a { color: inherit; }
 .serif { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; }
@@ -59,6 +60,10 @@ nav.top .wrap { display: flex; align-items: center; gap: 12px; height: 60px; }
 .nav-links a { text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 10px; border-radius: 8px; white-space: nowrap; }
 .nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--text); background: var(--border); }
 .spacer { flex: 1; }
+.badge { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--accent-2); color: #fff; font-size: 11px; font-weight: 700; vertical-align: 1px; }
+.tag-warn { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+.tag-danger { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
+.tag-here { color: #fff; background: linear-gradient(90deg, var(--accent), var(--accent-2)); font-weight: 600; }
 .icon-btn { width: 36px; height: 36px; flex: none; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--card); color: var(--text); display: grid; place-items: center; cursor: pointer; font-size: 16px; }
 .me-chip { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 3px 12px 3px 3px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--card); font-size: 14px; font-weight: 600; white-space: nowrap; }
 @media (max-width: 560px) { .me-chip span.label, .btn .label-long, .logo .label { display: none; } .me-chip { padding: 3px; } }
@@ -101,7 +106,7 @@ h3 { margin: 0; letter-spacing: -.02em; }
 label.field { display: block; margin-bottom: 16px; }
 label.field > span { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
 label.field small { display: block; color: var(--faint); font-size: 12.5px; margin-top: 5px; }
-input[type=text], input[type=url], input[type=search], textarea, select {
+input[type=text], input[type=url], input[type=search], input[type=date], input[type=time], input[type=number], textarea, select {
   width: 100%; border: 1px solid var(--border-strong); background: var(--bg-2); color: var(--text); font: inherit; font-size: 15px; border-radius: 12px; padding: 10px 12px; outline: none; transition: border-color .15s, box-shadow .15s;
 }
 input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
