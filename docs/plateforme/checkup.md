@@ -20,3 +20,15 @@
 - La suite se fait hors plateforme pour l'instant : appel de cadrage, saisie du formulaire, analyse avec Claude, relecture, puis envoi du PDF.
 
 Mention affichée partout : pré-diagnostic assisté par IA (et relu par un humain pour le complet), pas une certification ni un audit officiel.
+
+## Notifications de l'admin (`/admin` → « Notifications et agenda »)
+- **Telegram (instantané)** :
+  1. Créez un bot avec @BotFather.
+  2. Ajoutez son jeton comme secret `TELEGRAM_BOT_TOKEN` dans Cloudflare.
+  3. Reliez votre compte en un clic depuis `/admin` (code à usage unique).
+
+  Chaque demande de rappel envoie un message avec le pseudo, l'objectif, le projet et les disponibilités, plus un bouton « Contacter » et un bouton vers `/admin`. Une notification ratée ne bloque jamais la demande du membre.
+- **Agenda (abonnement privé)** : une adresse secrète `/cal/<jeton>.ics`, à ajouter une seule fois dans l'Agenda de l'iPhone ou Google Agenda.
+  - Chaque demande ouverte y apparaît sur le premier créneau proposé (30 minutes, alerte 10 minutes avant), avec les autres disponibilités et le lien de contact dans la note.
+  - Une demande passée en « Terminée » ou « Annulée » disparaît de l'agenda.
+  - « Nouvelle adresse » invalide l'ancienne.

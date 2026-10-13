@@ -5,6 +5,8 @@ import { ensureSchema } from "../lib/schema.js";
 import { requireUser, isAdmin } from "../lib/session.js";
 import { cleanText, cleanMultiline, cleanHttps } from "../lib/validate.js";
 import { analyzeExpress } from "../checkup/analyze.js";
+import { notifyAdmin, getSetting, setSetting, telegram } from "../lib/notify.js";
+import { randomHex } from "../lib/http.js";
 
 const MAX_ATTEMPTS = 3;
 export const GOALS = {
@@ -92,6 +94,14 @@ export async function requestCallback(request, env) {
         .bind(a.id, `Demande de rappel Check-up complet de ${user.pseudo} (${user.code}) : ${GOALS[goal]}.`, now).run();
     }
   }
+  // Notification instantanée sur le téléphone de l'admin (bot Telegram), si elle est configurée.
+  const contactUrl = contacts[network];
+  await notifyAdmin(env,
+    `📞 Nouvelle demande de rappel — Check-up complet\n\n` +
+    `Membre : ${user.pseudo} (${user.code})\nObjectif : ${GOALS[goal]}\nProjet : ${project}\n` +
+    (note ? `Besoin : ${note}\n` : "") +
+    `Disponibilités : ${days.join(", ")} · ${slots.map((x) => SLOTS[x]).join(", ")}\nContact : ${network}`,
+    [{ text: `Contacter sur ${network}`, url: contactUrl }, { text: "Ouvrir /admin", url: `${new URL(request.url).origin}/admin#checkups` }]);
   return json({ ok: true });
 }
 
@@ -173,4 +183,100 @@ export async function adminUpdate(request, env, id) {
     return json({ ok: true });
   }
   throw bad("status", "Action inconnue");
+}
+
+// ───────── Intégrations de l'admin : bot Telegram et abonnement d'agenda ─────────
+export async function adminIntegrations(request, env) {
+  await requireAdmin(request, env);
+  const origin = new URL(request.url).origin;
+  if (request.method === "POST") {
+    const body = await readJson(request);
+    if (body.action === "telegram_code") {
+      if (!env.TELEGRAM_BOT_TOKEN) throw bad("telegram", "Ajoutez d'abord le secret TELEGRAM_BOT_TOKEN dans Cloudflare");
+      await setSetting(env, "telegram_link_code", randomHex(6));
+    } else if (body.action === "telegram_verify") {
+      const code = await getSetting(env, "telegram_link_code");
+      if (!code) throw bad("telegram", "Générez d'abord un code de liaison");
+      const updates = await telegram(env, "getUpdates", { limit: 50, allowed_updates: ["message"] });
+      const msg = updates.map((u) => u.message).filter(Boolean).reverse()
+        .find((m) => m.chat?.type === "private" && String(m.text || "").trim() === `/start ${code}`);
+      if (!msg) throw bad("telegram", "Message introuvable : ouvrez le lien Telegram, appuyez sur « Démarrer », puis réessayez");
+      await setSetting(env, "telegram_chat_id", String(msg.chat.id));
+      await setSetting(env, "telegram_link_code", null);
+      await notifyAdmin(env, "✅ Vibe Tools est relié : vous recevrez ici les demandes de rappel du Check-up.");
+    } else if (body.action === "telegram_test") {
+      const ok = await notifyAdmin(env, "🔔 Test : les notifications Vibe Tools fonctionnent.");
+      if (!ok) throw bad("telegram", "Envoi impossible : vérifiez le bot et la liaison");
+    } else if (body.action === "telegram_off") {
+      await setSetting(env, "telegram_chat_id", null);
+    } else if (body.action === "calendar_new") {
+      await setSetting(env, "calendar_token", randomHex(24)); // l'ancien lien cesse de fonctionner
+    } else if (body.action === "calendar_off") {
+      await setSetting(env, "calendar_token", null);
+    } else throw bad("action", "Action inconnue");
+  }
+  let bot = null;
+  if (env.TELEGRAM_BOT_TOKEN) {
+    try { bot = (await telegram(env, "getMe")).username; } catch { bot = null; }
+  }
+  const code = await getSetting(env, "telegram_link_code");
+  const cal = await getSetting(env, "calendar_token");
+  return json({
+    telegram: { tokenSet: !!env.TELEGRAM_BOT_TOKEN, bot, connected: !!(await getSetting(env, "telegram_chat_id")), linkUrl: bot && code ? `https://t.me/${bot}?start=${code}` : null },
+    calendar: { url: cal ? `${origin}/cal/${cal}.ics` : null },
+  });
+}
+
+// Flux d'agenda privé (abonnement iCalendar) : une adresse secrète, sans connexion.
+// Chaque demande de rappel ouverte apparaît sur le premier créneau proposé par le membre.
+const DAY_INDEX = { lun: 1, mar: 2, mer: 3, jeu: 4, ven: 5, sam: 6 };
+const SLOT_START = { morning: [9, 0], lunch: [12, 0], afternoon: [14, 0], evening: [18, 0] };
+const icsEscape = (s) => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+const pad = (n) => String(n).padStart(2, "0");
+// Heure locale « flottante » (sans fuseau) : l'agenda l'affiche à l'heure de l'appareil (France).
+function floating(d, h, m) { return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(h)}${pad(m)}00`; }
+function firstSlot(createdAt, days, slots) {
+  const [h, m] = SLOT_START[slots.map((x) => x).sort((a, b) => SLOT_START[a][0] - SLOT_START[b][0])[0]] || [9, 0];
+  const wanted = new Set(days.map((d) => DAY_INDEX[d]));
+  const d = new Date(createdAt + 2 * 3600e3); // heure de Paris approximative pour choisir le jour
+  for (let i = 0; i < 14; i++) {
+    const day = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + i));
+    const isToday = i === 0;
+    if (wanted.has(day.getUTCDay()) && !(isToday && d.getUTCHours() >= h)) return { day, h, m };
+  }
+  return { day: new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1)), h, m };
+}
+
+export async function calendarFeed(request, env, token) {
+  await ensureSchema(env.DB);
+  const expected = await getSetting(env, "calendar_token");
+  if (!expected || token !== expected) return new Response("Not Found", { status: 404 });
+  const origin = new URL(request.url).origin;
+  const { results } = await env.DB.prepare(
+    `SELECT c.*, u.pseudo, u.code, u.contacts FROM checkups c JOIN users u ON u.id = c.user_id
+     WHERE c.kind = 'callback' AND c.status IN ('new', 'contacted') ORDER BY c.created_at DESC LIMIT 200`
+  ).all();
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Vibe Tools//Check-up//FR", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "X-WR-CALNAME:Vibe Tools · Rappels Check-up", "X-PUBLISHED-TTL:PT15M", "REFRESH-INTERVAL;VALUE=DURATION:PT15M"];
+  for (const r of results) {
+    const input = parse(r.input, {});
+    const { day, h, m } = firstSlot(r.created_at, input.days || [], input.slots || []);
+    const contact = parse(r.contacts, {})[input.network] || "";
+    const desc = [`Objectif : ${GOALS[input.goal] || ""}`, `Projet : ${input.project || ""}`, input.note ? `Besoin : ${input.note}` : "",
+      `Disponibilités : ${(input.days || []).join(", ")} · ${(input.slots || []).map((x) => SLOTS[x]).join(", ")}`,
+      `Contact (${input.network}) : ${contact}`, `Statut : ${r.status === "contacted" ? "contacté" : "nouvelle demande"}`, `${origin}/admin#checkups`].filter(Boolean).join("\n");
+    lines.push("BEGIN:VEVENT", `UID:checkup-${r.id}@vibetools`, `DTSTAMP:${stamp}`,
+      `DTSTART:${floating(day, h, m)}`, `DURATION:PT30M`,
+      `SUMMARY:${icsEscape(`📞 Rappel Check-up : ${r.pseudo} (${r.code})`)}`,
+      `DESCRIPTION:${icsEscape(desc)}`, ...(/^https:\/\//.test(contact) ? [`URL:${contact}`] : []),
+      "BEGIN:VALARM", "ACTION:DISPLAY", "TRIGGER:-PT10M", `DESCRIPTION:${icsEscape(`Rappel Check-up : ${r.pseudo}`)}`, "END:VALARM",
+      "END:VEVENT");
+  }
+  lines.push("END:VCALENDAR");
+  // Pliage des lignes à 75 octets environ (norme iCalendar).
+  const folded = lines.map((l) => l.length > 74 ? l.match(/.{1,74}/gu).join("\r\n ") : l).join("\r\n");
+  return new Response(folded + "\r\n", {
+    headers: { "content-type": "text/calendar; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" },
+  });
 }

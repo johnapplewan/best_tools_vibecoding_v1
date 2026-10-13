@@ -64,6 +64,9 @@ const ROUTES = [
   ["POST", /^\/api\/checkup\/callback$/, checkup.requestCallback, true, ["checkup", 10, 86400]],
   ["DELETE", /^\/api\/checkup\/callback$/, checkup.cancelCallback, true],
   ["GET", /^\/api\/admin\/checkups$/, checkup.adminList],
+  ["GET", /^\/api\/admin\/integrations$/, checkup.adminIntegrations],
+  ["POST", /^\/api\/admin\/integrations$/, checkup.adminIntegrations, true, ["checkup-admin", 60, 3600]],
+  ["GET", /^\/cal\/([a-f0-9]{48})\.ics$/, checkup.calendarFeed, false, ["cal", 120, 3600]],
   ["POST", /^\/api\/admin\/checkups\/(\d+)$/, checkup.adminUpdate, true, ["checkup-admin", 60, 3600]],
 
   ["GET", /^\/api\/admin\/reports$/, members.adminReports],

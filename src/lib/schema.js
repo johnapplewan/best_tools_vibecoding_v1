@@ -256,6 +256,12 @@ const SCHEMA = [
    )`,
   `CREATE INDEX IF NOT EXISTS checkups_user ON checkups (user_id, kind)`,
   `CREATE INDEX IF NOT EXISTS checkups_status ON checkups (kind, status, created_at)`,
+  // Réglages de l'admin (chat Telegram, jeton secret du flux d'agenda…).
+  `CREATE TABLE IF NOT EXISTS settings (
+     key TEXT PRIMARY KEY,
+     value TEXT NOT NULL,
+     updated_at INTEGER NOT NULL
+   )`,
 ];
 
 // Colonnes ajoutées après la création des tables (ALTER TABLE ignoré si la colonne existe déjà).

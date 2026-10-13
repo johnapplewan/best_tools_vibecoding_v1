@@ -64,6 +64,7 @@ if (!user) {
   renderPage();
   await refresh();
   loadCheckups();
+  loadIntegrations();
   setInterval(() => { if (items.some((i) => i.status === "pending" || i.status === "running")) refresh(); }, 20000);
 }
 
@@ -76,6 +77,7 @@ function renderPage() {
     </form>
     <div class="panel"><h2>Éléments analysés</h2><div class="list" id="list"></div></div>
     <div class="panel" id="checkups"><h2>🩺 Check-up</h2><div id="checkup-box"><p class="muted">Chargement…</p></div></div>
+    <div class="panel" id="integrations"><h2>🔔 Notifications et agenda</h2><div id="integ-box"><p class="muted">Chargement…</p></div></div>
     <div class="panel" id="shortcut"><h2>📱 Raccourci iOS « Veille Vibe »</h2>
       <p class="muted" style="margin-top:0">Pour envoyer un lien ou un texte depuis n'importe quelle app (YouTube, Instagram, TikTok, Safari…) via le menu Partager.</p>
       <div id="token-box"></div>
@@ -131,11 +133,11 @@ async function loadCheckups() {
   const express = data.items.filter((i) => i.kind === "express");
   const safe = (u) => /^https:\/\//.test(u || "") ? esc(u) : null;
   box.innerHTML = `<div class="section-title">Demandes de rappel (Check-up complet)</div>
-    ${callbacks.length ? callbacks.map((c) => `<div class="row" style="align-items:flex-start;flex-wrap:wrap;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+    ${callbacks.length ? callbacks.map((c) => `<div style="display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
       <div style="flex:1;min-width:240px"><b>${esc(c.member.pseudo)}</b> <span class="code">${esc(c.member.code)}</span> · ${esc(data.goals[c.input.goal] || "")}<br>
         <span class="muted">Projet : ${esc(c.input.project)}</span>${c.input.note ? `<br><span class="muted">${esc(c.input.note)}</span>` : ""}<br>
         <span class="faint">Dispo : ${c.input.days.map((d) => DAY_LABEL[d] || d).join(", ")} · ${c.input.slots.map((x) => data.slots[x] || x).join(", ")} · demandé le ${new Date(c.created_at).toLocaleDateString("fr-FR")}</span></div>
-      <div class="row" style="gap:6px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
         ${safe(c.contact) ? `<a class="btn btn-sm btn-primary" href="${safe(c.contact)}" target="_blank" rel="noopener nofollow">Contacter (${esc(c.input.network)})</a>` : `<span class="badge err">Lien de contact retiré</span>`}
         <select data-cb="${c.id}" style="width:auto;padding:4px 8px;font-size:13px">${Object.entries(CB_STATUS).map(([k, l]) => `<option value="${k}"${c.status === k ? " selected" : ""}>${l}</option>`).join("")}</select>
       </div></div>`).join("") : `<p class="muted">Aucune demande pour l'instant.</p>`}
@@ -153,6 +155,47 @@ document.addEventListener("click", async (e) => {
   b.disabled = true;
   try { await api(`/api/admin/checkups/${b.dataset.cxrun}`, { method: "POST", body: { run: true } }); toast("Analyse relancée"); } catch (err) { toast(err.message); }
   loadCheckups();
+});
+
+// ───────── Notifications Telegram et abonnement d'agenda ─────────
+async function loadIntegrations(action) {
+  const box = $("#integ-box");
+  let d;
+  try {
+    d = await api("/api/admin/integrations", action ? { method: "POST", body: { action } } : {});
+    if (action) toast("C'est fait");
+  } catch (err) { toast(err.message); if (action) return loadIntegrations(); box.textContent = err.message; return; }
+  const t = d.telegram, c = d.calendar;
+  const webcal = c.url ? c.url.replace(/^https:/, "webcal:") : null;
+  box.innerHTML = `<div class="section-title">📱 Notification instantanée (bot Telegram)</div>
+    ${!t.tokenSet ? `<ol class="steps">
+        <li>Dans Telegram, ouvrez <b>@BotFather</b>, envoyez <code>/newbot</code>, puis choisissez un nom (ex. « Vibe Tools Alertes ») et un identifiant finissant par <code>bot</code>.</li>
+        <li>BotFather vous donne un <b>jeton</b> (une longue suite de chiffres et de lettres). Ne le partagez avec personne.</li>
+        <li>Cloudflare → Worker → <b>Settings → Variables and secrets</b> → <b>Add</b> : nom <code>TELEGRAM_BOT_TOKEN</code>, type <b>Secret</b>, collez le jeton, puis enregistrez.</li>
+        <li>Revenez ici et rechargez la page.</li></ol>`
+      : t.connected ? `<p class="muted">✅ Relié${t.bot ? ` au bot @${esc(t.bot)}` : ""}. Vous recevez chaque demande de rappel sur votre téléphone.</p>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" data-integ="telegram_test">Envoyer un test</button><button class="btn btn-sm btn-danger" data-integ="telegram_off">Délier</button></div>`
+      : `<p class="muted">Jeton détecté${t.bot ? ` (bot @${esc(t.bot)})` : " mais le bot ne répond pas : vérifiez le jeton"}. Reliez maintenant votre compte Telegram :</p>
+        ${t.linkUrl ? `<ol class="steps"><li><a class="btn btn-sm btn-primary" href="${esc(t.linkUrl)}" target="_blank" rel="noopener">Ouvrir Telegram</a> puis appuyez sur <b>Démarrer</b>.</li>
+          <li><button class="btn btn-sm" data-integ="telegram_verify">J'ai appuyé sur Démarrer : vérifier</button></li></ol>`
+          : `<button class="btn btn-sm btn-primary" data-integ="telegram_code">Générer mon lien de liaison</button>`}`}
+    <div class="section-title">📅 Agenda (abonnement privé)</div>
+    ${c.url ? `<p class="muted">Ajoutez cette adresse une seule fois dans votre agenda. Chaque demande de rappel y apparaît sur le premier créneau proposé, avec une alerte 10 minutes avant. Gardez-la secrète.</p>
+        <div class="script" style="word-break:break-all">${esc(webcal)}</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px">
+          <a class="btn btn-sm btn-primary" href="${esc(webcal)}">S'abonner sur cet appareil</a>
+          <button class="btn btn-sm" id="copy-cal" type="button">Copier l'adresse</button>
+          <button class="btn btn-sm" data-integ="calendar_new" data-confirm="Créer une nouvelle adresse ? L'ancienne cessera de fonctionner.">Nouvelle adresse</button>
+          <button class="btn btn-sm btn-danger" data-integ="calendar_off" data-confirm="Désactiver le flux d'agenda ?">Désactiver</button></div>
+        <p class="faint" style="margin-top:8px">iPhone : touchez « S'abonner sur cet appareil », ou Réglages → Calendrier → Comptes → Ajouter un compte → Autre → « Ajouter un calendrier avec abonnement », puis collez l'adresse. Google Agenda : « Autres agendas » → « À partir de l'URL ». La mise à jour prend de 15 minutes à quelques heures selon l'application.</p>`
+      : `<button class="btn btn-sm btn-primary" data-integ="calendar_new">Créer mon adresse d'agenda</button>`}`;
+  $("#copy-cal")?.addEventListener("click", () => navigator.clipboard.writeText(webcal).then(() => toast("Adresse copiée")));
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-integ]"); if (!b) return;
+  if (b.dataset.confirm && !confirm(b.dataset.confirm)) return;
+  b.disabled = true;
+  loadIntegrations(b.dataset.integ);
 });
 
 async function refresh() {
