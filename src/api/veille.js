@@ -3,7 +3,7 @@
 import { json, readJson, HttpError, randomHex, sha256 } from "../lib/http.js";
 import { ensureSchema } from "../lib/schema.js";
 import { requireUser, isAdmin } from "../lib/session.js";
-import { analyze } from "../veille/analyze.js";
+import { analyze, fitScore } from "../veille/analyze.js";
 
 const MAX_ATTEMPTS = 3;
 const parse = (s, fallback = null) => {
@@ -129,12 +129,13 @@ export async function adminUpdate(request, env, id) {
   if (["green", "orange", "red"].includes(body.verdict) && result) {
     verdict = body.verdict;
     result.card.verdict = verdict;
+    fitScore(result.card); // la note reste dans la plage de la nouvelle couleur
   }
   let published = row.published;
   let publishedAt = row.published_at;
   if (typeof body.published === "boolean") {
-    if (body.published && !(row.status === "done" && ["green", "orange"].includes(verdict))) {
-      throw new HttpError(400, "invalid", { reason: "Seules les analyses terminées en vert ou orange peuvent être publiées" });
+    if (body.published && !(row.status === "done" && ["green", "orange", "red"].includes(verdict))) {
+      throw new HttpError(400, "invalid", { reason: "Seules les analyses terminées peuvent être publiées" });
     }
     published = body.published ? 1 : 0;
     publishedAt = body.published ? publishedAt || Date.now() : null;
@@ -182,6 +183,11 @@ export async function news(request, env) {
       uses: r.verdict === "green" ? card.uses : [],
       checks: card.security.checks,
       reasons: card.verdict_reasons,
+      score: typeof card.score === "number" ? card.score : null,
+      highlights: card.highlights || [],
+      risks: card.risks || [],
+      uncertainties: card.uncertainties || [],
+      improvements: card.improvements || [],
       github: github ? { repo: github.repo, stars: github.stars, license: github.license } : null,
       sources: card.sources.slice(0, 5),
     };
