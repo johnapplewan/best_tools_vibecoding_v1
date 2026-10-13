@@ -130,7 +130,7 @@ async function refresh() {
         <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
           <span class="badge ${i.status === "error" ? "err" : ""}">${STATUS[i.status]}${i.status === "error" ? ` (${i.attempts}/3)` : ""}</span>
           ${i.published ? `<span class="badge pub">Publié</span>` : ""}
-          ${i.error ? `<span class="badge err" title="${esc(i.error)}">${esc(i.error.slice(0, 60))}</span>` : ""}
+          ${i.error ? `<span class="badge err" title="${esc(i.error)}">${esc(i.error.length > 160 ? `${i.error.slice(0, 160)}…` : i.error)}</span>` : ""}
         </div>
       </div>
       <div class="acts">

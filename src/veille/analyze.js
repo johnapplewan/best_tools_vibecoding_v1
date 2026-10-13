@@ -86,7 +86,12 @@ Champs :
 N'ajoute aucune information qui n'est pas dans le dossier ou dans les données GitHub fournies.`;
 
 function client(env) {
-  return new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+  // Clé valable sur plusieurs workspaces : ANTHROPIC_WORKSPACE_ID (wrkspc_…) indique lequel utiliser.
+  const workspace = String(env.ANTHROPIC_WORKSPACE_ID || "").trim();
+  return new Anthropic({
+    apiKey: String(env.ANTHROPIC_API_KEY).trim(),
+    defaultHeaders: workspace ? { "anthropic-workspace-id": workspace } : undefined,
+  });
 }
 
 function textOf(message) {

@@ -51,7 +51,7 @@ Adresse : https://best-tools-vibecoding-v1.johnapplewan.workers.dev/outils
 
 **Créer ici** : rien à configurer. Une tâche planifiée horaire (le même déclencheur que la veille) envoie les relances du porteur et des missions, et active les intérims à la fin du délai d'opposition.
 
-**Veille** : secret `ANTHROPIC_API_KEY` (clé API Claude). Optionnel : variable `VEILLE_MODEL` pour changer de modèle (par défaut `claude-opus-5-5`). Une tâche planifiée (`triggers.crons`, toutes les 5 min) analyse la file. Coût indicatif : environ 0,25 à 0,50 $ par analyse avec Claude Opus 5.5 (recherche web comprise).
+**Veille** : secret `ANTHROPIC_API_KEY` (clé API Claude). Si la clé est valable sur plusieurs workspaces, ajoutez aussi la variable `ANTHROPIC_WORKSPACE_ID` (identifiant `wrkspc_…`, visible dans la console Claude → Settings → Workspaces). Optionnel : variable `VEILLE_MODEL` pour changer de modèle (par défaut `claude-opus-5-5`). Une tâche planifiée (`triggers.crons`, toutes les 5 min) analyse la file. Coût indicatif : environ 0,25 à 0,50 $ par analyse avec Claude Opus 5.5 (recherche web comprise).
 
 **Connexion GitHub** : OAuth App avec l'adresse de retour `https://best-tools-vibecoding-v1.johnapplewan.workers.dev/auth/callback`, et les secrets `GITHUB_CLIENT_ID` et `GITHUB_CLIENT_SECRET` (en Production). Les admins sont désignés par leur **identifiant GitHub numérique** dans `ADMIN_GITHUB_IDS` (`wrangler.jsonc`), qui ne change jamais même si le compte est renommé.
 

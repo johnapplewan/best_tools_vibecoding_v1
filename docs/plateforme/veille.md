@@ -106,6 +106,6 @@ Il est fourni avec une légende pour le post, des hashtags, et le mot-clé du CT
 
 ## Ce qu'il faudra fournir
 
-- **Une clé API Claude**, ajoutée comme secret du Worker. Elle sert à l'analyse, à la recherche web et à l'écriture (quelques centimes par analyse).
+- **Une clé API Claude**, ajoutée comme secret du Worker (`ANTHROPIC_API_KEY`). Si elle est valable sur plusieurs workspaces, ajoutez la variable `ANTHROPIC_WORKSPACE_ID` (`wrkspc_…`). Elle sert à l'analyse, à la recherche web et à l'écriture (quelques centimes par analyse).
 - *Optionnel* : une clé API YouTube (gratuite) pour la playlist « IA ».
 - *Optionnel* : un bot Telegram pour les notifications.
