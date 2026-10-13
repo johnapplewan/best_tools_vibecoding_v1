@@ -52,7 +52,7 @@ renderFooter();
 const app = $("#app");
 const LIGHT = { green: "🟢", orange: "🟠", red: "🔴" };
 const STATUS = { pending: "En attente", running: "Analyse en cours…", done: "Terminé", error: "Erreur" };
-const CHECK = { ok: "✅", warn: "⚠️", bad: "⛔", unknown: "❔" };
+const CHECK = { ok: "🟢", warn: "🟠", bad: "🔴", unknown: "🟠" };
 let items = [];
 
 const { user } = await loadMe();
@@ -136,7 +136,7 @@ async function refresh() {
       <div class="acts">
         ${i.status === "done" ? `<button class="btn btn-sm" data-open="${i.id}">Voir la fiche</button>` : ""}
         ${["pending", "error"].includes(i.status) ? `<button class="btn btn-sm" data-run="${i.id}">Analyser</button>` : ""}
-        ${i.status === "done" && i.verdict !== "red" ? `<button class="btn btn-sm ${i.published ? "" : "btn-primary"}" data-pub="${i.id}" data-v="${!i.published}">${i.published ? "Dépublier" : "Publier"}</button>` : ""}
+        ${i.status === "done" && i.verdict ? `<button class="btn btn-sm ${i.published ? "" : "btn-primary"}" data-pub="${i.id}" data-v="${!i.published}">${i.published ? "Dépublier" : "Publier"}</button>` : ""}
         <button class="btn btn-sm btn-danger" data-del="${i.id}" title="Supprimer">✕</button>
       </div></div>`).join("");
 }
@@ -168,14 +168,17 @@ function openItem(id) {
   const c = i.card, v = c.video;
   const scriptText = `ACCROCHE : ${v.hook}\n\nDÉMO :\n${v.demo.map((d, n) => `${n + 1}. ${d}`).join("\n")}\n\nVERDICT : ${v.verdict_line}\n\nCTA : ${v.cta}\n\nLÉGENDE : ${v.caption}\n${v.hashtags.join(" ")}`;
   $("#detail-body").innerHTML = `
-    <h2 style="padding-right:40px">${LIGHT[c.verdict] || ""} ${esc(c.tool.name || i.input)}</h2>
+    <h2 style="padding-right:40px">${LIGHT[c.verdict] || ""} ${esc(c.tool.name || i.input)}${typeof c.score === "number" ? ` · ${String(c.score).replace(".", ",")}/10` : ""}</h2>
     ${c.status !== "ok" ? `<div class="notice">Statut : ${esc(c.status)}${c.candidates.length ? ` · candidats : ${c.candidates.map(esc).join(", ")}` : ""}. Précisez l'outil et renvoyez-le à la veille.</div>` : ""}
     <p>${esc(c.summary)}</p>
     <p class="faint">Pour : ${esc(c.audience)} · ${esc(c.tool.pricing)} ${c.tool.pricing_note ? `(${esc(c.tool.pricing_note)})` : ""}
       ${i.github ? ` · ⭐ ${i.github.stars} · ${i.github.archived ? "archivé" : "actif"} · ${esc(i.github.license || "licence ?")}` : ""} · modèle ${esc(i.model || "")}</p>
-    <div class="section-title">Verdict</div>
-    <select id="verdict" style="max-width:240px"><option value="green">🟢 Vert</option><option value="orange">🟠 Orange</option><option value="red">🔴 Rouge</option></select>
+    <div class="section-title">Note et verdict</div>
+    <label class="field" style="max-width:300px"><span>Note sur 10 (modifiable)</span><input type="text" id="score" inputmode="decimal" value="${typeof c.score === "number" ? String(c.score).replace(".", ",") : ""}">
+      <small>≤ 5 : 🔴 · 5,1 à 7,9 : 🟠 · 8 et plus : 🟢</small></label>
     <ul>${c.verdict_reasons.map((r) => `<li class="muted">${esc(r)}</li>`).join("")}</ul>
+    ${[["🟢 Points intéressants", c.highlights], ["🔴 Points risqués", c.risks], ["🟠 Incertitudes", c.uncertainties], ["🔭 Axes d'amélioration à surveiller", c.improvements]]
+      .filter(([, l]) => l?.length).map(([t, l]) => `<div class="section-title">${t}</div><ul>${l.map((x) => `<li class="muted">${esc(x)}</li>`).join("")}</ul>`).join("")}
     <div class="section-title">Pré-audit sécurité</div>
     ${c.security.checks.map((k) => `<div class="muted" style="font-size:14px;margin:4px 0">${CHECK[k.status]} <b>${esc(k.label)}</b> — ${esc(k.detail)}</div>`).join("")}
     <p class="faint">${esc(c.security.data_policy)}</p>
@@ -191,11 +194,10 @@ function openItem(id) {
     <div class="section-title">Sources</div>
     ${c.sources.map((s) => /^https:\/\//.test(s.url) ? `<div><a href="${esc(s.url)}" target="_blank" rel="noopener nofollow">${esc(s.title || s.url)}</a></div>` : "").join("")}
     <details style="margin-top:14px"><summary>Dossier d'enquête complet</summary><div class="script" style="margin-top:8px">${esc(i.dossier || "")}</div></details>`;
-  $("#verdict").value = c.verdict;
   $("#copy-script").onclick = () => navigator.clipboard.writeText(scriptText).then(() => toast("Script copié 🎬"));
   $("#save-news").onclick = async () => {
     try {
-      await api(`/api/admin/veille/${id}`, { method: "POST", body: { verdict: $("#verdict").value, news: { title: $("#news-title").value, body: $("#news-body").value } } });
+      await api(`/api/admin/veille/${id}`, { method: "POST", body: { score: $("#score").value, news: { title: $("#news-title").value, body: $("#news-body").value } } });
       toast("Enregistré"); await refresh();
     } catch (err) { toast(err.message); }
   };

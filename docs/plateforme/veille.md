@@ -9,14 +9,13 @@ Depuis le raccourci iOS (ou le partage Android, ou la page `/admin`), vous envoy
 - un lien GitHub, npm, un site, une vidéo YouTube, Instagram ou TikTok ;
 - une phrase (« le truc pour faire des slides avec Claude vu hier »).
 
-La plateforme lance une **analyse complète** et vous rend un verdict **🟢 vert / 🟠 orange / 🔴 rouge**.
+La plateforme lance une **analyse complète** et vous rend une **note sur 10**, qui donne la couleur : **🟢 vert / 🟠 orange / 🔴 rouge**.
 
 ## Le parcours
 
 ```
 Envoi (raccourci iOS) → File d'attente → Identification → Décryptage → Audit sécurité → Verdict
-      → 🟢/🟠 : brouillon d'actu + script vidéo dans votre compte → vous validez → publication
-      → 🔴 : archivé avec la raison, visible seulement par vous
+      → brouillon d'actu + script vidéo dans votre compte → vous validez (et corrigez la note si besoin) → publication
 ```
 
 L'analyse se lance **dès l'envoi**. La **tâche quotidienne** traite en plus la playlist YouTube « IA » et relance les analyses échouées.
@@ -49,37 +48,36 @@ L'analyse se lance **dès l'envoi**. La **tâche quotidienne** traite en plus la
 
 > Il s'agit d'un **pré-audit automatique**, pas d'un audit de sécurité professionnel. La page publique le précise.
 
-## 4. Le verdict
+## 4. La note et le verdict
 
-| Feu | Signification | Exemples de raisons |
+L'analyse se conclut par une **note sur 10** (une décimale), qui condense l'utilité pour des devs, vibe-codeurs et no/low-codeurs, la maturité, la sécurité, la confidentialité, la licence, le prix et la fiabilité de l'éditeur. La note donne la couleur :
+
+| Note | Feu | Signification |
 |---|---|---|
-| 🟢 **Vert** | Recommandable | Maintenu, licence claire, pas de faille connue, accès demandés raisonnables |
-| 🟠 **Orange** | Intéressant, avec précautions | Jeune projet, peu maintenu, accès étendus, prix flou, bêta |
-| 🔴 **Rouge** | À éviter | Faille non corrigée, abandonné, suspicion d'arnaque, collecte de données abusive |
+| 8 et plus | 🟢 **Vert** | Recommandable |
+| 5,1 à 7,9 | 🟠 **Orange** | Intéressant, avec précautions |
+| 5 et moins | 🔴 **Rouge** | À éviter ou à surveiller de très près |
 
-Chaque verdict affiche **ses raisons**, pour que vous puissiez le contester ou le corriger.
+Garde-fou : un dépôt archivé ou inactif depuis plus de 12 mois ne peut pas dépasser 7,9.
 
-## 5. Ce qui est produit
+## 5. Ce qui est produit (pour toutes les couleurs)
 
-**Pour 🟢 vert :**
-- **3 usages intéressants** et concrets (« utilisez-le pour… ») ;
-- un **brouillon d'actu** ;
-- un **script vidéo** ;
-- une proposition d'ajout au catalogue.
-
-**Pour 🟠 orange :** un brouillon d'actu avec un encadré « Points d'attention », et un script vidéo.
-
-**Pour 🔴 rouge :** rien de public. Une fiche privée avec les raisons.
+- **Points intéressants**, **points risqués**, **incertitudes** et **axes d'amélioration à surveiller** ;
+- les **raisons de la note** et une **conclusion** avec la note sur 10 ;
+- le **pré-audit sécurité**, avec des pastilles 🟢 (sans souci), 🟠 (vigilance ou non vérifié) et 🔴 (problème sérieux) ;
+- les **usages** concrets et les **sources** ;
+- un **brouillon d'actu**, publiable quelle que soit la couleur après relecture ;
+- un **script vidéo**, privé.
 
 **Le script vidéo** (dans votre espace `/admin`), au format court de 30 à 60 secondes :
 1. **Accroche** (3 secondes) : le problème ou l'effet « waouh ».
 2. **Démo** en 3 temps : ce qu'on fait, comment, le résultat.
-3. **Verdict** : feu vert ou orange, et pour qui.
+3. **Verdict** : la note sur 10 et la couleur.
 4. **CTA** : « Commente **[MOT-CLÉ]** et je t'envoie le lien en DM ».
 
 Il est fourni avec une légende pour le post, des hashtags, et le mot-clé du CTA, unique par outil.
 
-**Publication :** rien n'est publié automatiquement. Vous validez chaque actu en un clic, et pouvez la modifier avant.
+**Publication :** rien n'est publié automatiquement. Vous validez chaque actu en un clic, et pouvez modifier le texte et la note avant.
 
 ## 6. Le raccourci iOS
 
@@ -97,7 +95,7 @@ Il est fourni avec une légende pour le post, des hashtags, et le mot-clé du CT
 - Modèle : `claude-opus-5-5` (modifiable par la variable `VEILLE_MODEL`), avec le repli automatique `fallbacks: "default"` en cas de refus.
 - Étape 1 « enquête » : outils serveur `web_search_20260209` (8 recherches max) et `web_fetch_20260209` (5 lectures max), effort `medium`, reprise automatique après `pause_turn`.
 - Étape 2 « fiche » : sortie JSON stricte (`output_config.format`), effort `low`. Elle est séparée de l'enquête, car les sorties structurées sont incompatibles avec les citations de la recherche web.
-- Enrichissement GitHub déterministe. Garde-fous : un dépôt archivé ou inactif depuis plus de 12 mois fait passer le verdict en orange au minimum.
+- Enrichissement GitHub déterministe. Garde-fou : un dépôt archivé ou inactif depuis plus de 12 mois est plafonné à 7,9/10.
 - Métadonnées vidéo : oEmbed YouTube et TikTok. Pour Instagram, uniquement le lien.
 - File d'attente D1 (`veille_items`) traitée par une tâche planifiée toutes les 5 minutes (3 éléments par passage, 3 tentatives maximum), ou immédiatement avec le bouton « Analyser ».
 - Le raccourci iOS s'authentifie avec un jeton personnel (`vt_…`), dont seule l'empreinte est stockée, révocable depuis `/admin`.

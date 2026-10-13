@@ -35,8 +35,12 @@ export const CARD_SCHEMA = obj({
     checks: { type: "array", items: obj({ label: str, status: { type: "string", enum: ["ok", "warn", "bad", "unknown"] }, detail: str }) },
     data_policy: str,
   }),
-  verdict: { type: "string", enum: ["green", "orange", "red"] },
+  score: { type: "number" },
   verdict_reasons: strArr,
+  highlights: strArr,
+  risks: strArr,
+  uncertainties: strArr,
+  improvements: strArr,
   uses: strArr,
   news: obj({ title: str, body: str }),
   video: obj({
@@ -67,23 +71,41 @@ Règles :
 - Distingue ce qui est vérifié de ce qui est supposé ; écris « non trouvé » plutôt que d'inventer.
 - Sois concis : le dossier sert à remplir une fiche, pas à être publié tel quel.`;
 
-const CARD_SYSTEM = `Tu convertis un dossier de veille en fiche structurée pour « Vibe Tools ». Écris en français, simplement, sans jargon inutile.
+const CARD_SYSTEM = `Tu convertis un dossier de veille en fiche structurée pour « Vibe Tools ». Le public : développeurs, vibe-codeurs et no/low-codeurs. Écris en français, clair, pragmatique, sans jargon inutile.
 
-Verdict :
-- "green" : recommandable (maintenu, licence claire, pas de faille connue, accès raisonnables).
-- "orange" : intéressant mais avec précautions (jeune, peu maintenu, accès étendus, prix flou, bêta, informations manquantes).
-- "red" : à éviter (faille non corrigée, abandonné, arnaque suspectée, collecte de données abusive).
-En cas de doute entre deux couleurs, choisis la plus prudente.
+Note globale (score) sur 10, avec une décimale. Elle condense tout le dossier : utilité réelle pour ce public, maturité et maintenance, sécurité, confidentialité et données, licence, prix et accès, fiabilité de l'éditeur. Grille :
+- 8 à 10 : recommandable (maintenu, licence claire, pas de faille connue, accès raisonnables, vraie valeur ajoutée).
+- 5,1 à 7,9 : intéressant mais avec précautions (jeune, peu maintenu, accès étendus, prix flou, bêta, informations manquantes).
+- 0 à 5 : à éviter ou à surveiller de très près (faille non corrigée, abandonné, arnaque suspectée, collecte de données abusive, trop d'inconnues).
+Sois exigeant et cohérent : en cas de doute, retire des points plutôt que d'en ajouter. Chaque inconnue importante coûte des points.
 
 Champs :
 - status : "ok" si un outil est identifié, "ambiguous" si plusieurs candidats (remplis candidates), "not_found" sinon.
 - github_repo : format "owner/nom" ou chaîne vide. official_url : URL https ou chaîne vide.
-- summary : 2 phrases maximum. uses : 3 usages concrets si vert, sinon 0 à 3.
-- security.checks : 4 à 8 contrôles (maintenance, licence, failles connues, accès demandés, confidentialité, typosquatting, incidents…).
-- news : titre accrocheur (≤ 80 caractères) et corps de 2 à 4 phrases pour l'onglet Actualités ; pour "orange", mentionne les points d'attention ; pour "red", laisse un texte interne.
-- video : script court 30–60 s. hook = accroche de 3 secondes ; demo = 3 étapes ; verdict_line = une phrase avec le feu ; cta_keyword = UN mot en MAJUSCULES sans espace lié à l'outil ; cta = « Commente <MOT> et je t'envoie le lien en DM » ; caption = légende du post ; hashtags = 5 à 8 hashtags.
+- summary : 2 phrases maximum.
+- verdict_reasons : 2 à 4 phrases courtes qui justifient la note.
+- highlights : 2 à 5 points intéressants (ce qui est vraiment utile ou bien fait).
+- risks : 0 à 5 points risqués (sécurité, données, dépendance, coût caché, fiabilité). Factuels, sans dramatiser.
+- uncertainties : 0 à 5 points d'incertitude (ce qu'on n'a pas pu vérifier).
+- improvements : 1 à 4 axes d'amélioration possibles, à surveiller de près pour voir si la note peut évoluer.
+- uses : 0 à 3 usages concrets (« utilisez-le pour… »), même pour une note basse si un usage prudent existe.
+- security.checks : 4 à 8 contrôles (maintenance, licence, failles connues, accès demandés, confidentialité, typosquatting, incidents…). status : "ok" = sans souci, "warn" = point de vigilance, "bad" = problème sérieux, "unknown" = non vérifiable.
+- news : titre accrocheur (≤ 80 caractères) et corps de 2 à 4 phrases pour l'onglet Actualités, qui annonce honnêtement la note et l'essentiel. La fiche est publique quelle que soit la note : reste factuel et nuancé, sans accusation non sourcée.
+- video : script court 30–60 s. hook = accroche de 3 secondes ; demo = 3 étapes ; verdict_line = une phrase avec la note sur 10 et la couleur (🟢, 🟠 ou 🔴) ; cta_keyword = UN mot en MAJUSCULES sans espace lié à l'outil ; cta = « Commente <MOT> et je t'envoie le lien en DM » ; caption = légende du post ; hashtags = 5 à 8 hashtags.
 - sources : uniquement des URL présentes dans le dossier.
 N'ajoute aucune information qui n'est pas dans le dossier ou dans les données GitHub fournies.`;
+
+// Note sur 10 → couleur : ≤ 5 rouge, de 5,1 à 7,9 orange, ≥ 8 vert.
+export function verdictFromScore(score) {
+  return score >= 8 ? "green" : score > 5 ? "orange" : "red";
+}
+
+export function normalizeScore(card) {
+  const n = Number(card.score);
+  card.score = Number.isFinite(n) ? Math.round(Math.min(10, Math.max(0, n)) * 10) / 10 : 5;
+  card.verdict = verdictFromScore(card.score);
+  return card;
+}
 
 function client(env) {
   // Clé valable sur plusieurs workspaces : ANTHROPIC_WORKSPACE_ID (wrkspc_…) indique lequel utiliser.
@@ -139,19 +161,19 @@ export async function githubFacts(repo, env) {
 }
 
 // Règles prudentes appliquées après coup, quoi qu'en dise le modèle.
+// Garde-fou : un dépôt archivé ou inactif depuis plus de 12 mois ne peut pas dépasser 7,9/10 (orange au mieux).
 function applyGuards(card, gh) {
+  normalizeScore(card);
   if (!gh) return card;
-  const order = { green: 0, orange: 1, red: 2 };
-  const atLeast = (v) => { if (order[card.verdict] < order[v]) card.verdict = v; };
+  const cap = (reason) => {
+    if (card.score > 7.9) card.score = 7.9;
+    card.verdict_reasons.unshift(reason);
+    card.risks.unshift(reason);
+  };
   const months = gh.pushed_at ? (Date.now() - Date.parse(gh.pushed_at)) / (30 * 86400e3) : null;
-  if (gh.archived) {
-    atLeast("orange");
-    card.verdict_reasons.unshift("Dépôt GitHub archivé : plus maintenu.");
-  } else if (months !== null && months > 12) {
-    atLeast("orange");
-    card.verdict_reasons.unshift(`Aucune activité sur le dépôt depuis ${Math.round(months)} mois.`);
-  }
-  return card;
+  if (gh.archived) cap("Dépôt GitHub archivé : plus maintenu.");
+  else if (months !== null && months > 12) cap(`Aucune activité sur le dépôt depuis ${Math.round(months)} mois.`);
+  return normalizeScore(card);
 }
 
 // ───────── Pipeline complet ─────────
@@ -224,7 +246,8 @@ async function makeCard(anthropic, model, input, dossier, gh) {
 // ───────── Résultat factice pour les tests locaux (VEILLE_MOCK=1) ─────────
 function mockAnalysis(input) {
   const name = input.replace(/https?:\/\/\S+/g, "").trim().split(/\s+/).slice(0, 3).join(" ") || "Outil test";
-  const verdict = /danger|malware/i.test(input) ? "red" : /beta|bêta/i.test(input) ? "orange" : "green";
+  const score = /danger|malware/i.test(input) ? 3.5 : /beta|bêta/i.test(input) ? 6.8 : 8.6;
+  const verdict = verdictFromScore(score);
   return {
     model: "mock",
     github: { repo: "acme/demo", stars: 1234, archived: false, pushed_at: new Date().toISOString(), license: "MIT", open_issues: 3 },
@@ -244,14 +267,19 @@ function mockAnalysis(input) {
         ],
         data_policy: "Pas d'entraînement sur vos données d'après la documentation.",
       },
+      score,
       verdict,
       verdict_reasons: verdict === "green" ? ["Projet actif et licence permissive."] : ["Encore en bêta."],
+      highlights: ["Installation en quelques minutes", "Open source (MIT)"],
+      risks: verdict === "green" ? [] : ["Accès en lecture à tout le dépôt local"],
+      uncertainties: ["Politique de conservation des données peu détaillée"],
+      improvements: ["Publier un audit de sécurité indépendant"],
       uses: ["Générer des tests", "Expliquer un dépôt inconnu", "Refactorer un fichier"],
       news: { title: `${name} : le copilote qui monte`, body: `${name} arrive dans le catalogue. Simple à installer, utile au quotidien.` },
       video: {
         hook: "Tu codes encore tout à la main ?",
         demo: ["J'installe l'outil", "Je lui donne mon dépôt", "Il écrit les tests"],
-        verdict_line: verdict === "green" ? "Feu vert 🟢 : fonce." : "Feu orange 🟠 : teste-le sur un petit projet.",
+        verdict_line: `${score}/10 ${{ green: "🟢", orange: "🟠", red: "🔴" }[verdict]}`,
         cta_keyword: "VIBE",
         cta: "Commente VIBE et je t'envoie le lien en DM",
         caption: `${name}, l'outil de vibe coding de la semaine`,

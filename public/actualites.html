@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>try{var t=localStorage.getItem("vt-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <title>Actualités vibe coding</title>
-<meta name="description" content="Les outils de vibe coding repérés par la veille, analysés et classés : feu vert, feu orange, pré-audit de sécurité.">
+<meta name="description" content="Les outils de vibe coding repérés par la veille, analysés et notés sur 10 : points forts, risques, incertitudes et pré-audit de sécurité.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,8 +19,22 @@
 .light { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
 .light-green { color: #059669; background: color-mix(in srgb, #10b981 16%, transparent); }
 .light-orange { color: #d97706; background: color-mix(in srgb, #f59e0b 18%, transparent); }
-:root[data-theme="dark"] .light-green { color: #34d399; } :root[data-theme="dark"] .light-orange { color: #fbbf24; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .light-green { color: #34d399; } :root:not([data-theme="light"]) .light-orange { color: #fbbf24; } }
+.light-red { color: #dc2626; background: color-mix(in srgb, #ef4444 15%, transparent); }
+:root[data-theme="dark"] .light-green { color: #34d399; } :root[data-theme="dark"] .light-orange { color: #fbbf24; } :root[data-theme="dark"] .light-red { color: #f87171; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .light-green { color: #34d399; } :root:not([data-theme="light"]) .light-orange { color: #fbbf24; } :root:not([data-theme="light"]) .light-red { color: #f87171; } }
+.news-main { flex: 1 1 280px; min-width: 0; }
+@media (max-width: 560px) { .news-head .score { margin-left: 0; display: flex; align-items: baseline; gap: 6px; } .news-head .score small { margin: 0 0 0 6px; } }
+.score { margin-left: auto; text-align: center; min-width: 86px; padding: 8px 12px; border-radius: 16px; font-weight: 800; line-height: 1; }
+.score b { font-size: 30px; letter-spacing: -.03em; } .score span { font-size: 13px; opacity: .75; }
+.score small { display: block; font-size: 11px; font-weight: 600; margin-top: 6px; text-transform: uppercase; letter-spacing: .06em; }
+.points { display: grid; gap: 12px; grid-template-columns: 1fr; margin-top: 4px; }
+@media (min-width: 640px) { .points { grid-template-columns: 1fr 1fr; } }
+.point-box { border: 1px solid var(--border); border-radius: 14px; padding: 10px 14px; background: var(--bg-2); }
+.point-box h3 { font-size: 13.5px; margin: 0 0 6px; }
+.point-box ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+.point-box li { margin: 3px 0; }
+.conclusion { margin-top: 18px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border); display: flex; gap: 14px; align-items: center; }
+.conclusion p { margin: 0; color: var(--text); font-size: 14.5px; }
 .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; color: var(--faint); font-size: 13px; }
 .news p { color: var(--muted); }
 .block-title { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; margin: 16px 0 8px; }
@@ -30,7 +44,6 @@
 .check-row b { font-weight: 600; }
 .uses { margin: 0; padding-left: 18px; color: var(--muted); }
 .uses li { margin: 4px 0; }
-.attention { border-left: 3px solid #f59e0b; padding: 8px 12px; border-radius: 0 10px 10px 0; background: color-mix(in srgb, #f59e0b 8%, transparent); font-size: 14px; }
 .filters { display: flex; gap: 8px; justify-content: center; margin: 0 0 22px; flex-wrap: wrap; }
 .empty { text-align: center; color: var(--muted); padding: 40px 0; }
 </style>
@@ -41,16 +54,17 @@
   <header class="hero wrap">
     <span class="pill"><b>Veille</b> Analyse automatique · validée à la main</span>
     <h1>Les <span class="serif grad">actus</span> du vibe coding</h1>
-    <p class="lead">Chaque outil repéré passe par une enquête, un pré-audit de sécurité et un verdict : 🟢 recommandé ou 🟠 à tester avec précaution.</p>
+    <p class="lead">Chaque outil repéré passe par une enquête et un pré-audit, puis reçoit une note sur 10 : 🟢 recommandé (8 et plus), 🟠 avec précaution (5,1 à 7,9), 🔴 à éviter ou à surveiller (5 et moins).</p>
   </header>
   <section class="wrap">
     <div class="filters" role="group" aria-label="Filtrer par verdict">
       <button class="chip" data-f="all" aria-pressed="true">Tout</button>
       <button class="chip" data-f="green" aria-pressed="false">🟢 Feu vert</button>
       <button class="chip" data-f="orange" aria-pressed="false">🟠 Feu orange</button>
+      <button class="chip" data-f="red" aria-pressed="false">🔴 Feu rouge</button>
     </div>
     <div class="feed" id="feed"><p class="empty">Chargement…</p></div>
-    <p class="faint" style="text-align:center;margin-top:24px">Le pré-audit est automatique et indicatif : ce n'est pas un audit de sécurité professionnel. Vérifiez toujours prix, licence et conditions avant d'utiliser un outil.</p>
+    <p class="faint" style="text-align:center;margin-top:24px">Le pré-audit et la note sont produits automatiquement à partir de sources publiques, puis relus avant publication. Ils sont indicatifs : ce n'est pas un audit de sécurité professionnel. Vérifiez toujours prix, licence et conditions avant d'utiliser un outil.</p>
   </section>
 </main>
 <script type="module">
@@ -59,22 +73,29 @@ import { CATEGORIES } from "/assets/tools.js";
 renderNav("/actualites");
 renderFooter();
 
-const STATUS = { ok: "✅", warn: "⚠️", bad: "⛔", unknown: "❔" };
+// Pastilles de gravité : 🟢 sans souci, 🟠 vigilance ou non vérifié, 🔴 problème sérieux.
+const STATUS = { ok: "🟢", warn: "🟠", bad: "🔴", unknown: "🟠" };
+const STATUS_HINT = { ok: "", warn: "", bad: "", unknown: " (non vérifié)" };
+const LIGHT = { green: "🟢 Feu vert", orange: "🟠 Feu orange", red: "🔴 Feu rouge" };
+const VERDICT_TEXT = { green: "Recommandé", orange: "Avec précaution", red: "À éviter ou à surveiller" };
 const PRICING = { free: "Gratuit", freemium: "Freemium", paid: "Payant", waitlist: "Liste d'attente", unknown: "Prix à vérifier" };
 let items = [];
 let filter = "all";
 const fmtDate = (t) => new Date(t).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 const fmtStars = (n) => n >= 1000 ? `${(n / 1000).toFixed(1).replace(".0", "")} k` : String(n);
+const fmtScore = (n) => String(n).replace(".", ",");
 const safeUrl = (u) => /^https:\/\//.test(u || "") ? u : null;
+const box = (title, list) => list?.length ? `<div class="point-box"><h3>${title}</h3><ul>${list.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
 
 function card(it) {
   const cat = CATEGORIES[it.tool.category];
   const url = safeUrl(it.tool.url);
+  const hasScore = typeof it.score === "number";
   return `<article class="news" id="actu-${it.id}">
     <div class="news-head">
-      <div style="flex:1;min-width:0">
+      <div class="news-main">
         <div class="meta">
-          <span class="light light-${it.verdict}">${it.verdict === "green" ? "🟢 Feu vert" : "🟠 Feu orange"}</span>
+          <span class="light light-${it.verdict}">${LIGHT[it.verdict] || ""}</span>
           <span>${fmtDate(it.published_at)}</span>
           ${cat ? `<span class="tag">${cat.emoji} ${esc(cat.label)}</span>` : ""}
           <span class="tag tag-tool">${esc(PRICING[it.tool.pricing] || "")}</span>
@@ -82,15 +103,25 @@ function card(it) {
         </div>
         <h2>${esc(it.title)}</h2>
       </div>
+      ${hasScore ? `<div class="score light-${it.verdict}" aria-label="Note ${fmtScore(it.score)} sur 10"><b>${fmtScore(it.score)}</b><span>/10</span><small>${VERDICT_TEXT[it.verdict]}</small></div>` : ""}
     </div>
     <p>${esc(it.body)}</p>
-    ${it.verdict === "orange" && it.reasons.length ? `<div class="attention"><b>Points d'attention</b><br>${it.reasons.map(esc).join("<br>")}</div>` : ""}
+    ${it.highlights.length || it.risks.length || it.uncertainties.length || it.improvements.length ? `<div class="points">
+      ${box("🟢 Points intéressants", it.highlights)}
+      ${box("🔴 Points risqués", it.risks)}
+      ${box("🟠 Incertitudes", it.uncertainties)}
+      ${box("🔭 Axes d'amélioration à surveiller", it.improvements)}
+    </div>` : ""}
     ${it.uses.length ? `<div class="block-title">Usages intéressants</div><ul class="uses">${it.uses.map((u) => `<li>${esc(u)}</li>`).join("")}</ul>` : ""}
     <div class="block-title">Pré-audit sécurité</div>
-    <div class="checks">${it.checks.map((c) => `<div class="check-row">${STATUS[c.status] || "❔"} <b>${esc(c.label)}</b> — ${esc(c.detail)}</div>`).join("")}</div>
-    <div class="links" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+    <div class="checks">${it.checks.map((c) => `<div class="check-row">${STATUS[c.status] || "🟠"} <b>${esc(c.label)}</b>${STATUS_HINT[c.status] || ""} — ${esc(c.detail)}</div>`).join("")}</div>
+    ${it.data_policy ? `<p class="faint" style="margin:8px 0 0">Données et confidentialité : ${esc(it.data_policy)}</p>` : ""}
+    ${hasScore ? `<div class="conclusion light-${it.verdict}"><div class="score" style="margin:0;padding:0;min-width:64px"><b>${fmtScore(it.score)}</b><span>/10</span></div>
+      <p><b>En bref :</b> ${it.reasons.map(esc).join(" ")}</p></div>` : ""}
+    <div class="block-title">Sources</div>
+    <div class="links" style="display:flex;gap:8px;flex-wrap:wrap">
       ${url ? `<a class="btn btn-sm btn-primary" href="${esc(url)}" target="_blank" rel="noopener nofollow">Découvrir ${esc(it.tool.name)} ↗</a>` : ""}
-      ${it.sources.filter((s) => safeUrl(s.url)).slice(0, 3).map((s) => `<a class="btn btn-sm" href="${esc(s.url)}" target="_blank" rel="noopener nofollow">${esc(s.title || "Source")}</a>`).join("")}
+      ${it.sources.filter((s) => safeUrl(s.url)).map((s) => `<a class="btn btn-sm" href="${esc(s.url)}" target="_blank" rel="noopener nofollow">${esc(s.title || "Source")}</a>`).join("")}
     </div>
   </article>`;
 }

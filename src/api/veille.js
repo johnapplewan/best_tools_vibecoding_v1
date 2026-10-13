@@ -3,7 +3,7 @@
 import { json, readJson, HttpError, randomHex, sha256 } from "../lib/http.js";
 import { ensureSchema } from "../lib/schema.js";
 import { requireUser, isAdmin } from "../lib/session.js";
-import { analyze } from "../veille/analyze.js";
+import { analyze, normalizeScore } from "../veille/analyze.js";
 
 const MAX_ATTEMPTS = 3;
 const parse = (s, fallback = null) => {
@@ -125,16 +125,19 @@ export async function adminUpdate(request, env, id) {
     result.card.news.title = String(body.news.title ?? result.card.news.title).slice(0, 120);
     result.card.news.body = String(body.news.body ?? result.card.news.body).slice(0, 1500);
   }
+  // La note sur 10 fixe la couleur : ≤ 5 rouge, 5,1 à 7,9 orange, ≥ 8 vert.
   let verdict = row.verdict;
-  if (["green", "orange", "red"].includes(body.verdict) && result) {
-    verdict = body.verdict;
-    result.card.verdict = verdict;
+  if (result && body.score !== undefined && body.score !== null && body.score !== "") {
+    const score = Number(String(body.score).replace(",", "."));
+    if (!Number.isFinite(score) || score < 0 || score > 10) throw new HttpError(400, "invalid", { field: "score", reason: "Note entre 0 et 10" });
+    result.card.score = score;
+    verdict = normalizeScore(result.card).verdict;
   }
   let published = row.published;
   let publishedAt = row.published_at;
   if (typeof body.published === "boolean") {
-    if (body.published && !(row.status === "done" && ["green", "orange"].includes(verdict))) {
-      throw new HttpError(400, "invalid", { reason: "Seules les analyses terminées en vert ou orange peuvent être publiées" });
+    if (body.published && !(row.status === "done" && verdict && result?.card?.status === "ok")) {
+      throw new HttpError(400, "invalid", { reason: "Seules les analyses terminées, avec un outil identifié, peuvent être publiées" });
     }
     published = body.published ? 1 : 0;
     publishedAt = body.published ? publishedAt || Date.now() : null;
@@ -179,11 +182,17 @@ export async function news(request, env) {
       body: card.news.body,
       tool: { name: card.tool.name, category: card.tool.category, url: card.tool.official_url, pricing: card.tool.pricing, pricing_note: card.tool.pricing_note },
       summary: card.summary,
-      uses: r.verdict === "green" ? card.uses : [],
+      score: typeof card.score === "number" ? card.score : null,
+      uses: card.uses || [],
+      highlights: card.highlights || [],
+      risks: card.risks || [],
+      uncertainties: card.uncertainties || [],
+      improvements: card.improvements || [],
       checks: card.security.checks,
+      data_policy: card.security.data_policy || "",
       reasons: card.verdict_reasons,
       github: github ? { repo: github.repo, stars: github.stars, license: github.license } : null,
-      sources: card.sources.slice(0, 5),
+      sources: card.sources.slice(0, 8),
     };
   }).filter(Boolean);
   return json({ items }, 200, { "cache-control": "public, max-age=120" });
