@@ -116,7 +116,8 @@ function card(m) {
     ${m.bio ? `<p class="m-bio">${esc(m.bio)}</p>` : ""}
     ${m.specialties.length ? `<div class="chips">${m.specialties.map((s) => `<span class="tag">${esc(s)}</span>`).join("")}</div>` : ""}
     ${m.projects.length ? `<div class="thumbs">${thumbs}</div>` : ""}
-    <div class="m-foot"><span>📁 ${m.projects.length} projet${m.projects.length > 1 ? "s" : ""}</span><span>👍 ${m.recommendations} recommandation${m.recommendations > 1 ? "s" : ""}</span></div>
+    ${m.bonus ? `<div class="chips"><span class="tag tag-here">✦ Créé ici${m.createdHere > 1 ? ` ×${m.createdHere}` : ""}</span><span class="faint">${esc(m.bonus.title)}</span></div>` : ""}
+    <div class="m-foot"><span>📁 ${m.projects.length + (m.bonus ? 1 : 0)} projet${m.projects.length + (m.bonus ? 1 : 0) > 1 ? "s" : ""}</span><span>👍 ${m.recommendations} recommandation${m.recommendations > 1 ? "s" : ""}</span></div>
   </button>`;
 }
 
@@ -195,6 +196,15 @@ function detailHTML(m) {
       <p class="faint" style="margin-top:8px">${member ? "Les liens s'ouvrent directement dans l'application. Aucun numéro n'est affiché sur ce site." : "🔒 Les contacts sont réservés aux membres connectés, pour protéger la communauté des robots."}</p>` : ""}
     <div class="section-title">Projets</div>
     ${projects ? `<div class="projects">${projects}</div>` : `<p class="muted">Pas encore de projet publié.</p>`}
+    ${m.bonus ? `<div class="section-title">Projet bonus · ✦ Créé ici${m.createdHere > 1 ? ` (${m.createdHere} projets)` : ""}</div>
+    <div class="projects"><article class="project">
+      <div class="p-thumb">${m.bonus.thumbnail ? `<img src="${esc(m.bonus.thumbnail)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}</div>
+      <div class="p-body"><span class="tag tag-here" style="align-self:flex-start">✦ Créé ici</span>
+        <h3 style="font-size:16px">${esc(m.bonus.title)}</h3>${m.bonus.pitch ? `<p>${esc(m.bonus.pitch)}</p>` : ""}
+        <div class="links"><a class="btn btn-sm btn-primary" href="/projet?id=${Number(m.bonus.id)}">Voir le projet</a>
+          ${m.bonus.github_url ? `<a class="btn btn-sm" href="${esc(m.bonus.github_url)}" target="_blank" rel="noopener nofollow">${GH_ICON} Code</a>` : ""}
+          ${m.bonus.demo_url ? `<a class="btn btn-sm" href="${esc(m.bonus.demo_url)}" target="_blank" rel="noopener nofollow">↗ Démo</a>` : ""}</div>
+      </div></article></div>` : ""}
     <div class="section-title">Recommandations (${m.recommendations})</div>
     ${recos || `<p class="muted">Pas encore de recommandation.</p>`}
     <div class="links" style="margin-top:20px;align-items:center">${actions}</div>

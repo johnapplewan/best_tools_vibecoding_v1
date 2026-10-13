@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem("vt-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<title>Créer ici</title>
+<meta name="description" content="L'atelier de création à plusieurs : proposez un outil, réunissez une équipe de vibe-devs et mettez-le en ligne avec le label « Créé ici ».">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+.steps { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin: 8px 0 0; padding: 0; list-style: none; counter-reset: s; }
+.steps li { counter-increment: s; border: 1px solid var(--border); border-radius: 16px; background: var(--card); padding: 12px 14px; font-size: 13.5px; color: var(--muted); }
+.steps li::before { content: counter(s); display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 999px; margin-right: 6px; font-size: 12px; font-weight: 700; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+.steps b { color: var(--text); }
+.bar { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin: 36px 0 14px; }
+.grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 700px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1040px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+.pcard { display: flex; flex-direction: column; border-radius: 20px; border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow); overflow: hidden; text-decoration: none; transition: transform .2s, box-shadow .2s; }
+.pcard:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.pthumb { aspect-ratio: 2 / 1; background: center / cover no-repeat, linear-gradient(135deg, color-mix(in srgb, var(--accent) 40%, transparent), color-mix(in srgb, var(--accent-2) 30%, transparent)); position: relative; }
+.pthumb .tag-here { position: absolute; left: 12px; top: 12px; }
+.pbody { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.pbody h3 { font-size: 17px; }
+.pbody p { margin: 0; color: var(--muted); font-size: 14px; }
+.pfoot { display: flex; gap: 10px; align-items: center; font-size: 13px; color: var(--faint); margin-top: auto; flex-wrap: wrap; }
+.notif { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; text-decoration: none; }
+.notif:last-child { border-bottom: 0; }
+.notif.unread::before { content: ""; width: 8px; height: 8px; border-radius: 999px; background: var(--accent-2); margin-top: 7px; flex: none; }
+.notif time { color: var(--faint); font-size: 12px; white-space: nowrap; margin-left: auto; }
+.empty { text-align: center; color: var(--muted); padding: 30px 0; }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<main>
+  <header class="hero wrap">
+    <span class="pill"><b>Créer ici</b> Projets à plusieurs · label « Créé ici »</span>
+    <h1>Construire un outil <span class="serif grad">à plusieurs</span></h1>
+    <p class="lead">Proposez une idée, devenez porteur de projet, réunissez une équipe de vibe-devs et mettez l'outil en ligne. Chaque participant l'affiche ensuite en 5ᵉ projet bonus sur sa fiche du showroom.</p>
+    <p style="margin-top:22px" id="cta"></p>
+  </header>
+
+  <section class="wrap">
+    <ol class="steps">
+      <li><b>Proposition</b> : la fiche projet, validée par l'admin</li>
+      <li><b>Recrutement</b> : les membres candidatent sur un rôle</li>
+      <li><b>Cadrage</b> : charte d'équipe, missions, calendrier</li>
+      <li><b>Réalisation</b> : cycles de 1 à 2 semaines</li>
+      <li><b>Recette</b> : tests et checklist de mise en ligne</li>
+      <li><b>Mise en ligne</b> : label « Créé ici »</li>
+      <li><b>Rétrospective</b> : bilan et crédits figés</li>
+    </ol>
+
+    <div id="admin-slot"></div>
+    <div id="me-slot"></div>
+
+    <div class="bar">
+      <h2 style="margin:0">Les projets</h2>
+      <div class="chips" role="group" aria-label="Filtrer par état" id="filters">
+        <button class="chip" data-f="all" aria-pressed="true">Tous</button>
+        <button class="chip" data-f="recruiting" aria-pressed="false">🙋 Recrute</button>
+        <button class="chip" data-f="work" aria-pressed="false">🛠️ En cours</button>
+        <button class="chip" data-f="live" aria-pressed="false">✦ Créé ici</button>
+      </div>
+    </div>
+    <div class="grid" id="list"><p class="empty">Chargement…</p></div>
+  </section>
+</main>
+
+<script type="module">
+import { $, esc, api, loadMe, loginUrl, renderNav, renderFooter, toast, GH_ICON } from "/assets/app.js";
+renderNav("/atelier");
+renderFooter();
+
+const LEVEL = { all: "Tous niveaux", beginner: "Débutant bienvenu", intermediate: "Intermédiaire", advanced: "Avancé" };
+const ROLE = { owner: "Porteur", co: "Co-porteur", contributor: "Contributeur" };
+const statusTag = (p) => p.createdHere ? `<span class="tag tag-here">✦ Créé ici</span>`
+  : `<span class="tag ${p.status === "recruiting" ? "tag-ok" : p.status === "draft" || p.status === "review" ? "tag-warn" : ""}">${esc(p.statusLabel)}</span>`;
+const fmt = (t) => new Date(t).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+let data = { projects: [] };
+let filter = "all";
+
+function card(p, extra = "") {
+  const bg = p.thumbnail ? `background-image:url('${esc(p.thumbnail)}'), linear-gradient(135deg, color-mix(in srgb, var(--accent) 40%, transparent), color-mix(in srgb, var(--accent-2) 30%, transparent))` : "";
+  const roles = p.roles.slice(0, 4).map((r) => `<span class="tag tag-tool">${esc(r.role)}${r.slots > 1 ? ` ×${r.slots}` : ""}</span>`).join("");
+  return `<a class="pcard" href="/projet?id=${p.id}">
+    <div class="pthumb" style="${bg}">${p.createdHere ? '<span class="tag tag-here">✦ Créé ici</span>' : ""}</div>
+    <div class="pbody">
+      <div class="chips">${p.createdHere ? "" : statusTag(p)}${extra}</div>
+      <h3>${esc(p.name)}</h3>
+      ${p.pitch ? `<p>${esc(p.pitch)}</p>` : ""}
+      ${roles && p.status === "recruiting" ? `<div class="chips">${roles}</div>` : ""}
+      <div class="pfoot">${p.teamSize != null ? `<span>👥 ${p.teamSize}</span>` : ""}<span>${esc(LEVEL[p.level] || "")}</span></div>
+    </div></a>`;
+}
+
+function render() {
+  const list = data.projects.filter((p) => filter === "all" || (filter === "live" ? p.createdHere : filter === "work" ? ["active", "paused", "testing", "launch_review"].includes(p.status) : p.status === filter));
+  $("#list").innerHTML = list.length ? list.map((p) => card(p)).join("") : `<p class="empty" style="grid-column:1/-1">Pas encore de projet ici. Lancez le premier ✨</p>`;
+}
+
+$("#filters").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-f]"); if (!b) return;
+  filter = b.dataset.f;
+  document.querySelectorAll("#filters [data-f]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  render();
+});
+
+const [{ user }, d] = await Promise.all([loadMe(), api("/api/atelier").catch(() => ({ projects: [], mine: [] }))]);
+data = d;
+render();
+
+const member = user?.pseudo && !user.needsOnboarding;
+$("#cta").innerHTML = member
+  ? `<a class="btn btn-primary" href="/projet?new">✨ Proposer un projet</a>`
+  : user ? `<a class="btn btn-primary" href="/moi">Terminer mon inscription pour participer</a>`
+  : `<a class="btn btn-dark" href="${loginUrl("/atelier")}">${GH_ICON} Se connecter pour participer</a>`;
+
+if (member) {
+  const notifs = (d.notifications || []).map((n) => `<a class="notif ${n.read_at ? "" : "unread"}" href="${esc(n.link || "/atelier")}"><span>${esc(n.text)}</span><time>${fmt(n.created_at)}</time></a>`).join("");
+  $("#me-slot").innerHTML = `<div class="bar"><h2 style="margin:0">Mon atelier</h2></div>
+    <div class="grid">${d.mine.length ? d.mine.map((p) => card(p, `<span class="tag tag-tool">${ROLE[p.role]}</span>`)).join("") : `<div class="panel" style="grid-column:1/-1"><p class="muted" style="margin:0">Vous ne participez à aucun projet pour l'instant. Proposez le vôtre ou candidatez sur un projet qui recrute.</p></div>`}</div>
+    <div class="panel" style="margin-top:16px"><h3 style="margin-bottom:6px">🔔 Notifications</h3>${notifs || `<p class="muted" style="margin:0">Rien de nouveau.</p>`}</div>`;
+  if ((d.notifications || []).some((n) => !n.read_at)) api("/api/notifications/read", { method: "POST", body: {} }).then(() => document.querySelector("nav .badge")?.remove()).catch(() => {});
+}
+
+if (d.queue) {
+  $("#admin-slot").innerHTML = `<div class="bar"><h2 style="margin:0">🛡️ À valider (${d.queue.length})</h2></div>
+    ${d.queue.length ? `<div class="grid">${d.queue.map((p) => card(p, p.interim === "admin" ? '<span class="tag tag-danger">Intérim à valider</span>' : p.status === "launch_review" ? '<span class="tag tag-warn">Mise en ligne</span>' : "")).join("")}</div>` : `<p class="muted">Rien à valider.</p>`}`;
+}
+</script>
+</body>
+</html>

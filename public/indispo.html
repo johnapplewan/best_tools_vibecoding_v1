@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem("vt-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<title>Porteur indisponible</title>
+<meta name="description" content="Porteurs de projet « Créer ici » : signalez votre indisponibilité ou reprenez votre rôle avec un code de récupération.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+.box { max-width: 620px; margin: 0 auto; }
+.code-input { font: 600 16px "JetBrains Mono", monospace; letter-spacing: .06em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<main class="wrap">
+  <header class="hero">
+    <span class="pill"><b>Créer ici</b> Réservé aux porteurs de projet</span>
+    <h1>Codes de <span class="serif grad">récupération</span></h1>
+    <p class="lead">Utilisez un des 8 codes reçus à la création de votre projet. Chaque code ne sert qu'une fois.</p>
+  </header>
+  <div class="box">
+    <form class="panel" id="freeze">
+      <h2>❄️ Je suis indisponible</h2>
+      <p class="muted">Sans connexion. Le projet est <b>gelé</b> : aucun intérim ni transfert n'est possible, et l'équipe et l'admin sont prévenus. À votre retour, un clic sur « Je suis de retour » dans le projet suffit.</p>
+      <div class="grid-2">
+        <label class="field"><span>Numéro du projet</span><input type="text" name="project" inputmode="numeric" pattern="[0-9]+" required></label>
+        <label class="field"><span>Code de récupération</span><input class="code-input" type="text" name="code" placeholder="XXXX-XXXX-XXXX" autocomplete="off" required></label>
+      </div>
+      <button class="btn btn-primary" type="submit">Geler mon projet</button>
+      <p class="err" data-msg role="status"></p>
+    </form>
+    <form class="panel" id="recover">
+      <h2>🔑 Reprendre mon rôle depuis un autre compte</h2>
+      <p class="muted">Vous avez perdu l'accès à votre compte GitHub ? Connectez-vous avec un nouveau compte, puis saisissez un code : vous redevenez porteur. L'ancien compte perd le rôle, et tout est inscrit au journal public du projet.</p>
+      <div id="recover-slot"></div>
+    </form>
+  </div>
+</main>
+<script type="module">
+import { $, esc, api, loadMe, loginUrl, renderNav, renderFooter, GH_ICON } from "/assets/app.js";
+renderNav("");
+renderFooter();
+
+$("#freeze").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = e.target, msg = f.querySelector("[data-msg]");
+  msg.textContent = "";
+  try {
+    const res = await api("/api/atelier/freeze", { method: "POST", body: { project: Number(f.project.value), code: f.code.value } });
+    f.innerHTML = `<h2>✅ C'est noté</h2><p>« ${esc(res.name)} » est gelé. Prenez soin de vous : l'équipe et l'admin sont prévenus. À votre retour, ouvrez le projet et cliquez sur « Je suis de retour ».</p>`;
+  } catch (err) { msg.textContent = err.message; }
+});
+
+const { user } = await loadMe();
+const slot = $("#recover-slot");
+if (!user) slot.innerHTML = `<a class="btn btn-dark" href="${loginUrl("/indispo")}">${GH_ICON} Se connecter avec le nouveau compte</a>`;
+else if (!user.pseudo || user.needsOnboarding) slot.innerHTML = `<a class="btn btn-primary" href="/moi">Terminer l'inscription de ce compte</a>`;
+else {
+  slot.innerHTML = `<p class="faint">Connecté en tant que <b>${esc(user.pseudo)}</b> (${esc(user.code)}).</p>
+    <div class="grid-2">
+      <label class="field"><span>Numéro du projet</span><input type="text" name="project" inputmode="numeric" pattern="[0-9]+" required></label>
+      <label class="field"><span>Code de récupération</span><input class="code-input" type="text" name="code" placeholder="XXXX-XXXX-XXXX" autocomplete="off" required></label>
+    </div>
+    <button class="btn btn-primary" type="submit">Reprendre mon rôle</button><p class="err" data-msg role="status"></p>`;
+  $("#recover").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target, msg = f.querySelector("[data-msg]");
+    msg.textContent = "";
+    if (!confirm("Reprendre le rôle de porteur avec ce compte ? L'ancien compte perdra le rôle.")) return;
+    try {
+      const res = await api("/api/atelier/recover", { method: "POST", body: { project: Number(f.project.value), code: f.code.value } });
+      location.href = `/projet?id=${res.id}`;
+    } catch (err) { msg.textContent = err.message; }
+  });
+}
+</script>
+</body>
+</html>

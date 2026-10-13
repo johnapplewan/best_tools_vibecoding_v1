@@ -38,7 +38,7 @@ td, th { padding: 8px; border-bottom: 1px solid var(--border); text-align: left;
 <main id="app"><p class="muted" style="margin-top:40px">Chargement…</p></main>
 
 <script type="module">
-import { $, esc, api, loadMe, loginUrl, avatarHTML, renderNav, renderFooter, toast, NETWORKS, GH_ICON } from "/assets/app.js";
+import { $, esc, api, loadMe, loginUrl, avatarHTML, renderNav, renderFooter, toast, NETWORKS, GH_ICON, toLandscape } from "/assets/app.js";
 import { TOOLS } from "/assets/tools.js";
 
 renderNav("/moi");
@@ -274,25 +274,6 @@ function renderProfile(user, options) {
 }
 
 // Recadre au centre en 2:1 (1280×640 max) et compresse en WebP (JPEG si le navigateur ne sait pas), < 400 Ko.
-async function toLandscape(file) {
-  let bmp;
-  try { bmp = await createImageBitmap(file); } catch { throw new Error("Format d'image non pris en charge"); }
-  const ratio = 2;
-  let sw = bmp.width, sh = Math.round(bmp.width / ratio);
-  if (sh > bmp.height) { sh = bmp.height; sw = Math.round(sh * ratio); }
-  const sx = Math.round((bmp.width - sw) / 2), sy = Math.round((bmp.height - sh) / 2);
-  const W = Math.min(1280, sw), H = Math.round(W / ratio);
-  const canvas = document.createElement("canvas");
-  canvas.width = W; canvas.height = H;
-  canvas.getContext("2d").drawImage(bmp, sx, sy, sw, sh, 0, 0, W, H);
-  const encode = (type, q) => new Promise((r) => canvas.toBlob(r, type, q));
-  for (const q of [0.85, 0.75, 0.6, 0.45]) {
-    let blob = await encode("image/webp", q);
-    if (!blob || blob.type !== "image/webp") blob = await encode("image/jpeg", q);
-    if (blob && blob.size <= 400 * 1024) return blob;
-  }
-  throw new Error("Image trop lourde même compressée");
-}
 
 // ───────── Modération (admin) ─────────
 async function loadReports() {

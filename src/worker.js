@@ -5,6 +5,7 @@ import * as stars from "./api/stars.js";
 import * as auth from "./api/auth.js";
 import * as members from "./api/members.js";
 import * as veille from "./api/veille.js";
+import * as atelier from "./api/atelier.js";
 import { HttpError, assertSameOrigin, json } from "./lib/http.js";
 import { hit, ipKey } from "./lib/ratelimit.js";
 
@@ -42,6 +43,20 @@ const ROUTES = [
   ["GET", /^\/api\/admin\/tokens$/, veille.adminTokens],
   ["POST", /^\/api\/admin\/tokens$/, veille.adminTokens, true],
   ["DELETE", /^\/api\/admin\/tokens$/, veille.adminTokens, true],
+
+  ["GET", /^\/api\/atelier$/, atelier.list, false, ["read", 300, 600]],
+  ["POST", /^\/api\/atelier$/, atelier.create, true, ["write", 120, 3600]],
+  ["GET", /^\/api\/atelier\/(\d+)$/, atelier.get, false, ["read", 300, 600]],
+  ["PUT", /^\/api\/atelier\/(\d+)$/, atelier.update, true, ["write", 120, 3600]],
+  ["POST", /^\/api\/atelier\/(\d+)\/action$/, atelier.action, true, ["write", 120, 3600]],
+  ["POST", /^\/api\/atelier\/(\d+)\/mission$/, atelier.mission, true, ["write", 120, 3600]],
+  ["POST", /^\/api\/atelier\/(\d+)\/event$/, atelier.event, true, ["write", 120, 3600]],
+  ["POST", /^\/api\/atelier\/(\d+)\/meeting$/, atelier.meeting, true, ["write", 120, 3600]],
+  ["POST", /^\/api\/atelier\/(\d+)\/decision$/, atelier.decision, true, ["write", 120, 3600]],
+  ["POST", /^\/api\/atelier\/freeze$/, atelier.freeze, true, ["code", 5, 3600]],
+  ["POST", /^\/api\/atelier\/recover$/, atelier.recover, true, ["code", 5, 3600]],
+  ["POST", /^\/api\/notifications\/read$/, atelier.readNotifications, true, ["write", 120, 3600]],
+  ["POST", /^\/api\/admin\/atelier$/, atelier.adminAction, true],
 
   ["GET", /^\/api\/admin\/reports$/, members.adminReports],
   ["POST", /^\/api\/admin\/moderate$/, members.adminModerate, true],
@@ -83,8 +98,10 @@ export default {
     return env.ASSETS.fetch(request);
   },
 
-  // Tâche planifiée (voir « triggers » dans wrangler.jsonc) : traite la file de veille.
+  // Tâche planifiée (voir « triggers » dans wrangler.jsonc) : file de veille, puis maintenance de l'atelier.
   async scheduled(controller, env, ctx) {
     await veille.scheduled(env);
+    // Relances et intérims de l'atelier « Créer ici » : une fois par heure suffit.
+    if (new Date(controller.scheduledTime).getUTCMinutes() < 5 || env.DEV_LOGIN === "1") await atelier.scheduled(env);
   },
 };

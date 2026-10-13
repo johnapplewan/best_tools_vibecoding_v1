@@ -170,3 +170,51 @@ Le porteur reprend son rôle **à tout moment** en se reconnectant.
 ## Données affichées (rappel de la règle de confidentialité)
 
 Partout sur la plateforme, on n'affiche **que des pseudos** et un **identifiant membre** (ex. `VD-4F7K2`). Aucun nom, aucun email, aucun numéro de téléphone. Voir la [politique de pseudonymat](/cgu).
+
+## Mise en œuvre (PR D)
+
+**Ce qui est en place**
+
+| Élément | Où |
+|---|---|
+| Liste des projets, « Mon atelier », notifications, file de l'admin | `/atelier` |
+| Fiche projet, équipe, missions, calendrier, réunions, décisions, journal, mise en ligne, continuité | `/projet?id=…` (onglets) |
+| Gel « je suis indisponible » (sans connexion) et reprise du rôle depuis un autre compte | `/indispo` |
+| Projet bonus « Créé ici » sur la fiche du showroom | `/showroom` |
+| API | `src/api/atelier.js` |
+
+- **Parcours** : brouillon → validation de l'admin → « Recrute » → « En cours » (co-porteur obligatoire, qui accepte les règles) → « En recette » (checklist) → vérification de l'admin → « En ligne », avec le label et les crédits figés → rétrospective. Pause, réouverture du recrutement et archivage (par le porteur seul) sont aussi possibles.
+- **Candidatures** : un message de 20 caractères minimum et un rôle ; le porteur accepte ou refuse.
+- **Charte d'équipe** : rédigée par le porteur (modèle prérempli) et signée en un clic. Une nouvelle version demande une nouvelle signature.
+- **Missions** :
+  - champs : titre, description, « c'est fini quand… », taille, échéance, lien de l'issue et de la PR GitHub ;
+  - statuts : À faire, En cours, En revue, Terminée ;
+  - « Je prends » et « Libérer » ;
+  - relance amicale automatique après 14 jours sans activité ; le porteur ne peut réattribuer qu'après 7 jours de plus sans réponse.
+- **Calendrier** : jalons, cycles et réunions, frise des jalons, export `.ics` (un événement ou tout le calendrier). Le public ne voit que les jalons.
+- **Réunions** : participants et météo de chacun, ordre du jour, décisions (reportées au journal des décisions sans doublon), actions transformables en mission en un clic.
+- **Météo hebdo** : ☀️ ⛅ 🌧️ par membre et par semaine.
+- **Continuité (§ 9 bis)** :
+  - 8 codes de récupération par projet (seule l'empreinte est stockée), régénérables par le porteur ;
+  - relances à J+14, J+21 et J+28 ;
+  - intérim : demande du co-porteur à J+35, majorité de l'équipe, validation de l'admin, 7 jours d'opposition, puis intérim actif ;
+  - le porteur reprend son rôle dès sa prochaine visite sur le site ;
+  - pendant l'intérim, interdit de changer la licence, d'archiver ou de retirer le porteur ;
+  - gel du projet avec un code ; reprise du rôle depuis un nouveau compte avec un code ;
+  - transmission volontaire du rôle au co-porteur.
+- **Crédits figés à la mise en ligne** : le porteur, le fondateur, et les membres présents avec au moins une mission terminée.
+- **Notifications sur le site** : pastille sur « Créer ici » dans la navigation.
+- **Sécurité et vie privée** :
+  - pseudos et identifiants `VD-…` uniquement ;
+  - numéros et emails refusés dans tous les textes ;
+  - canal d'équipe limité à un lien de groupe (Telegram, Signal, WhatsApp, Discord) et visible par l'équipe seule ;
+  - limites de fréquence sur la création de projets, les candidatures et les codes de récupération ;
+  - suppression de compte impossible tant que le membre porte un projet en cours.
+
+**Pas encore automatisé (étapes suivantes)**
+
+- Synchronisation des issues et du calcul des contributions avec GitHub (nécessite une application GitHub).
+- Création du dépôt dans une organisation GitHub de la plateforme et règles de branche automatiques.
+- Activité sur le dépôt prise en compte dans les relances (aujourd'hui : activité sur le site seulement).
+- Alerte Telegram en option.
+- Transfert définitif après 90 jours d'intérim, et retrait d'un porteur par l'admin pour violation grave : ils se font avec l'admin, à la main, pour l'instant.
