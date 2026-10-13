@@ -19,8 +19,10 @@
 .light { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
 .light-green { color: #059669; background: color-mix(in srgb, #10b981 16%, transparent); }
 .light-orange { color: #d97706; background: color-mix(in srgb, #f59e0b 18%, transparent); }
-:root[data-theme="dark"] .light-green { color: #34d399; } :root[data-theme="dark"] .light-orange { color: #fbbf24; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .light-green { color: #34d399; } :root:not([data-theme="light"]) .light-orange { color: #fbbf24; } }
+.light-red { color: #dc2626; background: color-mix(in srgb, #ef4444 15%, transparent); }
+:root[data-theme="dark"] .light-green { color: #34d399; } :root[data-theme="dark"] .light-orange { color: #fbbf24; } :root[data-theme="dark"] .light-red { color: #f87171; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .light-green { color: #34d399; } :root:not([data-theme="light"]) .light-orange { color: #fbbf24; } :root:not([data-theme="light"]) .light-red { color: #f87171; } }
+.note { margin: 14px 0 0; font-size: 13.5px; color: var(--muted); }
 .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; color: var(--faint); font-size: 13px; }
 .news p { color: var(--muted); }
 .block-title { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; margin: 16px 0 8px; }
@@ -48,6 +50,7 @@
       <button class="chip" data-f="all" aria-pressed="true">Tout</button>
       <button class="chip" data-f="green" aria-pressed="false">🟢 Feu vert</button>
       <button class="chip" data-f="orange" aria-pressed="false">🟠 Feu orange</button>
+      <button class="chip" data-f="red" aria-pressed="false">🔴 Feu rouge</button>
     </div>
     <div class="feed" id="feed"><p class="empty">Chargement…</p></div>
     <p class="faint" style="text-align:center;margin-top:24px">Le pré-audit est automatique et indicatif : ce n'est pas un audit de sécurité professionnel. Vérifiez toujours prix, licence et conditions avant d'utiliser un outil.</p>
@@ -59,7 +62,10 @@ import { CATEGORIES } from "/assets/tools.js";
 renderNav("/actualites");
 renderFooter();
 
-const STATUS = { ok: "✅", warn: "⚠️", bad: "⛔", unknown: "❔" };
+// Pastilles de gravité : 🟢 sans souci, 🟠 vigilance ou non vérifié, 🔴 problème sérieux.
+const STATUS = { ok: "🟢", warn: "🟠", bad: "🔴", unknown: "🟠" };
+const LIGHT = { green: "🟢 Feu vert", orange: "🟠 Feu orange", red: "🔴 Feu rouge" };
+const list = (title, items) => items?.length ? `<div class="block-title">${title}</div><ul class="uses">${items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
 const PRICING = { free: "Gratuit", freemium: "Freemium", paid: "Payant", waitlist: "Liste d'attente", unknown: "Prix à vérifier" };
 let items = [];
 let filter = "all";
@@ -74,7 +80,7 @@ function card(it) {
     <div class="news-head">
       <div style="flex:1;min-width:0">
         <div class="meta">
-          <span class="light light-${it.verdict}">${it.verdict === "green" ? "🟢 Feu vert" : "🟠 Feu orange"}</span>
+          <span class="light light-${it.verdict}">${LIGHT[it.verdict] || ""}</span>
           <span>${fmtDate(it.published_at)}</span>
           ${cat ? `<span class="tag">${cat.emoji} ${esc(cat.label)}</span>` : ""}
           <span class="tag tag-tool">${esc(PRICING[it.tool.pricing] || "")}</span>
@@ -85,9 +91,14 @@ function card(it) {
     </div>
     <p>${esc(it.body)}</p>
     ${it.verdict === "orange" && it.reasons.length ? `<div class="attention"><b>Points d'attention</b><br>${it.reasons.map(esc).join("<br>")}</div>` : ""}
+    ${list("Points intéressants", it.highlights)}
+    ${list("Points risqués", it.risks)}
+    ${list("Incertitudes", it.uncertainties)}
+    ${list("Axes d'amélioration à surveiller", it.improvements)}
     ${it.uses.length ? `<div class="block-title">Usages intéressants</div><ul class="uses">${it.uses.map((u) => `<li>${esc(u)}</li>`).join("")}</ul>` : ""}
     <div class="block-title">Pré-audit sécurité</div>
     <div class="checks">${it.checks.map((c) => `<div class="check-row">${STATUS[c.status] || "❔"} <b>${esc(c.label)}</b> — ${esc(c.detail)}</div>`).join("")}</div>
+    ${typeof it.score === "number" ? `<p class="note">Note : <b>${String(it.score).replace(".", ",")}/10</b></p>` : ""}
     <div class="links" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
       ${url ? `<a class="btn btn-sm btn-primary" href="${esc(url)}" target="_blank" rel="noopener nofollow">Découvrir ${esc(it.tool.name)} ↗</a>` : ""}
       ${it.sources.filter((s) => safeUrl(s.url)).slice(0, 3).map((s) => `<a class="btn btn-sm" href="${esc(s.url)}" target="_blank" rel="noopener nofollow">${esc(s.title || "Source")}</a>`).join("")}

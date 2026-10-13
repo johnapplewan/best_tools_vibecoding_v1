@@ -15,8 +15,7 @@ La plateforme lance une **analyse complète** et vous rend un verdict **🟢 ver
 
 ```
 Envoi (raccourci iOS) → File d'attente → Identification → Décryptage → Audit sécurité → Verdict
-      → 🟢/🟠 : brouillon d'actu + script vidéo dans votre compte → vous validez → publication
-      → 🔴 : archivé avec la raison, visible seulement par vous
+      → brouillon d'actu + script vidéo dans votre compte → vous validez → publication (🟢, 🟠 ou 🔴)
 ```
 
 L'analyse se lance **dès l'envoi**. La **tâche quotidienne** traite en plus la playlist YouTube « IA » et relance les analyses échouées.
@@ -59,6 +58,8 @@ L'analyse se lance **dès l'envoi**. La **tâche quotidienne** traite en plus la
 
 Chaque verdict affiche **ses raisons**, pour que vous puissiez le contester ou le corriger.
 
+La couleur découle des pastilles du pré-audit (🟢 sans souci, 🟠 vigilance ou non vérifié, 🔴 problème sérieux) : la couleur qui prédomine donne la tendance. Une **note sur 10** (une décimale) conclut ensuite le verdict, sans le changer : elle reste dans la plage de la couleur (🔴 0 à 5, 🟠 5,1 à 7,9, 🟢 8 à 10). Sa position dans la plage dépend de la répartition des pastilles et de la confiance : utilité, entretien du dépôt, validation par des applications, qualité des intégrations, étoiles GitHub. Elle s'affiche en petit, en fin de fiche.
+
 ## 5. Ce qui est produit
 
 **Pour 🟢 vert :**
@@ -69,7 +70,9 @@ Chaque verdict affiche **ses raisons**, pour que vous puissiez le contester ou l
 
 **Pour 🟠 orange :** un brouillon d'actu avec un encadré « Points d'attention », et un script vidéo.
 
-**Pour 🔴 rouge :** rien de public. Une fiche privée avec les raisons.
+**Pour 🔴 rouge :** un brouillon d'actu publiable après relecture, qui explique factuellement pourquoi éviter ou surveiller l'outil.
+
+**Pour toutes les couleurs :** points intéressants, points risqués, incertitudes, axes d'amélioration à surveiller, et les sources.
 
 **Le script vidéo** (dans votre espace `/admin`), au format court de 30 à 60 secondes :
 1. **Accroche** (3 secondes) : le problème ou l'effet « waouh ».

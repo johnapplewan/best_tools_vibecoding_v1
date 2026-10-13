@@ -52,7 +52,7 @@ renderFooter();
 const app = $("#app");
 const LIGHT = { green: "🟢", orange: "🟠", red: "🔴" };
 const STATUS = { pending: "En attente", running: "Analyse en cours…", done: "Terminé", error: "Erreur" };
-const CHECK = { ok: "✅", warn: "⚠️", bad: "⛔", unknown: "❔" };
+const CHECK = { ok: "🟢", warn: "🟠", bad: "🔴", unknown: "🟠" };
 let items = [];
 
 const { user } = await loadMe();
@@ -136,7 +136,7 @@ async function refresh() {
       <div class="acts">
         ${i.status === "done" ? `<button class="btn btn-sm" data-open="${i.id}">Voir la fiche</button>` : ""}
         ${["pending", "error"].includes(i.status) ? `<button class="btn btn-sm" data-run="${i.id}">Analyser</button>` : ""}
-        ${i.status === "done" && i.verdict !== "red" ? `<button class="btn btn-sm ${i.published ? "" : "btn-primary"}" data-pub="${i.id}" data-v="${!i.published}">${i.published ? "Dépublier" : "Publier"}</button>` : ""}
+        ${i.status === "done" && i.verdict ? `<button class="btn btn-sm ${i.published ? "" : "btn-primary"}" data-pub="${i.id}" data-v="${!i.published}">${i.published ? "Dépublier" : "Publier"}</button>` : ""}
         <button class="btn btn-sm btn-danger" data-del="${i.id}" title="Supprimer">✕</button>
       </div></div>`).join("");
 }
@@ -175,7 +175,10 @@ function openItem(id) {
       ${i.github ? ` · ⭐ ${i.github.stars} · ${i.github.archived ? "archivé" : "actif"} · ${esc(i.github.license || "licence ?")}` : ""} · modèle ${esc(i.model || "")}</p>
     <div class="section-title">Verdict</div>
     <select id="verdict" style="max-width:240px"><option value="green">🟢 Vert</option><option value="orange">🟠 Orange</option><option value="red">🔴 Rouge</option></select>
+    ${typeof c.score === "number" ? `<p class="faint">Note : ${String(c.score).replace(".", ",")}/10 (elle suit la couleur choisie)</p>` : ""}
     <ul>${c.verdict_reasons.map((r) => `<li class="muted">${esc(r)}</li>`).join("")}</ul>
+    ${[["Points intéressants", c.highlights], ["Points risqués", c.risks], ["Incertitudes", c.uncertainties], ["Axes d'amélioration à surveiller", c.improvements]]
+      .filter(([, l]) => l?.length).map(([t, l]) => `<div class="section-title">${t}</div><ul>${l.map((x) => `<li class="muted">${esc(x)}</li>`).join("")}</ul>`).join("")}
     <div class="section-title">Pré-audit sécurité</div>
     ${c.security.checks.map((k) => `<div class="muted" style="font-size:14px;margin:4px 0">${CHECK[k.status]} <b>${esc(k.label)}</b> — ${esc(k.detail)}</div>`).join("")}
     <p class="faint">${esc(c.security.data_policy)}</p>

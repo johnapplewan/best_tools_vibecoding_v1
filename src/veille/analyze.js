@@ -37,6 +37,11 @@ export const CARD_SCHEMA = obj({
   }),
   verdict: { type: "string", enum: ["green", "orange", "red"] },
   verdict_reasons: strArr,
+  score: { type: "number" },
+  highlights: strArr,
+  risks: strArr,
+  uncertainties: strArr,
+  improvements: strArr,
   uses: strArr,
   news: obj({ title: str, body: str }),
   video: obj({
@@ -74,13 +79,19 @@ Verdict :
 - "orange" : intéressant mais avec précautions (jeune, peu maintenu, accès étendus, prix flou, bêta, informations manquantes).
 - "red" : à éviter (faille non corrigée, abandonné, arnaque suspectée, collecte de données abusive).
 En cas de doute entre deux couleurs, choisis la plus prudente.
+Le verdict découle des contrôles du pré-audit (security.checks) : la couleur factuelle qui prédomine donne la tendance.
+
+Note (score) : un nombre à une décimale qui CONCLUT le verdict, sans jamais le changer. Elle reste dans la plage de la couleur :
+- "red" : de 0 à 5 ; "orange" : de 5,1 à 7,9 ; "green" : de 8 à 10.
+Place-la dans la moitié haute, moyenne ou basse de cette plage selon la répartition des contrôles (ex. rouge, vert, vert, orange, vert, orange, vert → moitié haute de l'orange), puis affine avec la tendance de confiance : utilité réelle, entretien du dépôt, validation par des applications ou des utilisateurs, qualité des intégrations, étoiles GitHub s'il y en a.
 
 Champs :
 - status : "ok" si un outil est identifié, "ambiguous" si plusieurs candidats (remplis candidates), "not_found" sinon.
 - github_repo : format "owner/nom" ou chaîne vide. official_url : URL https ou chaîne vide.
 - summary : 2 phrases maximum. uses : 3 usages concrets si vert, sinon 0 à 3.
+- highlights : 1 à 5 points intéressants. risks : 0 à 5 points risqués. uncertainties : 0 à 5 points d'incertitude (ce qui n'a pas pu être vérifié). improvements : 1 à 4 axes d'amélioration possibles, à surveiller de près.
 - security.checks : 4 à 8 contrôles (maintenance, licence, failles connues, accès demandés, confidentialité, typosquatting, incidents…).
-- news : titre accrocheur (≤ 80 caractères) et corps de 2 à 4 phrases pour l'onglet Actualités ; pour "orange", mentionne les points d'attention ; pour "red", laisse un texte interne.
+- news : titre accrocheur (≤ 80 caractères) et corps de 2 à 4 phrases pour l'onglet Actualités ; pour "orange", mentionne les points d'attention ; pour "red", explique factuellement pourquoi il faut l'éviter ou le surveiller, sans accusation non sourcée (la fiche peut être publiée).
 - video : script court 30–60 s. hook = accroche de 3 secondes ; demo = 3 étapes ; verdict_line = une phrase avec le feu ; cta_keyword = UN mot en MAJUSCULES sans espace lié à l'outil ; cta = « Commente <MOT> et je t'envoie le lien en DM » ; caption = légende du post ; hashtags = 5 à 8 hashtags.
 - sources : uniquement des URL présentes dans le dossier.
 N'ajoute aucune information qui n'est pas dans le dossier ou dans les données GitHub fournies.`;
@@ -139,8 +150,18 @@ export async function githubFacts(repo, env) {
 }
 
 // Règles prudentes appliquées après coup, quoi qu'en dise le modèle.
+// La note conclut la couleur et reste dans sa plage : rouge ≤ 5, orange 5,1 à 7,9, vert ≥ 8.
+const SCORE_RANGE = { red: [0, 5], orange: [5.1, 7.9], green: [8, 10] };
+export function fitScore(card) {
+  const [min, max] = SCORE_RANGE[card.verdict] || SCORE_RANGE.orange;
+  const n = Number(card.score);
+  const value = Number.isFinite(n) ? n : (min + max) / 2;
+  card.score = Math.round(Math.min(max, Math.max(min, value)) * 10) / 10;
+  return card;
+}
+
 function applyGuards(card, gh) {
-  if (!gh) return card;
+  if (!gh) return fitScore(card);
   const order = { green: 0, orange: 1, red: 2 };
   const atLeast = (v) => { if (order[card.verdict] < order[v]) card.verdict = v; };
   const months = gh.pushed_at ? (Date.now() - Date.parse(gh.pushed_at)) / (30 * 86400e3) : null;
@@ -151,7 +172,7 @@ function applyGuards(card, gh) {
     atLeast("orange");
     card.verdict_reasons.unshift(`Aucune activité sur le dépôt depuis ${Math.round(months)} mois.`);
   }
-  return card;
+  return fitScore(card);
 }
 
 // ───────── Pipeline complet ─────────
@@ -246,6 +267,11 @@ function mockAnalysis(input) {
       },
       verdict,
       verdict_reasons: verdict === "green" ? ["Projet actif et licence permissive."] : ["Encore en bêta."],
+      score: { green: 8.6, orange: 6.8, red: 3.5 }[verdict],
+      highlights: ["Installation en quelques minutes", "Open source (MIT)"],
+      risks: verdict === "green" ? [] : ["Accès en lecture à tout le dépôt local"],
+      uncertainties: ["Politique de conservation des données peu détaillée"],
+      improvements: ["Publier un audit de sécurité indépendant"],
       uses: ["Générer des tests", "Expliquer un dépôt inconnu", "Refactorer un fichier"],
       news: { title: `${name} : le copilote qui monte`, body: `${name} arrive dans le catalogue. Simple à installer, utile au quotidien.` },
       video: {
