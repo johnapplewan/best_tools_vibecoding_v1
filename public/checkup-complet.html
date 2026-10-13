@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem("vt-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<title>Check-up complet de ton App</title>
+<meta name="description" content="Le Check-up complet Vibe Tools : un dossier technique et business en PDF pour comprendre le vrai potentiel de ton projet avant d'aller plus loin.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+section.block { padding: 56px 0 8px; }
+.kicker { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--accent); font-weight: 700; text-align: center; }
+.title { text-align: center; max-width: 760px; margin: 8px auto 12px; }
+.sub { text-align: center; color: var(--muted); max-width: 680px; margin: 0 auto 28px; }
+.cards { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 700px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1040px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+.card { border: 1px solid var(--border); border-radius: 20px; background: var(--card); padding: 20px; box-shadow: var(--shadow); backdrop-filter: blur(12px); }
+.card .ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 20px; background: color-mix(in srgb, var(--accent) 14%, transparent); margin-bottom: 12px; }
+.card h3 { font-size: 16.5px; margin-bottom: 6px; }
+.card p { margin: 0; color: var(--muted); font-size: 14px; }
+.split { display: grid; gap: 24px; grid-template-columns: 1fr; align-items: center; }
+@media (min-width: 900px) { .split { grid-template-columns: 1.05fr .95fr; } }
+.doc { border: 1px solid var(--border-strong); border-radius: 18px; background: var(--card-solid); box-shadow: 0 30px 60px -30px rgba(40,30,120,.45); padding: 22px; position: relative; }
+.doc::before { content: "PDF"; position: absolute; top: -12px; right: 18px; font: 700 11px Inter, sans-serif; letter-spacing: .1em; color: #fff; background: linear-gradient(90deg, var(--accent), var(--accent-2)); padding: 5px 10px; border-radius: 999px; }
+.doc h4 { margin: 0 0 4px; font-size: 15px; }
+.toc { margin: 12px 0 0; padding: 0; list-style: none; counter-reset: t; font-size: 13.5px; }
+.toc li { counter-increment: t; display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--border); color: var(--muted); }
+.toc li::before { content: counter(t, decimal-leading-zero); font: 600 12px "JetBrains Mono", monospace; color: var(--accent); min-width: 22px; }
+.chart { width: 100%; height: auto; margin-top: 8px; }
+.chart .axis { stroke: var(--border-strong); }
+.chart text { fill: var(--faint); font: 500 11px Inter, sans-serif; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.steps { display: grid; gap: 14px; grid-template-columns: 1fr; counter-reset: s; }
+@media (min-width: 800px) { .steps { grid-template-columns: repeat(4, 1fr); } }
+.step { counter-increment: s; border: 1px solid var(--border); border-radius: 18px; background: var(--card); padding: 18px; }
+.step::before { content: counter(s); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 999px; color: #fff; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent-2)); margin-bottom: 10px; }
+.step h3 { font-size: 15.5px; margin-bottom: 4px; }
+.step p { margin: 0; font-size: 14px; color: var(--muted); }
+.checklist { columns: 1; gap: 24px; padding: 0; list-style: none; margin: 0; }
+@media (min-width: 700px) { .checklist { columns: 2; } }
+@media (min-width: 1040px) { .checklist { columns: 3; } }
+.checklist li { break-inside: avoid; padding: 6px 0 6px 26px; position: relative; font-size: 14px; color: var(--muted); }
+.checklist li::before { content: "✓"; position: absolute; left: 0; top: 6px; width: 18px; height: 18px; border-radius: 6px; display: grid; place-items: center; font-size: 11px; font-weight: 800; color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); }
+.cta-band { margin-top: 56px; border-radius: 26px; padding: 34px 24px; text-align: center; color: #fff; background: linear-gradient(120deg, var(--accent), color-mix(in srgb, var(--accent) 45%, var(--accent-2)), var(--accent-2)); box-shadow: 0 30px 60px -30px var(--accent); }
+.cta-band h2 { color: #fff; } .cta-band p { color: rgba(255,255,255,.9); max-width: 620px; margin: 6px auto 18px; }
+.cta-band .btn { background: #fff; color: #1a1630; border: 0; }
+.faq details { border-bottom: 1px solid var(--border); padding: 14px 0; }
+.faq summary { cursor: pointer; font-weight: 600; }
+.faq p { color: var(--muted); margin: 8px 0 0; font-size: 14.5px; }
+.pick { display: flex; flex-wrap: wrap; gap: 8px; }
+.pick label { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border-strong); border-radius: 999px; padding: 6px 12px; font-size: 14px; cursor: pointer; background: var(--bg-2); }
+.pick input { accent-color: var(--accent); }
+.disclaimer { text-align: center; color: var(--faint); font-size: 13px; max-width: 760px; margin: 28px auto 0; }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<main>
+  <header class="hero wrap">
+    <span class="pill"><b>Check-up complet</b> Technique · Business · Sécurité</span>
+    <h1>Découvre le <span class="serif grad">vrai potentiel</span> de ton projet avant d'aller plus loin</h1>
+    <p class="lead">Un dossier complet, technique et business, préparé avec toi et relu par un humain : ce que ton app vaut vraiment, ce qui la menace, et le chemin le plus sûr pour la faire grandir.</p>
+    <p style="margin-top:24px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn-primary" href="#rappel">📞 Être rappelé</a>
+      <a class="btn" href="#contenu">Voir ce que tu reçois</a>
+    </p>
+  </header>
+
+  <section class="block wrap" id="contenu">
+    <p class="kicker">Ce que tu sauras après</p>
+    <h2 class="title">Tu repars avec une vision claire, chiffrée et argumentée</h2>
+    <p class="sub">Fini les intuitions : chaque point est sourcé, expliqué simplement et relié à une décision concrète.</p>
+    <div class="cards">
+      <div class="card"><div class="ico">🧭</div><h3>Ton projet, compris en profondeur</h3><p>Ce que ton app fait vraiment bien, ce qui la rend unique, et les angles morts que personne ne t'a encore signalés.</p></div>
+      <div class="card"><div class="ico">🎯</div><h3>Tes cibles réelles</h3><p>Qui a vraiment le problème, qui est prêt à payer, et comment les atteindre : des profils concrets, pas des suppositions.</p></div>
+      <div class="card"><div class="ico">⚡</div><h3>Ta consommation et tes coûts d'usage</h3><p>Hébergement, API, IA, services tiers : ce que te coûte un utilisateur actif aujourd'hui, et demain à 100, 1 000 ou 10 000.</p></div>
+      <div class="card"><div class="ico">📈</div><h3>Trois projections</h3><p>Pessimiste, réaliste et optimiste, avec les hypothèses posées noir sur blanc, pour décider en connaissance de cause.</p></div>
+      <div class="card"><div class="ico">📣</div><h3>Des plans marketing éprouvés</h3><p>Les canaux et tactiques qui ont fonctionné pour ce type d'app, adaptés à ton budget et à ton temps disponible.</p></div>
+      <div class="card"><div class="ico">🧱</div><h3>Tes contraintes métier, et leurs solutions</h3><p>Les règles de ton secteur, les pièges classiques, et les solutions ou outils connexes qui les règlent déjà.</p></div>
+      <div class="card"><div class="ico">🏛️</div><h3>Les organismes et démarches</h3><p>Où t'enregistrer et quelles déclarations prévoir selon ton activité, pour avancer sans mauvaise surprise.</p></div>
+      <div class="card"><div class="ico">💶</div><h3>Les investissements à faire</h3><p>Les indispensables, les optimisés et ceux qui peuvent attendre, chacun justifié par son impact.</p></div>
+      <div class="card"><div class="ico">🛡️</div><h3>Ta sécurité, niveau par niveau</h3><p>Ce qui est protégé, ce qui ne l'est pas encore, et les niveaux de protection à mettre en place, par ordre de priorité.</p></div>
+      <div class="card"><div class="ico">🔀</div><h3>La circulation de l'information</h3><p>Où passent les données, dans ton outil et vers l'extérieur (services, API, partenaires), et où sont les fuites possibles.</p></div>
+      <div class="card"><div class="ico">🔒</div><h3>Confidentialité et RGPD</h3><p>Ce que tu collectes, ce que tu dois afficher, ce qu'il faut corriger : un pré-diagnostic clair de ta conformité.</p></div>
+      <div class="card"><div class="ico">✅</div><h3>Un plan d'action priorisé</h3><p>Les prochaines étapes, dans l'ordre, avec ce qu'elles débloquent. Tu sais exactement par quoi commencer lundi.</p></div>
+    </div>
+  </section>
+
+  <section class="block wrap">
+    <div class="split">
+      <div>
+        <p class="kicker" style="text-align:left">Le livrable</p>
+        <h2>Un dossier PDF complet, technique et business</h2>
+        <p class="muted">Un document clair, structuré et sourcé, avec graphiques et tableaux, que tu peux relire, partager avec un associé ou utiliser pour préparer un rendez-vous important : banque, investisseur, incubateur, client.</p>
+        <ul class="checklist" style="columns:1;margin-top:14px">
+          <li>Synthèse en une page, lisible en 2 minutes</li>
+          <li>Notes et pastilles 🟢 🟠 🔴 par domaine</li>
+          <li>Graphiques de projections et de coûts</li>
+          <li>Sources citées pour chaque affirmation</li>
+          <li>Plan d'action priorisé</li>
+        </ul>
+      </div>
+      <div class="doc" aria-label="Aperçu du dossier">
+        <h4>Check-up complet · Ton App</h4>
+        <span class="faint">Dossier technique et business</span>
+        <svg class="chart" viewBox="0 0 320 150" role="img" aria-label="Exemple de graphique : trois projections pessimiste, réaliste et optimiste">
+          <line class="axis" x1="30" y1="120" x2="310" y2="120"/><line class="axis" x1="30" y1="12" x2="30" y2="120"/>
+          <polyline fill="none" stroke="#ef4444" stroke-width="2.5" points="30,112 100,108 170,104 240,100 310,96"/>
+          <polyline fill="none" stroke="#f59e0b" stroke-width="2.5" points="30,112 100,100 170,86 240,70 310,54"/>
+          <polyline fill="none" stroke="#10b981" stroke-width="2.5" points="30,112 100,92 170,68 240,42 310,20"/>
+          <text x="30" y="138">M1</text><text x="160" y="138">M6</text><text x="290" y="138">M12</text>
+        </svg>
+        <div class="legend"><span><i style="background:#ef4444"></i>Pessimiste</span><span><i style="background:#f59e0b"></i>Réaliste</span><span><i style="background:#10b981"></i>Optimiste</span></div>
+        <ol class="toc">
+          <li>Synthèse et note globale</li>
+          <li>Produit, cibles et positionnement</li>
+          <li>Coûts d'usage et consommation</li>
+          <li>Projections et hypothèses</li>
+          <li>Marketing : plans éprouvés</li>
+          <li>Contraintes métier et démarches</li>
+          <li>Sécurité, données et RGPD</li>
+          <li>Investissements et plan d'action</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="block wrap">
+    <p class="kicker">Comment ça se passe</p>
+    <h2 class="title">Un vrai échange, pas un formulaire de plus</h2>
+    <p class="sub">On prend le temps de comprendre ton projet avant de l'analyser. Les questions sont réglées pendant l'analyse, pour que le dossier final soit juste.</p>
+    <div class="steps">
+      <div class="step"><h3>Tu demandes à être rappelé</h3><p>Tu choisis tes jours et tes horaires. On te contacte via ton lien Telegram, Signal ou WhatsApp : aucun numéro demandé.</p></div>
+      <div class="step"><h3>Appel de cadrage</h3><p>On fait le point sur ton projet, ton objectif et tes contraintes. Le tarif t'est annoncé à ce moment-là.</p></div>
+      <div class="step"><h3>Analyse approfondie</h3><p>Analyse assistée par IA et expertise humaine. Si un point soulève une question, elle est traitée avant la remise.</p></div>
+      <div class="step"><h3>Relecture et remise</h3><p>Chaque conclusion est relue par un humain, puis tu reçois ton dossier PDF complet.</p></div>
+    </div>
+  </section>
+
+  <section class="block wrap">
+    <p class="kicker">Les points analysés</p>
+    <h2 class="title">40 points analysés, du code au business</h2>
+    <ul class="checklist">
+      <li>Architecture et choix techniques</li><li>Qualité et maintenabilité du code</li><li>Dépendances et licences</li><li>Performance et temps de chargement</li>
+      <li>Accessibilité</li><li>Hébergement et disponibilité</li><li>Sauvegardes et reprise</li><li>Authentification et sessions</li>
+      <li>Gestion des secrets et clés API</li><li>En-têtes et configuration de sécurité</li><li>Failles connues des dépendances</li><li>Niveaux d'accès et rôles</li>
+      <li>Circulation interne des données</li><li>Flux vers les services externes</li><li>Données collectées et finalités</li><li>Mentions légales et confidentialité</li>
+      <li>Cookies et consentement</li><li>Sous-traitants et transferts hors UE</li><li>Proposition de valeur</li><li>Parcours d'inscription</li>
+      <li>Cibles réelles et persona</li><li>Concurrence directe et indirecte</li><li>Positionnement et différenciation</li><li>Prix et modèle économique</li>
+      <li>Coût d'acquisition estimé</li><li>Coût d'usage par utilisateur</li><li>Projections à 12 mois</li><li>Seuil de rentabilité</li>
+      <li>Canaux marketing adaptés</li><li>Contenu et réseaux sociaux</li><li>Référencement naturel</li><li>Contraintes réglementaires du secteur</li>
+      <li>Démarches et organismes</li><li>Propriété intellectuelle et nom</li><li>Investissements indispensables</li><li>Investissements optimisables</li>
+      <li>Risques majeurs et parades</li><li>Dépendance à un fournisseur</li><li>Capacité à passer à l'échelle</li><li>Plan d'action priorisé</li>
+    </ul>
+  </section>
+
+  <section class="block wrap">
+    <p class="kicker">Pour quel besoin ?</p>
+    <h2 class="title">Le dossier s'adapte à ton objectif</h2>
+    <div class="chips" style="justify-content:center;max-width:860px;margin:0 auto">
+      <span class="tag">🚀 Lancement public</span><span class="tag">💼 Levée de fonds</span><span class="tag">🏦 Business plan ou banque</span><span class="tag">🛡️ Dossier d'assurance cyber</span>
+      <span class="tag">🔒 Pré-diagnostic RGPD</span><span class="tag">🤝 Vente ou rachat</span><span class="tag">🌱 Incubateur, BPI, subvention</span><span class="tag">📋 Questionnaire sécurité B2B</span>
+      <span class="tag">👥 Recherche d'associé ou de CTO</span><span class="tag">📖 Passage en open source</span>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta-band" id="rappel">
+      <h2>Prêt à voir ton projet tel qu'il est vraiment ?</h2>
+      <p>Choisis ton créneau : on te rappelle pour cadrer ton Check-up complet. Sans engagement, le tarif t'est annoncé pendant l'appel.</p>
+      <div id="callback-slot"></div>
+    </div>
+  </section>
+
+  <section class="block wrap faq" style="max-width:820px">
+    <h2 class="title">Questions fréquentes</h2>
+    <details><summary>Combien ça coûte ?</summary><p>Le tarif dépend de la taille de ton projet et de ton objectif. Il t'est annoncé lors de l'appel de cadrage, avant tout engagement.</p></details>
+    <details><summary>Pourquoi un appel plutôt qu'un formulaire ?</summary><p>Parce qu'un bon dossier commence par les bonnes questions. L'appel permet de comprendre ton objectif réel et de régler les points sensibles avant l'analyse, pour un dossier juste dès la première version.</p></details>
+    <details><summary>Est-ce que vous me demandez mon numéro ?</summary><p>Non. On te contacte via un lien que tu as déjà mis sur ton profil (Telegram, Signal ou WhatsApp en lien QR). La plateforme ne stocke aucun numéro de téléphone.</p></details>
+    <details><summary>Mes informations restent-elles confidentielles ?</summary><p>Oui. Ce que tu partages pour ton Check-up sert uniquement à préparer ton dossier. Rien n'est publié ni transmis à des tiers.</p></details>
+    <details><summary>Est-ce une certification ou un audit officiel ?</summary><p>Non. C'est un pré-diagnostic approfondi, assisté par IA et relu par un humain : une aide à la décision. Il ne remplace ni un audit de sécurité professionnel, ni un avis juridique ou comptable.</p></details>
+    <details><summary>Quelle différence avec le Check-up express ?</summary><p>L'express est un aperçu gratuit et automatique, à partir des informations publiques. Le complet part d'un échange avec toi, couvre la technique et le business en profondeur, et aboutit à un dossier PDF relu par un humain.</p></details>
+  </section>
+
+  <p class="disclaimer wrap">Le Check-up complet est un pré-diagnostic assisté par IA et relu par un humain. C'est une aide à la décision, pas une certification ni un audit de sécurité, juridique ou comptable officiel. Les projections reposent sur des hypothèses explicites et ne constituent pas une garantie de résultat.</p>
+</main>
+
+<script type="module">
+import { $, esc, api, loadMe, loginUrl, renderNav, renderFooter, toast, GH_ICON } from "/assets/app.js";
+renderNav("/checkup");
+renderFooter();
+
+const NET = { telegram: "✈️ Telegram", signal: "🔵 Signal", whatsapp: "🟢 WhatsApp" };
+const DAY = { lun: "Lundi", mar: "Mardi", mer: "Mercredi", jeu: "Jeudi", ven: "Vendredi", sam: "Samedi" };
+const slot = $("#callback-slot");
+
+async function render() {
+  const { user } = await loadMe();
+  if (!user) { slot.innerHTML = `<a class="btn" href="${loginUrl("/checkup-complet#rappel")}">${GH_ICON} Se connecter pour être rappelé</a>`; return; }
+  if (!user.pseudo || user.needsOnboarding) { slot.innerHTML = `<a class="btn" href="/moi">Terminer mon inscription</a>`; return; }
+  const d = await api("/api/checkup");
+  if (d.callback) {
+    const c = d.callback.input;
+    slot.innerHTML = `<div class="panel" style="text-align:left;color:var(--text);max-width:620px;margin:0 auto">
+      <h3>✅ Ta demande est enregistrée</h3>
+      <p class="muted" style="margin:6px 0">${d.callback.status === "contacted" ? "On a pris contact avec toi." : "On te rappelle sur l'un de tes créneaux."} Contact : ${esc(NET[c.network] || c.network)} · ${c.days.map((x) => DAY[x] || x).join(", ")} · ${c.slots.map((x) => d.slots[x] || x).join(", ")}</p>
+      <button class="btn btn-sm" id="cancel" type="button">Annuler ma demande</button></div>`;
+    $("#cancel").onclick = async () => { if (!confirm("Annuler ta demande de rappel ?")) return; await api("/api/checkup/callback", { method: "DELETE" }); toast("Demande annulée"); render(); };
+    return;
+  }
+  if (!d.contactOptions.length) {
+    slot.innerHTML = `<div class="panel" style="text-align:left;color:var(--text);max-width:620px;margin:0 auto">
+      <p style="margin-top:0">Pour être rappelé, ajoute d'abord sur ton profil un lien <b>Telegram</b>, <b>Signal</b> ou <b>WhatsApp</b> (lien QR). Aucun numéro n'est demandé.</p>
+      <a class="btn btn-primary" href="/moi">Ajouter un lien de contact</a></div>`;
+    return;
+  }
+  slot.innerHTML = `<form class="panel" id="cb" style="text-align:left;color:var(--text);max-width:680px;margin:0 auto">
+    <label class="field"><span>Ton projet (nom ou lien) *</span><input type="text" name="project" maxlength="120" required></label>
+    <label class="field"><span>Ton objectif</span><select name="goal">${Object.entries(d.goals).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join("")}</select></label>
+    <label class="field"><span>Un mot sur ton besoin (facultatif)</span><textarea name="note" maxlength="600" rows="3" placeholder="Où tu en es, ce qui t'inquiète, l'échéance…"></textarea><small>Pas de numéro ni d'email.</small></label>
+    <fieldset style="border:0;padding:0;margin:0 0 14px"><legend style="font-weight:600;font-size:14px;margin-bottom:6px">On te contacte via</legend>
+      <div class="pick">${d.contactOptions.map((n, i) => `<label><input type="radio" name="network" value="${n}" ${i ? "" : "checked"}> ${NET[n]}</label>`).join("")}</div></fieldset>
+    <fieldset style="border:0;padding:0;margin:0 0 14px"><legend style="font-weight:600;font-size:14px;margin-bottom:6px">Tes jours disponibles</legend>
+      <div class="pick">${d.days.map((x) => `<label><input type="checkbox" name="days" value="${x}"> ${DAY[x]}</label>`).join("")}</div></fieldset>
+    <fieldset style="border:0;padding:0;margin:0 0 16px"><legend style="font-weight:600;font-size:14px;margin-bottom:6px">Tes tranches horaires</legend>
+      <div class="pick">${Object.entries(d.slots).map(([k, l]) => `<label><input type="checkbox" name="slots" value="${k}"> ${l}</label>`).join("")}</div></fieldset>
+    <button class="btn btn-primary" type="submit">📞 Être rappelé</button>
+  </form>`;
+  $("#cb").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const all = (n) => [...f.querySelectorAll(`[name=${n}]:checked`)].map((x) => x.value);
+    try {
+      await api("/api/checkup/callback", { method: "POST", body: { project: f.project.value, goal: f.goal.value, note: f.note.value, network: all("network")[0], days: all("days"), slots: all("slots") } });
+      toast("Demande envoyée, à très vite 👋");
+      render();
+    } catch (err) { toast(err.message); }
+  });
+}
+render();
+</script>
+</body>
+</html>

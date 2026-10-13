@@ -241,6 +241,27 @@ const SCHEMA = [
      created_at INTEGER NOT NULL
    )`,
   `CREATE INDEX IF NOT EXISTS notifications_user ON notifications (user_id, read_at)`,
+  // Check-up : pré-diagnostic express (IA) et demandes de rappel pour le Check-up complet.
+  `CREATE TABLE IF NOT EXISTS checkups (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     user_id INTEGER NOT NULL,
+     kind TEXT NOT NULL,                       -- express | callback
+     input TEXT NOT NULL DEFAULT '{}',
+     status TEXT NOT NULL DEFAULT 'pending',   -- express : pending | running | done | error ; rappel : new | contacted | done | cancelled
+     attempts INTEGER NOT NULL DEFAULT 0,
+     result TEXT,
+     error TEXT,
+     created_at INTEGER NOT NULL,
+     updated_at INTEGER NOT NULL
+   )`,
+  `CREATE INDEX IF NOT EXISTS checkups_user ON checkups (user_id, kind)`,
+  `CREATE INDEX IF NOT EXISTS checkups_status ON checkups (kind, status, created_at)`,
+  // Réglages de l'admin (chat Telegram, jeton secret du flux d'agenda…).
+  `CREATE TABLE IF NOT EXISTS settings (
+     key TEXT PRIMARY KEY,
+     value TEXT NOT NULL,
+     updated_at INTEGER NOT NULL
+   )`,
 ];
 
 // Colonnes ajoutées après la création des tables (ALTER TABLE ignoré si la colonne existe déjà).

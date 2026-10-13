@@ -96,7 +96,7 @@ Champs :
 - sources : uniquement des URL présentes dans le dossier.
 N'ajoute aucune information qui n'est pas dans le dossier ou dans les données GitHub fournies.`;
 
-function client(env) {
+export function client(env) {
   // Clé valable sur plusieurs workspaces : ANTHROPIC_WORKSPACE_ID (wrkspc_…) indique lequel utiliser.
   const workspace = String(env.ANTHROPIC_WORKSPACE_ID || "").trim();
   return new Anthropic({
@@ -105,7 +105,7 @@ function client(env) {
   });
 }
 
-function textOf(message) {
+export function textOf(message) {
   return message.content.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
 }
 

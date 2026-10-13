@@ -195,6 +195,7 @@ export async function deleteMe(request, env) {
     env.DB.prepare("DELETE FROM cp_votes WHERE user_id = ?1").bind(user.id),
     env.DB.prepare("DELETE FROM cp_weather WHERE user_id = ?1").bind(user.id),
     env.DB.prepare("DELETE FROM notifications WHERE user_id = ?1").bind(user.id),
+    env.DB.prepare("DELETE FROM checkups WHERE user_id = ?1").bind(user.id),
     env.DB.prepare("DELETE FROM projects WHERE user_id = ?1").bind(user.id),
     env.DB.prepare("DELETE FROM project_images WHERE user_id = ?1 AND id NOT IN (SELECT image_id FROM cp_projects WHERE image_id IS NOT NULL)").bind(user.id),
     env.DB.prepare("DELETE FROM recommendations WHERE from_user = ?1 OR to_user = ?1").bind(user.id),
