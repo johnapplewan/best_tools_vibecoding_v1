@@ -17,7 +17,11 @@
   ],
   // Identifiants GitHub NUMÉRIQUES des administrateurs (séparés par des virgules). Ce n'est pas un secret.
   // 80370810 = johnapplewan. L'identifiant ne change jamais, même si le compte est renommé.
-  "vars": { "ADMIN_GITHUB_IDS": "80370810" },
+  // ANTHROPIC_WORKSPACE_ID : workspace Claude utilisé par la veille (la clé API est valable sur plusieurs workspaces).
+  "vars": {
+    "ADMIN_GITHUB_IDS": "80370810",
+    "ANTHROPIC_WORKSPACE_ID": "wrkspc_01XTxUEHRLgaJzojzsCTQvJy"
+  },
   // Garde les variables ajoutées dans le tableau de bord Cloudflare à chaque déploiement.
   "keep_vars": true,
   // Toutes les 5 minutes : analyse des éléments de veille en attente.
