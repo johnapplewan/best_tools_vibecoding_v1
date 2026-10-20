@@ -6,6 +6,8 @@ Pour chaque vidéo : un code, un titre et son contenu en trois phrases. Ces troi
 
 ## Règles communes
 
+La charte graphique complète (couleurs, polices, motion design, effets, son) est dans [`charte-video.md`](charte-video.md).
+
 - **Ton** : tutoiement, phrases courtes, vocabulaire simple ; chaque terme technique est expliqué en une phrase la première fois.
 - **Structure** : une accroche de 5 secondes (le problème ou la promesse), le contenu, puis un récapitulatif en une phrase.
 - **Durées** :
