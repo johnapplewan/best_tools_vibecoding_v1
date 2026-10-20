@@ -69,20 +69,38 @@ export function avatarHTML(member, size = "") {
 const GH_ICON = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>';
 export { GH_ICON };
 
+// Menu « trois traits » : sur mobile et tablette, les liens de navigation passent dans un panneau.
+function setupMenu(nav) {
+  const btn = nav.querySelector(".menu-btn"), menu = nav.querySelector(".nav-menu");
+  const close = () => { menu.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); btn.textContent = "☰"; };
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (menu.classList.contains("open")) return close();
+    menu.innerHTML = nav.querySelector(".nav-links").innerHTML;
+    menu.classList.add("open"); btn.setAttribute("aria-expanded", "true"); btn.textContent = "✕";
+  });
+  menu.addEventListener("click", (e) => { if (e.target.closest("a")) close(); });
+  document.addEventListener("click", (e) => { if (!nav.contains(e.target)) close(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+}
+
 export async function renderNav(active) {
   initTheme();
   const nav = document.createElement("nav");
   nav.className = "top";
   const links = [["/outils", "Outils"], ["/comment-faire", "Comment faire ?"], ["/actualites", "Actualités"], ["/showroom", "Showroom"], ["/atelier", "Créer ici"]];
   nav.innerHTML = `<div class="wrap">
+    <button class="icon-btn menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-menu">☰</button>
     <a class="logo" href="/outils"><span class="logo-mark">✦</span><span class="label">Vibe Tools</span></a>
     <div class="nav-links">${links.map(([h, l]) => `<a href="${h}"${h === active ? ' aria-current="page"' : ""}>${l}</a>`).join("")}</div>
     <div class="spacer"></div>
     <button class="icon-btn" type="button" data-theme-toggle aria-label="Changer de thème">◐</button>
     <span data-me-slot></span>
-  </div>`;
+  </div>
+  <div class="nav-menu" id="nav-menu"></div>`;
   document.body.prepend(nav);
   nav.querySelector("[data-theme-toggle]").addEventListener("click", toggleTheme);
+  setupMenu(nav);
   const { user } = await loadMe();
   if (user?.unread) {
     const a = nav.querySelector('a[href="/atelier"]');
