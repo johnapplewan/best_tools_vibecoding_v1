@@ -285,6 +285,7 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
       <a href="#outils">Outils</a>
       <a href="#comparaison">Comparaison</a>
       <a href="#politiques">Changements</a>
+      <a href="/comment-faire">Comment faire ?</a>
       <a href="/actualites">Actualités</a>
       <a href="/showroom">Showroom</a>
     </div>
@@ -636,6 +637,9 @@ fetch("/api/me").then(r => r.ok ? r.json() : null).then(d => {
 }).catch(() => {});
 
 // ── Chargement ──
+// ?q=… (liens depuis « Comment faire ? ») : pré-remplit la recherche
+const q0 = new URLSearchParams(location.search).get("q");
+if (q0) { $("#q").value = q0; state.q = q0; }
 chips(); overlaps(); render();
 
 fetch("/api/stars").then(r => r.ok ? r.json() : null).then(d => {

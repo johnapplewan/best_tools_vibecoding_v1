@@ -73,7 +73,7 @@ export async function renderNav(active) {
   initTheme();
   const nav = document.createElement("nav");
   nav.className = "top";
-  const links = [["/outils", "Outils"], ["/actualites", "Actualités"], ["/showroom", "Showroom"], ["/atelier", "Créer ici"]];
+  const links = [["/outils", "Outils"], ["/comment-faire", "Comment faire ?"], ["/actualites", "Actualités"], ["/showroom", "Showroom"], ["/atelier", "Créer ici"]];
   nav.innerHTML = `<div class="wrap">
     <a class="logo" href="/outils"><span class="logo-mark">✦</span><span class="label">Vibe Tools</span></a>
     <div class="nav-links">${links.map(([h, l]) => `<a href="${h}"${h === active ? ' aria-current="page"' : ""}>${l}</a>`).join("")}</div>
