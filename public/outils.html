@@ -106,7 +106,17 @@ nav.top .wrap { display: flex; align-items: center; gap: 14px; height: 60px; }
 .nav-links { display: none; gap: 4px; margin-left: 12px; }
 .nav-links a { text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 10px; border-radius: 8px; }
 .nav-links a:hover { color: var(--text); background: var(--border); }
-@media (min-width: 820px) { .nav-links { display: flex; } }
+@media (min-width: 1024px) { .nav-links { display: flex; } }
+
+/* Menu « trois traits » sur mobile et tablette */
+.icon-btn.menu-btn { display: none; flex: none; }
+.nav-menu { display: none; }
+@media (max-width: 1023px) {
+  .icon-btn.menu-btn { display: grid; }
+  .nav-menu.open { display: flex; flex-direction: column; gap: 2px; position: absolute; left: 0; right: 0; top: 60px; padding: 10px 16px 16px; background: var(--bg); border-bottom: 1px solid var(--border); box-shadow: 0 20px 40px -20px rgba(0,0,0,.35); max-height: calc(100vh - 60px); overflow: auto; }
+  .nav-menu a { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 10px; text-decoration: none; color: var(--text); font-size: 16px; font-weight: 500; }
+  .nav-menu a:hover, .nav-menu a[aria-current="page"] { background: var(--border); }
+}
 .spacer { flex: 1; }
 .icon-btn {
   width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--card);
@@ -280,11 +290,13 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
 
 <nav class="top">
   <div class="wrap">
+    <button class="icon-btn menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-menu">☰</button>
     <a class="logo" href="#top"><span class="logo-mark">✦</span>Vibe Tools</a>
     <div class="nav-links">
       <a href="#outils">Outils</a>
       <a href="#comparaison">Comparaison</a>
       <a href="#politiques">Changements</a>
+      <a href="/comment-faire">Comment faire ?</a>
       <a href="/actualites">Actualités</a>
       <a href="/showroom">Showroom</a>
     </div>
@@ -295,6 +307,7 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
       <span>Se connecter</span>
     </a>
   </div>
+  <div class="nav-menu" id="nav-menu"></div>
 </nav>
 
 <main id="top">
@@ -437,6 +450,22 @@ if (!device) { device = uuid(); store.set("vt-device", device); }
 const root = document.documentElement;
 const savedTheme = store.get("vt-theme");
 if (savedTheme) root.dataset.theme = savedTheme;
+// ── Menu « trois traits » (mobile et tablette) ──
+function setupMenu(nav) {
+  const btn = nav.querySelector(".menu-btn"), menu = nav.querySelector(".nav-menu");
+  const close = () => { menu.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); btn.textContent = "☰"; };
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (menu.classList.contains("open")) return close();
+    menu.innerHTML = nav.querySelector(".nav-links").innerHTML;
+    menu.classList.add("open"); btn.setAttribute("aria-expanded", "true"); btn.textContent = "✕";
+  });
+  menu.addEventListener("click", (e) => { if (e.target.closest("a")) close(); });
+  document.addEventListener("click", (e) => { if (!nav.contains(e.target)) close(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+}
+setupMenu(document.querySelector("nav.top"));
+
 $("#theme").addEventListener("click", () => {
   const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
   root.dataset.theme = dark ? "light" : "dark";
@@ -636,6 +665,9 @@ fetch("/api/me").then(r => r.ok ? r.json() : null).then(d => {
 }).catch(() => {});
 
 // ── Chargement ──
+// ?q=… (liens depuis « Comment faire ? ») : pré-remplit la recherche
+const q0 = new URLSearchParams(location.search).get("q");
+if (q0) { $("#q").value = q0; state.q = q0; }
 chips(); overlaps(); render();
 
 fetch("/api/stars").then(r => r.ok ? r.json() : null).then(d => {

@@ -27,6 +27,7 @@ Page de référencement d'outils de vibe-coding sympa - A page listing cool vibe
 | `public/indispo.html` | Codes de récupération du porteur : gel ou reprise du rôle (`/indispo`) |
 | `src/api/checkup.js`, `src/checkup/analyze.js` | Check-up : express (pré-diagnostic IA, membres) et demandes de rappel du complet |
 | `public/checkup.html`, `public/checkup-complet.html` | Check-up express (`/checkup`) et landing du Check-up complet (`/checkup-complet`) |
+| `public/comment-faire.html` | « Comment faire ? » (`/comment-faire`) : GPS, carte, bibliothèque et, pour les membres, « Évoluer » (compétences, certifs, jobs, outils, recrutement, tests et simulateur d'entretien) |
 | `public/cgu.html`, `public/charte.html` | Pages légales, rendues depuis `public/legal/*.md` |
 | `wrangler.jsonc` | Configuration du Worker et liaison de la base D1 |
 | `docs/sources/source-A-post-X.md` | Tableau des 25 ressources du post X |
@@ -90,4 +91,6 @@ npx wrangler@4 dev --test-scheduled   # puis curl "http://localhost:8787/__sched
 - [`public/legal/cgu.md`](public/legal/cgu.md) : conditions générales d'utilisation, affichées sur `/cgu` (brouillon à faire relire)
 - [`public/legal/charte.md`](public/legal/charte.md) : charte déontologique des membres, affichée sur `/charte`
 - [`docs/plateforme/checkup.md`](docs/plateforme/checkup.md) : Check-up de ton App (express et complet)
+- [`docs/plateforme/comment-faire.md`](docs/plateforme/comment-faire.md) : page « Comment faire ? » (modes, accès, Évoluer, stockage, prochaines étapes)
+- [`docs/plateforme/comment-faire-videos.md`](docs/plateforme/comment-faire-videos.md) : liste des vidéos à produire (fiches et capsules outils)
 - [`docs/plateforme/veille.md`](docs/plateforme/veille.md) : module de veille (raccourci iOS, analyse, feu tricolore, script vidéo)

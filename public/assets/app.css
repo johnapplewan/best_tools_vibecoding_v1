@@ -60,6 +60,17 @@ nav.top .wrap { display: flex; align-items: center; gap: 12px; height: 60px; }
 .nav-links a { text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 10px; border-radius: 8px; white-space: nowrap; }
 .nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--text); background: var(--border); }
 .spacer { flex: 1; }
+
+/* Menu « trois traits » sur mobile et tablette */
+.icon-btn.menu-btn { display: none; flex: none; }
+.nav-menu { display: none; }
+@media (max-width: 1023px) {
+  nav.top .nav-links { display: none; }
+  .icon-btn.menu-btn { display: grid; }
+  .nav-menu.open { display: flex; flex-direction: column; gap: 2px; position: absolute; left: 0; right: 0; top: 60px; padding: 10px 16px 16px; background: var(--bg); border-bottom: 1px solid var(--border); box-shadow: 0 20px 40px -20px rgba(0,0,0,.35); max-height: calc(100vh - 60px); overflow: auto; }
+  .nav-menu a { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 10px; text-decoration: none; color: var(--text); font-size: 16px; font-weight: 500; }
+  .nav-menu a:hover, .nav-menu a[aria-current="page"] { background: var(--border); }
+}
 .badge { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--accent-2); color: #fff; font-size: 11px; font-weight: 700; vertical-align: 1px; }
 .tag-warn { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
 .tag-danger { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
