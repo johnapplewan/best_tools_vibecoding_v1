@@ -11,7 +11,7 @@ Version 1 · 20 oct. 2026 · s'applique à toutes les vidéos listées dans [`co
 1. **Une idée par scène.** Si une scène dit deux choses, on la coupe en deux.
 2. **Le contenu d'abord, l'effet ensuite.** Un effet qui n'aide pas à comprendre est retiré.
 3. **Tout bouge comme un liquide.** Pas d'apparition sèche : chaque élément glisse, s'étire et se pose.
-4. **La même grammaire partout.** Mêmes couleurs, mêmes polices, mêmes transitions dans les 173 vidéos : c'est ce qui fait « pro ».
+4. **La même grammaire partout.** Mêmes couleurs, mêmes polices, mêmes transitions dans les 180 vidéos : c'est ce qui fait « pro ».
 5. **Lisible sur téléphone.** Chaque écran doit se lire en format 9:16 sur un téléphone tenu à bout de bras.
 
 ---
