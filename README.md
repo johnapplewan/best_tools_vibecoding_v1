@@ -93,4 +93,5 @@ npx wrangler@4 dev --test-scheduled   # puis curl "http://localhost:8787/__sched
 - [`docs/plateforme/checkup.md`](docs/plateforme/checkup.md) : Check-up de ton App (express et complet)
 - [`docs/plateforme/comment-faire.md`](docs/plateforme/comment-faire.md) : page « Comment faire ? » (modes, accès, Évoluer, stockage, prochaines étapes)
 - [`docs/plateforme/comment-faire-videos.md`](docs/plateforme/comment-faire-videos.md) : liste des vidéos à produire (fiches et capsules outils)
+- [`docs/plateforme/charte-video.md`](docs/plateforme/charte-video.md) : charte graphique des vidéos (couleurs, polices, illustrations, motion design, effets, son)
 - [`docs/plateforme/veille.md`](docs/plateforme/veille.md) : module de veille (raccourci iOS, analyse, feu tricolore, script vidéo)

@@ -91,6 +91,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .ex { margin-top: 12px; }
 .profile { display: grid; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
 .profile > div { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.wfseg { display: inline-flex; gap: 4px; padding: 3px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-2); }
+.wfseg button { border: 0; background: transparent; border-radius: 999px; padding: 5px 12px; font: 600 13px Inter, sans-serif; color: var(--muted); cursor: pointer; }
+.wfseg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.wftag { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-2); color: var(--muted); white-space: nowrap; }
+.wfhelp { margin-top: 12px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-2); }
+.wfhelp summary { cursor: pointer; padding: 10px 14px; font-weight: 600; font-size: 14px; }
+.wfhelp .wfin { padding: 0 14px 14px; font-size: 13.5px; }
+.wfhelp table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.wfhelp td, .wfhelp th { text-align: left; padding: 6px 8px; border-top: 1px solid var(--border); vertical-align: top; }
+.wfhelp th { color: var(--faint); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+.wfrec { margin-top: 12px; padding: 10px 14px; border-radius: 12px; background: color-mix(in srgb, var(--accent-3) 10%, transparent); font-size: 14px; }
 .profile .k { font-size: 12px; color: var(--faint); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; min-width: 92px; }
 .sug-head { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 14px; font-size: 12.5px; color: var(--faint); }
 .sug-head b { color: var(--muted); }
@@ -176,8 +187,8 @@ section.view { padding: 22px 0 60px; }
 .bar { flex: 1 1 220px; height: 12px; border-radius: 999px; background: var(--border); overflow: hidden; }
 .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3)); border-radius: 999px; transition: width .4s; }
 .badges { display: flex; gap: 6px; flex-wrap: wrap; }
-.badge { font-size: 12.5px; padding: 4px 9px; border-radius: 999px; border: 1px dashed var(--border-strong); color: var(--faint); }
-.badge.on { border-style: solid; border-color: var(--warn); color: var(--text); background: color-mix(in srgb, var(--warn) 12%, transparent); }
+.xpbadge { font-size: 12.5px; padding: 4px 9px; border-radius: 999px; border: 1px dashed var(--border-strong); color: var(--faint); }
+.xpbadge.on { border-style: solid; border-color: var(--warn); color: var(--text); background: color-mix(in srgb, var(--warn) 12%, transparent); }
 .world { margin-top: 26px; }
 .world h3 { display: flex; gap: 8px; align-items: center; font-size: 18px; }
 .world h3 span { font-size: 12px; font-weight: 600; color: var(--faint); }
@@ -428,7 +439,20 @@ button.door:hover { transform: translateY(-2px); border-color: var(--tc); }
       <div class="profile">
         <div><span class="k">Mon niveau</span><span class="chips" id="p-level"></span></div>
         <div><span class="k">Où j'en suis</span><span class="chips" id="p-stage"></span></div>
+        <div id="p-where-row"><span class="k">Où je travaille</span><span class="chips" id="p-where"></span></div>
       </div>
+      <details class="wfhelp" id="wf-help"><summary>🤔 Poste local ou full web : quel workflow pour quel projet ?</summary><div class="wfin">
+        <p class="muted"><b>🖥️ Poste local</b> : éditeur, Node et terminal sur ton ordinateur, puis GitHub. <b>🌐 Full web</b> : Claude Code en ligne (ordinateur, mobile ou tablette), GitHub pour le code, Cloudflare ou Netlify pour l'aperçu et la mise en ligne. Rien à installer.</p>
+        <table><thead><tr><th>Type de projet</th><th>Workflow conseillé</th></tr></thead><tbody>
+          <tr><td>Site vitrine, landing page, blog, prototype</td><td>🌐 Full web</td></tr>
+          <tr><td>App web simple avec Supabase (comptes, données)</td><td>🌐 Full web</td></tr>
+          <tr><td>Temps réel, multijoueur (Cloudflare Durable Objects)</td><td>🌐 Full web (Cloudflare)</td></tr>
+          <tr><td>Depuis un mobile ou une tablette, sans ordinateur</td><td>🌐 Full web</td></tr>
+          <tr><td>IA locale (Ollama, LM Studio), confidentialité totale</td><td>🖥️ Poste local</td></tr>
+          <tr><td>Outils lourds ou qui tournent chez toi (Foundry, Hardhat, ROS, Arduino, Home Assistant, apps Apple)</td><td>🖥️ Poste local</td></tr>
+          <tr><td>Gros projet, services à lancer ou déboguer en local</td><td>🖥️ Poste local</td></tr>
+          <tr><td>Tu hésites</td><td>Commence en 🌐 full web : GitHub permet de passer en local plus tard sans rien perdre</td></tr>
+        </tbody></table></div></details>
       <div class="sug-head" id="sug-head"><span>💡 <b>Idées de projets de la semaine</b> · adaptées à ton niveau · mises à jour le lundi 12 octobre</span><button class="btn btn-sm" type="button" id="shuffle">🔀 D'autres idées</button></div>
       <div class="sugs" id="examples"></div>
     </div>
@@ -593,6 +617,19 @@ const WHY = {
   "t-playwright": ["Un robot ne se fatigue pas et ne saute pas d'étape.", "Fais-le tester sur une copie de test, jamais sur tes vraies données."]
 };
 T.forEach((x) => { [x.why, x.senior] = WHY[x.id] || ["", ""]; });
+// Workflow : « local » = poste local seulement ; « web » = faisable en full web ; une variante W = sélecteur sur la fiche
+const LOCAL_ONLY = ["local", "t-codex", "t-ollama", "t-playwright"];
+const WVAR = {
+  poste: { t: "Travailler sans rien installer", tools: ["claude-code", "github"], steps: ["Crée ton compte GitHub", "Ouvre Claude Code en ligne et connecte ton dépôt", "Lance ta première session depuis ton navigateur ou ton téléphone"], connect: "Rien à installer : un compte GitHub et un compte Claude suffisent.", pit: ["Oublier que l'agent ne voit que le dépôt choisi : ce qui n'y est pas n'existe pas pour lui"], exo: "Crée un dépôt « mon-projet » et demande à Claude d'y ajouter un fichier README." },
+  git: { t: "GitHub depuis ton navigateur", tools: ["github", "claude-code"], steps: ["Ouvre ton dépôt sur GitHub", "Demande à Claude de travailler sur une branche et de proposer une pull request", "Relis la différence dans GitHub avant de fusionner"], connect: "Claude Code en ligne se connecte à GitHub une fois pour toutes.", pit: ["Fusionner sans avoir lu la différence"], exo: "Annule une modification avec le bouton « Revert » de GitHub." },
+  agent: { t: "L'agent de code en ligne", tools: ["claude-code", "github"], steps: ["Ouvre Claude Code en ligne et choisis ton dépôt", "Confie-lui une petite tâche", "Relis la différence et crée la pull request"], connect: "L'agent travaille dans un espace isolé en ligne, avec ton dépôt seulement.", pit: ["Croire que l'agent voit ton ordinateur : il ne voit que ton dépôt"], exo: "Depuis ton téléphone, demande d'ajouter un bouton et fais-toi expliquer ce qu'il a changé." },
+  deploy: { t: "L'aperçu en ligne de chaque branche", tools: ["github", "cloudflare", "netlify"], steps: ["Connecte ton dépôt GitHub à Cloudflare ou Netlify", "Ouvre l'adresse d'aperçu de ta branche sur ton téléphone", "Fusionne et regarde la mise en ligne"], connect: "Tout se règle depuis le navigateur : chaque branche reçoit une adresse d'aperçu, la fusion publie.", pit: ["Oublier les variables d'environnement dans l'hébergeur"], exo: "Change un titre depuis ton téléphone, vérifie l'aperçu, puis publie." },
+  evolve: { t: "Une branche, un aperçu, une fusion", tools: ["github", "claude-code", "cloudflare"], steps: ["Demande une fonctionnalité sur une nouvelle branche", "Ouvre son aperçu en ligne", "Relis et fusionne"], connect: "GitHub et l'aperçu Cloudflare ou Netlify : chaque branche se teste en ligne avant d'être publiée.", pit: ["Fusionner sans avoir ouvert l'aperçu"], exo: "Ajoute une petite fonctionnalité sur une branche, vérifie l'aperçu, puis fusionne." },
+  "t-claude-code": { t: "Claude Code sur le web, mobile et tablette", tools: ["claude-code", "github"], steps: ["Connecte GitHub à Claude Code en ligne", "Ouvre une session sur ton dépôt depuis ton téléphone", "Suis ses actions et relis la différence"], connect: "Claude Code en ligne fonctionne dans le navigateur, sur mobile et tablette.", pit: ["Lui donner un dépôt sensible sans comprendre ce qu'il peut modifier"], exo: "Demande-lui d'écrire le README de ton projet depuis ta tablette." }
+};
+T.forEach((x) => { x.wf = WVAR[x.id] ? "both" : LOCAL_ONLY.includes(x.id) ? "local" : "web"; });
+const WF = { local: "🖥️ Poste local", web: "🌐 Full web" };
+const wfTag = (x) => x.wf === "both" ? `<span class="wftag">🖥️ / 🌐 Les deux</span>` : `<span class="wftag">${WF[x.wf]}</span>`;
 const byId = Object.fromEntries(T.map((x) => [x.id, x]));
 const LEVELS = ["", "🐣 Grand débutant", "🛠️ J'ai déjà bricolé", "🚀 À l'aise", "💼 Pro"];
 const STAGES = ["💡 Juste une idée", "🎨 Un prototype", "🌳 Du code sur GitHub", "🌍 Déjà en ligne"];
@@ -613,7 +650,7 @@ const LVLTXT = ["", "Facile", "Moyen", "Costaud"];
 // Modèles d'objectif : la destination saisie est rapprochée du modèle le plus proche.
 const GOALS = [
   { k: /jeu|carte|multi|partie|joueur/i, label: "🃏 Jeu de cartes en ligne avec chat", ex: "un jeu de cartes en ligne où les gens peuvent discuter et jouer",
-    title: "Jeu de cartes en ligne multijoueur avec chat", lvl: 3, weeks: "4 à 8 semaines", budget: "0 à 25 €/mois au début",
+    title: "Jeu de cartes en ligne multijoueur avec chat", wf: ["web", "Temps réel et multijoueur : tout se publie directement sur Cloudflare."], lvl: 3, weeks: "4 à 8 semaines", budget: "0 à 25 €/mois au début",
     phases: [
       { e: "🧭", t: "Réfléchir avant de coder", think: "Un vibe-coder ne commence pas par le code : il joue d'abord une partie sur papier et écrit les règles noir sur blanc. L'IA ne peut pas inventer les règles de TON jeu.",
         hard: ["Des règles floues = un jeu buggé", "Vouloir tout (classement, boutique, tournois) dès la v1"], watch: ["Commencer à 2 joueurs, pas 8", "Un seul type de partie"], why: "Chaque règle floue devient un bug plus tard. Une heure de réflexion t'économise des jours de corrections.",
@@ -635,28 +672,28 @@ const GOALS = [
         ask: ["Quelle est la prochaine fonctionnalité qui fera revenir les joueurs ?"], topics: ["monitor", "evolve"] }
     ] },
   { k: /vitrine|portfolio|landing|site|blog/i, label: "🪟 Site vitrine", ex: "un site vitrine pour mon activité de photographe",
-    title: "Site vitrine", lvl: 1, weeks: "1 à 3 jours", budget: "0 à 15 €/an (nom de domaine)",
+    title: "Site vitrine", wf: ["web", "Un site vitrine se construit et se publie entièrement en ligne."], lvl: 1, weeks: "1 à 3 jours", budget: "0 à 15 €/an (nom de domaine)",
     phases: [
       { e: "🧭", t: "Réfléchir", think: "Un site vitrine sert à une seule chose : que le visiteur fasse UNE action (appeler, réserver, écrire).", hard: ["Trop de pages"], watch: ["Une seule action principale"], ask: ["Quelle action veux-tu que le visiteur fasse ?", "Qui sont tes visiteurs ?", "Tu as déjà des textes et des photos ?"], topics: ["vibe", "brief"] },
       { e: "🎨", t: "Prototyper", think: "Génère, regarde sur mobile, corrige. Trois tours suffisent.", hard: ["Le rendu sur téléphone"], watch: ["Les textes écrits par toi, pas par l'IA"], ask: ["Quelles couleurs et quel ton ?"], topics: ["proto"] },
       { e: "🚀", t: "Mettre en ligne", think: "Un nom de domaine et c'est parti.", hard: ["Relier le nom de domaine"], watch: ["Mentions légales", "Référencement de base"], ask: ["As-tu déjà un nom de domaine ?"], topics: ["git", "deploy"] }
     ] },
   { k: /r[ée]serv|rdv|rendez|booking|agenda|planning/i, label: "📅 App de réservation", ex: "une app de réservation pour mes cours de yoga",
-    title: "App de réservation", lvl: 2, weeks: "2 à 4 semaines", budget: "0 à 25 €/mois",
+    title: "App de réservation", wf: ["web", "Une app web avec Supabase se fait entièrement en ligne."], lvl: 2, weeks: "2 à 4 semaines", budget: "0 à 25 €/mois",
     phases: [
       { e: "🧭", t: "Réfléchir", think: "La difficulté n'est pas l'écran, c'est le calendrier : créneaux, annulations, doublons.", hard: ["Deux personnes qui réservent le même créneau"], watch: ["Commencer sans paiement en ligne"], ask: ["Qui crée les créneaux ?", "Peut-on annuler ? Jusqu'à quand ?", "Faut-il un rappel par email ?"], topics: ["brief", "mvp"] },
       { e: "🏗️", t: "Construire", think: "Base de données + comptes, puis l'écran de réservation.", hard: ["Les fuseaux horaires"], watch: ["Données personnelles minimales"], ask: ["Les clients ont-ils un compte ?"], topics: ["proto", "db", "auth", "debug"] },
       { e: "🚀", t: "Lancer", think: "Teste avec 3 vrais clients avant d'ouvrir à tous.", hard: ["Les emails qui partent en spam"], watch: ["RGPD"], ask: ["Combien de réservations par semaine ?"], topics: ["deploy", "secrets", "test", "monitor"] }
     ] },
   { k: /agent|assistant|chatbot|\bia\b|gpt|llm/i, label: "🤖 Agent IA perso", ex: "un agent IA qui répond aux questions sur mes documents",
-    title: "Agent IA personnel", lvl: 2, weeks: "1 à 3 semaines", budget: "Selon l'usage de l'API, ou gratuit en local",
+    title: "Agent IA personnel", wf: ["web", "Commence en ligne ; passe sur ton poste si l'IA doit rester 100 % locale (Ollama, LM Studio)."], lvl: 2, weeks: "1 à 3 semaines", budget: "Selon l'usage de l'API, ou gratuit en local",
     phases: [
       { e: "🧭", t: "Réfléchir", think: "Un bon agent fait une seule chose très bien. Définis ce qu'il doit refuser.", hard: ["Les réponses inventées"], watch: ["Toujours citer la source"], ask: ["Sur quels documents ?", "En ligne ou 100 % local ?", "Qui peut lui parler ?"], topics: ["assistant", "brief", "local"] },
       { e: "🏗️", t: "Construire", think: "Commence par une conversation simple, ajoute les documents ensuite.", hard: ["Le coût par question"], watch: ["Clé d'API côté serveur seulement"], ask: ["Combien de questions par jour ?"], topics: ["poste", "agent", "web", "secrets"] },
       { e: "🚀", t: "Lancer", think: "Fais-le tester avec des questions pièges.", hard: ["Mesurer la qualité"], watch: ["Limiter le nombre de messages"], ask: ["Que doit-il répondre quand il ne sait pas ?"], topics: ["deploy", "test", "monitor"] }
     ] },
   { k: /automati|workflow|mail|notion|tableur|excel|sheet/i, label: "⚙️ Automatisation", ex: "automatiser l'envoi de mes factures depuis mon tableur",
-    title: "Automatisation", lvl: 1, weeks: "1 à 5 jours", budget: "0 à 10 €/mois",
+    title: "Automatisation", wf: ["web", "Une automatisation se construit et tourne en ligne."], lvl: 1, weeks: "1 à 5 jours", budget: "0 à 10 €/mois",
     phases: [
       { e: "🧭", t: "Réfléchir", think: "Écris la tâche comme une recette : quand ça démarre, ce qui se passe, ce qui sort.", hard: ["Les cas particuliers"], watch: ["Tester sur de fausses données"], ask: ["Qu'est-ce qui déclenche la tâche ?", "Que se passe-t-il en cas d'erreur ?"], topics: ["vibe", "brief"] },
       { e: "🏗️", t: "Construire", think: "Un petit script, piloté par l'IA, qui tourne à heure fixe.", hard: ["Les accès aux comptes (clés, autorisations)"], watch: ["Ranger les clés dans les secrets"], ask: ["Quels services faut-il relier ?"], topics: ["assistant", "agent", "secrets"] },
@@ -696,7 +733,7 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem("cf2-" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem("cf2-" + k, JSON.stringify(v)); } catch (e) {} }
 };
-let state = { user: ME, member: !!(ME?.pseudo && !ME.needsOnboarding), v: store.get("v", "A"), goal: store.get("goal", ""), example: false, open: new Set(), sugOff: 0, dtab: "outils", target: 0, cTheme: "", cPrice: "", cLang: "", cLvl: "", done: store.get("done", []), road: store.get("road", null), level: store.get("level", 1), stage: store.get("stage", 0), lvl: 0, setup: "", kind: "" };
+let state = { user: ME, member: !!(ME?.pseudo && !ME.needsOnboarding), v: store.get("v", "A"), goal: store.get("goal", ""), example: false, open: new Set(), sugOff: 0, dtab: "outils", target: 0, cTheme: "", cPrice: "", cLang: "", cLvl: "", done: store.get("done", []), road: store.get("road", null), level: store.get("level", 1), stage: store.get("stage", 0), where: store.get("where", "pc"), wfOver: {}, wfFilter: "", lvl: 0, setup: "", kind: "" };
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const goalText = () => state.example ? GOALS[0].ex : state.goal;
@@ -715,7 +752,7 @@ const joinLabel = () => ME ? "Terminer mon inscription" : "Inscription gratuite 
 const lockCta = (txt) => `<div class="lockcta"><p>🔒 ${txt}</p><button class="btn btn-dark" data-join>${joinLabel()}</button></div>`;
 const needed = () => new Set((plan()?.phases || []).flatMap((p) => p.topics).filter((id) => !acquired(id)));
 const toolChip = (id) => `<a class="tag tool" href="/outils?q=${encodeURIComponent(TOOLS[id] || id)}">↗ ${esc(TOOLS[id] || id)}</a>`;
-function save() { store.set("done", state.done); store.set("road", state.road); store.set("goal", state.goal); store.set("v", state.v); store.set("level", state.level); store.set("stage", state.stage); }
+function save() { store.set("done", state.done); store.set("road", state.road); store.set("goal", state.goal); store.set("v", state.v); store.set("level", state.level); store.set("stage", state.stage); store.set("where", state.where); }
 
 function buildRoad(p = plan()) { if (!p) { state.road = null; return; }
   state.road = { title: p.title, items: p.phases.flatMap((ph) => ph.topics.filter((id) => !acquired(id)).map((id) => ({ id, ph: ph.t }))) };
@@ -727,9 +764,12 @@ function openFiche(id) {
   if (isLocked(id)) { $("#dlg").innerHTML = `<div class="fiche"><div class="top"><h2>🔒 Réservé aux membres</h2><button class="x" aria-label="Fermer" data-close>✕</button></div><p class="muted" style="margin:10px 0 16px">« ${esc(x.t)} » fait partie des fiches réservées aux membres. L'inscription est gratuite et se fait en un clic avec ton compte GitHub.</p><button class="btn btn-dark" data-join>${joinLabel()}</button></div>`; return $("#dlg").showModal(); }
   const isDone = state.done.includes(id);
   const inRoad = state.road?.items.some((i) => i.id === id);
+  const W = WVAR[id], mode = W ? (state.wfOver[id] || (state.where === "mobile" ? "web" : "local")) : null;
+  const c = mode === "web" ? { ...x, ...W } : x;
   $("#dlg").innerHTML = `<div class="fiche">
     <div class="top"><div><span class="faint" style="font-size:13px">${x.kind === "outil" ? "Tuto outil" : "Premiers pas"}</span>
-      <h2 style="margin-top:4px">${x.e} ${esc(x.t)}</h2></div><button class="x" aria-label="Fermer" data-close>✕</button></div>
+      <h2 style="margin-top:4px">${x.e} ${esc(x.t)}</h2>${mode === "web" ? `<p class="muted" style="margin-top:4px">Version full web : ${esc(W.t)}</p>` : ""}</div><button class="x" aria-label="Fermer" data-close>✕</button></div>
+    <div style="margin-top:10px">${W ? `<span class="wfseg" role="group" aria-label="Workflow"><button data-fwf="local" data-id="${id}" aria-pressed="${mode === "local"}">🖥️ Poste local</button><button data-fwf="web" data-id="${id}" aria-pressed="${mode === "web"}">🌐 Full web</button></span>` : wfTag(x)}${x.wf === "local" && state.where === "mobile" ? `<span class="faint" style="font-size:12.5px;margin-left:8px">Demande un ordinateur</span>` : ""}</div>
     <div class="meta"><span class="tag lvl" title="Niveau">${LVL(x.lvl)} ${LVLTXT[x.lvl]}</span><span class="tag">⏱ ${x.min} min</span>${x.setups.map((s) => `<span class="tag">${SETUPS[s]}</span>`).join("")}</div>
     <div class="two" style="margin-top:14px">
       <div class="box"><div class="block-title" style="margin-top:0">Contexte</div><p style="font-size:14px">${esc(x.ctx)}</p></div>
@@ -738,14 +778,14 @@ function openFiche(id) {
     ${x.why ? `<div class="why">🔑 <b>Pourquoi c'est important :</b> ${esc(x.why)}</div>` : ""}
     ${x.senior ? `<div class="senior">🎓 <b>Ce qu'un senior te dirait :</b> ${esc(x.senior)}</div>` : ""}
     <div class="block-title">🎬 Vidéos courtes</div>
-    <div class="vids"><div class="vid"><div><b>▶</b>Vidéo à venir · 2 min<br>« ${esc(x.t)} »</div></div><div class="vid"><div><b>▶</b>Vidéo à venir · 1 min<br>Pas-à-pas à l'écran</div></div></div>
-    <div class="block-title">🧰 Outils utilisés</div><div class="chips">${x.tools.map(toolChip).join("")}</div>
-    <div class="block-title">👣 Pas-à-pas</div><ol class="steps">${x.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>
+    <div class="vids">${mode === "web" ? `<div class="vid"><div><b>▶</b>Vidéo à venir · 1 min<br>Pas-à-pas full web</div></div>` : `<div class="vid"><div><b>▶</b>Vidéo à venir · 2 min<br>« ${esc(x.t)} »</div></div><div class="vid"><div><b>▶</b>Vidéo à venir · 1 min<br>Pas-à-pas à l'écran</div></div>`}</div>
+    <div class="block-title">🧰 Outils utilisés</div><div class="chips">${c.tools.map(toolChip).join("")}</div>
+    <div class="block-title">👣 Pas-à-pas</div><ol class="steps">${c.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>
     <div class="two" style="margin-top:12px">
-      <div class="box"><div class="block-title" style="margin-top:0">🔌 Comment connecter</div><p style="font-size:14px">${esc(x.connect)}</p></div>
-      <div class="box"><div class="block-title" style="margin-top:0">⚠️ Erreurs fréquentes</div><ul class="l">${x.pit.map((s) => `<li>${esc(s)}</li>`).join("")}</ul></div>
+      <div class="box"><div class="block-title" style="margin-top:0">🔌 Comment connecter</div><p style="font-size:14px">${esc(c.connect)}</p></div>
+      <div class="box"><div class="block-title" style="margin-top:0">⚠️ Erreurs fréquentes</div><ul class="l">${c.pit.map((s) => `<li>${esc(s)}</li>`).join("")}</ul></div>
     </div>
-    <div class="block-title">🏋️ Mini-défi</div><div class="exo">${esc(x.exo)}</div>
+    <div class="block-title">🏋️ Mini-défi</div><div class="exo">${esc(c.exo)}</div>
     <div class="act">
       <button class="btn btn-primary" data-done="${id}">${isDone ? "✓ Fait (annuler)" : "✅ J'ai terminé ce sujet"}</button>
       ${inRoad ? `<span class="added" style="align-self:center">✓ Dans ma feuille de route</span>` : `<button class="btn" data-addone="${id}">＋ Ajouter à ma feuille de route</button>`}
@@ -756,6 +796,8 @@ $("#dlg").addEventListener("click", (e) => {
   if (e.target === e.currentTarget || e.target.closest("[data-close]")) return $("#dlg").close();
   const d = e.target.closest("[data-done]");
   if (d) { toggleDone(d.dataset.done); $("#dlg").close(); }
+  const w = e.target.closest("[data-fwf]");
+  if (w) { state.wfOver[w.dataset.id] = w.dataset.fwf; return openFiche(w.dataset.id); }
   const a = e.target.closest("[data-addone]");
   if (a) { if (!state.road) state.road = { title: "Ma feuille de route", items: [] }; state.road.items.push({ id: a.dataset.addone, ph: "Ajouté à la main" }); save(); toast("Ajouté à ta feuille de route ✨"); $("#dlg").close(); render(); }
 });
@@ -778,7 +820,8 @@ function viewA() {
     <div class="panel" style="padding:18px 20px">
       <span class="faint" style="font-size:13px">Comment faire…</span>
       <h2 style="margin-top:2px">${esc(p.title)} ?</h2>
-      <p class="faint" style="font-size:13px;margin-top:4px">Chemin adapté à : ${LEVELS[state.level]} · ${STAGES[state.stage]}</p>
+      <p class="faint" style="font-size:13px;margin-top:4px">Chemin adapté à : ${LEVELS[state.level]} · ${STAGES[state.stage]} · ${state.where === "mobile" ? "📱 Mobile ou tablette" : "💻 Ordinateur"}</p>
+      <div class="wfrec">${state.where === "mobile" ? "🌐 <b>Workflow : full web.</b> Depuis un mobile ou une tablette, tout se fait en ligne : les fiches s'ouvrent dans leur version full web." : `${(p.wf || ["web"])[0] === "web" ? "🌐 <b>Workflow conseillé : full web.</b>" : "🖥️ <b>Workflow conseillé : poste local.</b>"} ${esc((p.wf || ["web", "Tu hésites ? Commence en full web : GitHub permet de passer en local plus tard sans rien perdre."])[1])}`}</div>
       <div class="sum">
         <div><b class="lvl">${LVL(p.lvl)}</b><span>Difficulté : ${LVLTXT[p.lvl]}</span></div>
         <div><b>${esc(p.weeks)}</b><span>En y passant quelques soirées</span></div>
@@ -807,7 +850,7 @@ function viewA() {
         <div><div class="block-title">❓ Questions pour ton brief</div><ul class="l">${ph.ask.map((s) => `<li>${esc(s)}</li>`).join("")}</ul></div>
       </div>
       <div class="senior">🎓 <b>Les bonnes pratiques qu'un senior te transmettrait :</b><ul>${todo.map((id) => `<li>${esc(byId[id].senior)}</li>`).join("")}</ul></div>
-      <div class="topics">${todo.map((id) => { const x = byId[id]; return `<button class="tcard" data-fiche="${id}"><b>${x.e} ${esc(x.t)} ${state.done.includes(id) ? "✅" : ""}</b><small><span class="lvl">${LVL(x.lvl)}</span> · ${x.min} min · 🎬 vidéo</small><span class="chips">${x.tools.slice(0, 3).map((t) => `<span class="tag">${esc(TOOLS[t])}</span>`).join("")}</span></button>`; }).join("")}</div>
+      <div class="topics">${todo.map((id) => { const x = byId[id]; return `<button class="tcard" data-fiche="${id}"><b>${x.e} ${esc(x.t)} ${state.done.includes(id) ? "✅" : ""}</b><small><span class="lvl">${LVL(x.lvl)}</span> · ${x.min} min · 🎬 vidéo · ${x.wf === "both" ? "🖥️/🌐" : x.wf === "local" ? "🖥️" : "🌐"}</small><span class="chips">${x.tools.slice(0, 3).map((t) => `<span class="tag">${esc(TOOLS[t])}</span>`).join("")}</span></button>`; }).join("")}</div>
       ${acqLine}` : ""}
     </div></div>`; }).join("")}</div>
     <p class="note-ai">Le chemin s'appuie sur des modèles préparés par l'équipe et s'adapte à ton niveau et à ton avancement.</p>`;
@@ -825,7 +868,7 @@ function viewB() {
       <div><b style="font-size:18px">🔥 ${state.done.length * 10} XP</b> <span class="faint">· ${pct} % des premiers pas</span></div>
       <div class="bar" aria-label="Progression"><i style="width:${pct}%"></i></div>
     </div>
-    <div class="badges" style="margin-top:12px">${BADGES.map(([b, n]) => `<span class="badge ${state.done.length >= n ? "on" : ""}">${b}</span>`).join("")}</div>
+    <div class="badges" style="margin-top:12px">${BADGES.map(([b, n]) => `<span class="xpbadge ${state.done.length >= n ? "on" : ""}">${b}</span>`).join("")}</div>
     <div class="legend"><span><i style="border-color:var(--accent-2)"></i>Requis pour « ${esc(plan()?.title || "ta destination")} »</span><span><i style="border-color:var(--ok)"></i>Terminé</span><span><i style="border-color:var(--accent-3)"></i>Déjà acquis (ton profil)</span><span><i style="border-color:var(--border-strong)"></i>À découvrir</span></div>
     </div>
     ${WORLDS.map((w) => `${!state.member && w.n === 4 ? `<div style="margin-top:26px">${lockCta("Les mondes 4 et 5 sont réservés aux membres. Inscris-toi gratuitement pour continuer l'aventure.")}</div>` : ""}<div class="world ${!state.member && w.n >= 4 ? "locked" : ""}"><h3>${w.e} Monde ${w.n} · ${w.t} <span>${w.d}</span></h3>
@@ -838,7 +881,7 @@ function viewB() {
 
 /* ---------- Version C : bibliothèque + feuille de route ---------- */
 function viewC() {
-  const list = T.filter((x) => (!state.lvl || x.lvl === state.lvl) && (!state.setup || x.setups.includes(state.setup)) && (!state.kind || x.kind === state.kind));
+  const list = T.filter((x) => (!state.lvl || x.lvl === state.lvl) && (!state.setup || x.setups.includes(state.setup)) && (!state.kind || x.kind === state.kind) && (!state.wfFilter || x.wf === "both" || x.wf === state.wfFilter));
   const f = (key, val, label) => `<button class="chip" data-f="${key}" data-val="${val}" aria-pressed="${String(state[key]) === String(val)}">${label}</button>`;
   const road = state.road;
   let lastPh = "";
@@ -848,6 +891,7 @@ function viewC() {
         <div><span class="k">Type</span>${f("kind", "", "Tout")}${f("kind", "base", "🌱 Premiers pas")}${f("kind", "outil", "🛠️ Tutos outils")}</div>
         <div><span class="k">Niveau</span>${f("lvl", 0, "Tous")}${f("lvl", 1, "●○○ Facile")}${f("lvl", 2, "●●○ Moyen")}${f("lvl", 3, "●●● Costaud")}</div>
         <div><span class="k">Mon setup</span>${f("setup", "", "Tous")}${Object.entries(SETUPS).map(([k, v]) => f("setup", k, v)).join("")}</div>
+        <div><span class="k">Workflow</span>${f("wfFilter", "", "Tous")}${f("wfFilter", "local", "🖥️ Poste local")}${f("wfFilter", "web", "🌐 Full web")}</div>
       </div>
       ${!state.member ? `<div style="margin-bottom:12px">${lockCta("Les fiches faciles sont en accès libre. Les autres sont réservées aux membres, inscription gratuite.")}</div>` : ""}<div class="cards">${list.map((x) => `<button class="fcard ${isLocked(x.id) ? "locked" : ""}" data-fiche="${x.id}"><div class="th">${isLocked(x.id) ? "🔒" : x.e}<span class="tag">${x.kind === "outil" ? "Tuto outil" : "Premiers pas"}</span></div>
         <div class="b"><b>${esc(x.t)} ${state.done.includes(x.id) ? "✅" : ""}</b><p>${esc(x.obj)}</p>
@@ -1584,7 +1628,7 @@ function render() {
   $("#lead").textContent = LEADS[state.v];
   $("#hero").hidden = state.v === "D";
   const isA = state.v === "A";
-  $("#examples-v1").hidden = isA; $("#sug-head").hidden = !isA; $("#examples").hidden = !isA;
+  $("#examples-v1").hidden = isA; $("#sug-head").hidden = !isA; $("#examples").hidden = !isA; $("#p-where-row").hidden = !isA; $("#wf-help").hidden = !isA;
   $("#goal").value = isA ? state.goal : goalBC();
   $("#view").innerHTML = state.v === "A" ? viewA() : state.v === "B" ? viewB() : state.v === "C" ? viewC() : viewD();
 }
@@ -1607,10 +1651,12 @@ $("#examples-v1").addEventListener("click", (e) => { const b = e.target.closest(
 function renderProfile() {
   $("#p-level").innerHTML = LEVELS.slice(1).map((l, i) => `<button class="chip" type="button" data-level="${i + 1}" aria-pressed="${state.level === i + 1}">${l}</button>`).join("");
   $("#p-stage").innerHTML = STAGES.map((l, i) => `<button class="chip" type="button" data-stage="${i}" aria-pressed="${state.stage === i}">${l}</button>`).join("");
+  $("#p-where").innerHTML = [["pc", "💻 Sur un ordinateur"], ["mobile", "📱 Sur mobile ou tablette"]].map(([k, l]) => `<button class="chip" type="button" data-where="${k}" aria-pressed="${state.where === k}">${l}</button>`).join("");
 }
 renderProfile();
 document.querySelector(".profile").addEventListener("click", (e) => {
-  const b = e.target.closest("[data-level],[data-stage]"); if (!b) return;
+  const b = e.target.closest("[data-level],[data-stage],[data-where]"); if (!b) return;
+  if (b.dataset.where) { state.where = b.dataset.where; state.wfOver = {}; save(); renderProfile(); render(); return toast(state.where === "mobile" ? "Workflow full web : les fiches s'ouvrent dans leur version en ligne 📱" : "Sur ordinateur : choisis ton workflow sur chaque fiche 💻"); }
   if (b.dataset.level) state.level = Number(b.dataset.level); else state.stage = Number(b.dataset.stage);
   state.sugOff = 0; buildRoad(); save(); renderProfile(); renderSugs(); render(); toast(state.v === "A" ? "Chemin et idées adaptés à ton profil 🧭" : "Chemin recalculé pour ton profil 🧭");
 });
