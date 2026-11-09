@@ -7,6 +7,7 @@ import * as members from "./api/members.js";
 import * as veille from "./api/veille.js";
 import * as atelier from "./api/atelier.js";
 import * as checkup from "./api/checkup.js";
+import * as contact from "./api/contact.js";
 import { HttpError, assertSameOrigin, json } from "./lib/http.js";
 import { hit, ipKey } from "./lib/ratelimit.js";
 
@@ -68,6 +69,11 @@ const ROUTES = [
   ["POST", /^\/api\/admin\/integrations$/, checkup.adminIntegrations, true, ["checkup-admin", 60, 3600]],
   ["GET", /^\/cal\/([a-f0-9]{48})\.ics$/, checkup.calendarFeed, false, ["cal", 120, 3600]],
   ["POST", /^\/api\/admin\/checkups\/(\d+)$/, checkup.adminUpdate, true, ["checkup-admin", 60, 3600]],
+
+  ["POST", /^\/api\/contact$/, contact.submit, true, ["contactform", 5, 3600]],
+  ["GET", /^\/api\/admin\/contacts$/, contact.adminList],
+  ["POST", /^\/api\/admin\/contacts\/([a-f0-9]{12})$/, contact.adminUpdate, true],
+  ["DELETE", /^\/api\/admin\/contacts\/([a-f0-9]{12})$/, contact.adminDelete, true],
 
   ["GET", /^\/api\/admin\/reports$/, members.adminReports],
   ["POST", /^\/api\/admin\/moderate$/, members.adminModerate, true],

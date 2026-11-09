@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem("vt-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<title>Contact · Vibe Tools</title>
+<meta name="description" content="Écrire à l'équipe de Vibe Tools : une question, un problème, une demande d'accessibilité ou de données personnelles.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+main { max-width: 760px; margin: 40px auto 0; padding: 0 16px; }
+#doc h1 { font-size: clamp(28px, 5vw, 40px); text-align: left; margin: 0 0 12px; }
+#doc p { color: var(--muted); }
+.req { color: var(--danger); }
+.field { display: block; margin-bottom: 16px; }
+.field > label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+.field small { display: block; color: var(--faint); font-size: 12.5px; margin-top: 5px; }
+.field .err { display: block; color: var(--danger); font-size: 13.5px; font-weight: 600; margin-top: 6px; }
+.field .err:empty { display: none; }
+.field[data-invalid] input, .field[data-invalid] textarea { border-color: var(--danger); }
+.count { float: right; font-weight: 400; color: var(--faint); font-size: 12.5px; }
+.summary { border: 2px solid var(--danger); border-radius: 14px; padding: 12px 16px; margin-bottom: 18px; background: color-mix(in srgb, var(--danger) 8%, transparent); }
+.summary h2 { font-size: 16px; margin: 0 0 6px; color: var(--danger); }
+.summary ul { margin: 0; padding-left: 20px; }
+.summary a { color: var(--text); }
+.success { border: 2px solid var(--ok); border-radius: 14px; padding: 14px 16px; background: color-mix(in srgb, var(--ok) 8%, transparent); }
+.success h2 { font-size: 18px; margin: 0 0 6px; color: var(--ok); }
+.trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+button[aria-disabled="true"] { opacity: .6; cursor: progress; }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<main>
+  <article class="panel" id="doc">
+    <h1>Contact</h1>
+    <p>Une question, un problème sur le site, une demande d'alternative accessible ou une demande sur vos données personnelles : écrivez-nous ici.</p>
+    <p>Les champs marqués d'un astérisque (<span class="req" aria-hidden="true">*</span>) sont obligatoires.</p>
+
+    <div id="status" tabindex="-1"></div>
+
+    <form id="contact" novalidate>
+      <div class="field" id="f-email">
+        <label for="email">Adresse électronique <span class="req" aria-hidden="true">*</span></label>
+        <input type="email" name="email" id="email" autocomplete="email" required maxlength="254" aria-describedby="email-help email-err">
+        <small id="email-help">Format attendu : nom@domaine.fr. Elle sert uniquement à vous répondre.</small>
+        <span class="err" id="email-err"></span>
+      </div>
+      <div class="field" id="f-subject">
+        <label for="subject">Sujet <span class="req" aria-hidden="true">*</span></label>
+        <input type="text" name="subject" id="subject" required maxlength="120" aria-describedby="subject-help subject-err">
+        <small id="subject-help">120 caractères au maximum. Exemples : « Accessibilité : … », « Données personnelles : … ».</small>
+        <span class="err" id="subject-err"></span>
+      </div>
+      <div class="field" id="f-message">
+        <label for="message">Message <span class="req" aria-hidden="true">*</span> <span class="count" id="count" aria-hidden="true">0 / 5000</span></label>
+        <textarea name="message" id="message" rows="8" required maxlength="5000" aria-describedby="message-help message-err"></textarea>
+        <small id="message-help">Entre 10 et 5 000 caractères. N'indiquez pas de mot de passe ni de donnée sensible.</small>
+        <span class="err" id="message-err"></span>
+      </div>
+      <div class="trap" aria-hidden="true">
+        <label>Ne pas remplir ce champ <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <p class="faint" style="font-size:13px">Vos données sont traitées comme décrit dans la page <a href="/confidentialite">Cookies et données personnelles</a>.</p>
+      <button class="btn btn-primary" type="submit" id="send">Envoyer le message</button>
+    </form>
+  </article>
+</main>
+
+<script type="module">
+import { renderNav, renderFooter, $, esc } from "/assets/app.js";
+renderNav("/contact");
+renderFooter();
+
+const LIMITS = { subject: 120, messageMin: 10, message: 5000 };
+const LABELS = { email: "Adresse électronique", subject: "Sujet", message: "Message" };
+// Messages d'erreur par code : le même texte côté navigateur et côté serveur.
+const FIELD_ERRORS = {
+  email_required: "Saisissez votre adresse électronique.",
+  email_invalid: "L'adresse électronique n'est pas valide. Format attendu : nom@domaine.fr.",
+  subject_required: "Saisissez un sujet.",
+  subject_too_long: `Le sujet dépasse ${LIMITS.subject} caractères.`,
+  message_required: "Saisissez votre message.",
+  message_too_short: `Le message doit contenir au moins ${LIMITS.messageMin} caractères.`,
+  message_too_long: `Le message dépasse ${LIMITS.message} caractères.`,
+};
+
+const form = $("#contact"), status = $("#status"), send = $("#send");
+$("#message").addEventListener("input", (e) => { $("#count").textContent = `${e.target.value.length} / ${LIMITS.message}`; });
+
+function check() {
+  const email = form.email.value.trim(), subject = form.subject.value.trim(), message = form.message.value.trim();
+  const fields = {};
+  if (!email) fields.email = "email_required";
+  else if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) fields.email = "email_invalid";
+  if (!subject) fields.subject = "subject_required"; else if (subject.length > LIMITS.subject) fields.subject = "subject_too_long";
+  if (!message) fields.message = "message_required";
+  else if (message.length < LIMITS.messageMin) fields.message = "message_too_short";
+  else if (message.length > LIMITS.message) fields.message = "message_too_long";
+  return fields;
+}
+
+function showFields(fields) {
+  for (const name of Object.keys(LABELS)) {
+    const code = fields[name], input = form[name];
+    $(`#${name}-err`).textContent = code ? `Erreur : ${FIELD_ERRORS[code] || code}` : "";
+    input.setAttribute("aria-invalid", code ? "true" : "false");
+    code ? $(`#f-${name}`).setAttribute("data-invalid", "") : $(`#f-${name}`).removeAttribute("data-invalid");
+  }
+}
+
+// Affiche une erreur : un titre qui dit le TYPE d'erreur, puis le détail. Le focus va sur le message.
+function showError(type, detail, fields) {
+  const list = fields ? `<ul>${Object.entries(fields).map(([n, c]) => `<li><a href="#${n}">${LABELS[n]} : ${esc(FIELD_ERRORS[c] || c)}</a></li>`).join("")}</ul>` : `<p style="margin:0">${esc(detail)}</p>`;
+  status.innerHTML = `<div class="summary" role="alert"><h2>${esc(type)}</h2>${list}</div>`;
+  status.focus();
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (send.getAttribute("aria-disabled") === "true") return;
+  const fields = check();
+  showFields(fields);
+  if (Object.keys(fields).length) return showError(`Erreur de saisie : ${Object.keys(fields).length} champ${Object.keys(fields).length > 1 ? "s" : ""} à corriger`, "", fields);
+
+  send.setAttribute("aria-disabled", "true"); send.textContent = "Envoi en cours…";
+  status.innerHTML = `<p role="status">Envoi en cours…</p>`;
+  let res, data = {};
+  try {
+    res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: form.email.value, subject: form.subject.value, message: form.message.value, website: form.website.value }),
+    });
+    data = await res.json().catch(() => ({}));
+  } catch {
+    reset();
+    return showError("Erreur réseau", "Le message n'a pas pu partir : vérifiez votre connexion internet, puis réessayez. Votre texte est conservé dans le formulaire.");
+  }
+  reset();
+  if (res.ok) {
+    form.reset(); $("#count").textContent = `0 / ${LIMITS.message}`; showFields({});
+    status.innerHTML = `<div class="success" role="status"><h2>Message envoyé</h2><p style="margin:0">Merci, nous avons bien reçu votre message${data.ref ? ` (référence <b>${esc(data.ref)}</b>)` : ""}. Nous vous répondrons à l'adresse indiquée.</p></div>`;
+    return status.focus();
+  }
+  if (res.status === 400 && data.fields) { showFields(data.fields); return showError("Erreur de saisie (vérifiée par le serveur)", "", data.fields); }
+  if (res.status === 429) {
+    const min = Math.max(1, Math.ceil((Number(res.headers.get("retry-after")) || 60) / 60));
+    return showError("Trop de messages envoyés", `Pour limiter les abus, le nombre d'envois est limité. Réessayez dans ${min} minute${min > 1 ? "s" : ""}.`);
+  }
+  if (res.status === 413) return showError("Message trop volumineux", "Raccourcissez votre message, puis réessayez.");
+  if (res.status === 403) return showError("Envoi refusé", "La demande ne vient pas de ce site (erreur de sécurité). Rechargez la page, puis réessayez.");
+  if (res.status === 503) return showError("Service indisponible", "L'enregistrement des messages est momentanément indisponible. Réessayez plus tard.");
+  return showError(`Erreur du serveur (code ${res.status})`, "Le message n'a pas été enregistré. Réessayez dans quelques instants ; votre texte est conservé dans le formulaire.");
+});
+
+function reset() { send.removeAttribute("aria-disabled"); send.textContent = "Envoyer le message"; }
+</script>
+</body>
+</html>

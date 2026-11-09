@@ -1,5 +1,6 @@
 // Tables de la plateforme communautaire. Créées automatiquement au premier appel.
-// Aucune donnée personnelle : pas de nom, pas d'email, pas de numéro.
+// Aucune donnée personnelle : pas de nom, pas de numéro. Seule exception : l'email laissé dans le formulaire
+// de contact (table contact_messages), utilisé uniquement pour répondre et visible par l'admin seul.
 
 const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS users (
@@ -262,6 +263,18 @@ const SCHEMA = [
      value TEXT NOT NULL,
      updated_at INTEGER NOT NULL
    )`,
+  // Formulaire de contact : path = « contacts/AAAA-MM-JJ/identifiant/sujet ».
+  `CREATE TABLE IF NOT EXISTS contact_messages (
+     id TEXT PRIMARY KEY,
+     path TEXT NOT NULL,
+     email TEXT NOT NULL,
+     subject TEXT NOT NULL,
+     message TEXT NOT NULL,
+     status TEXT NOT NULL DEFAULT 'new',      -- new | read | done
+     alerts TEXT NOT NULL DEFAULT '',         -- canaux d'alerte réussis : telegram, email
+     created_at INTEGER NOT NULL
+   )`,
+  `CREATE INDEX IF NOT EXISTS contact_messages_created ON contact_messages (created_at)`,
 ];
 
 // Colonnes ajoutées après la création des tables (ALTER TABLE ignoré si la colonne existe déjà).

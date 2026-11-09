@@ -122,11 +122,32 @@ export async function renderNav(active) {
   }
 }
 
+// ── Pied de page commun : identique sur toutes les pages (y compris /outils, qui l'importe d'ici) ──
+// [À COMPLÉTER] Adresse du site de John Apple. Tant qu'elle est vide, le lien mène à la section prévue dans « Info site ».
+export const ORGANISME_URL = "";
+export const FOOTER_LINKS = [
+  ["/contact", "Contact"],
+  ["/aide", "Aide"],
+  ["/info-site", "Info site"],
+  ["/accessibilite", "Accessibilité : non conforme"],
+  [ORGANISME_URL || "/info-site#site-de-john-apple", "Site de John Apple"],
+  ["/confidentialite", "Cookies / Données personnelles"],
+  ["/mentions-legales", "Mentions légales"],
+];
+
+export function footerHTML(current = location.pathname) {
+  const items = FOOTER_LINKS.map(([href, label]) => {
+    const external = /^https?:\/\//.test(href);
+    return `<li><a href="${esc(href)}"${href === current ? ' aria-current="page"' : ""}${external ? ' rel="noopener"' : ""}>${esc(label)}</a></li>`;
+  }).join("");
+  return `<footer><div class="wrap">
+    <nav aria-label="Pied de page"><ul class="footer-links">${items}</ul></nav>
+    <p class="footer-note">Vibe Tools · communauté de vibe-devs · pseudonymes uniquement</p>
+  </div></footer>`;
+}
+
 export function renderFooter() {
-  const f = document.createElement("footer");
-  f.innerHTML = `<div class="wrap"><span>Vibe Tools · communauté de vibe-devs · pseudonymes uniquement</span>
-    <span><a href="/cgu">Conditions d'utilisation</a> · <a href="/charte">Charte</a></span></div>`;
-  document.body.append(f);
+  document.body.insertAdjacentHTML("beforeend", footerHTML());
 }
 
 export function toast(msg) {
