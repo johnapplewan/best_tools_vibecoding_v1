@@ -64,6 +64,7 @@ if (!user) {
   renderPage();
   await refresh();
   loadCheckups();
+  loadContacts();
   loadIntegrations();
   setInterval(() => { if (items.some((i) => i.status === "pending" || i.status === "running")) refresh(); }, 20000);
 }
@@ -76,6 +77,7 @@ function renderPage() {
       <button class="btn btn-primary" type="submit">Envoyer à la veille</button>
     </form>
     <div class="panel"><h2>Éléments analysés</h2><div class="list" id="list"></div></div>
+    <div class="panel" id="contacts"><h2>📬 Messages de contact</h2><div id="contact-box"><p class="muted">Chargement…</p></div></div>
     <div class="panel" id="checkups"><h2>🩺 Check-up</h2><div id="checkup-box"><p class="muted">Chargement…</p></div></div>
     <div class="panel" id="integrations"><h2>🔔 Notifications et agenda</h2><div id="integ-box"><p class="muted">Chargement…</p></div></div>
     <div class="panel" id="shortcut"><h2>📱 Raccourci iOS « Veille Vibe »</h2>
@@ -155,6 +157,30 @@ document.addEventListener("click", async (e) => {
   b.disabled = true;
   try { await api(`/api/admin/checkups/${b.dataset.cxrun}`, { method: "POST", body: { run: true } }); toast("Analyse relancée"); } catch (err) { toast(err.message); }
   loadCheckups();
+});
+
+// ───────── Messages du formulaire de contact ─────────
+const CT_STATUS = { new: "🆕 Nouveau", read: "👀 Lu", done: "✅ Traité" };
+async function loadContacts() {
+  const box = $("#contact-box");
+  let data;
+  try { data = await api("/api/admin/contacts"); } catch (err) { box.textContent = err.message; return; }
+  box.innerHTML = `<p class="faint" style="margin-top:0">Alertes : Telegram si relié ci-dessous · email ${data.email ? "activé (Resend)" : "non configuré"} · copie R2 ${data.r2 ? "activée" : "non configurée"}.</p>
+    ${data.items.length ? data.items.map((m) => `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b>${esc(m.subject)}</b><span class="code">${esc(m.path)}</span>
+        <select data-ct="${m.id}" style="width:auto;padding:4px 8px;font-size:13px;margin-left:auto">${Object.entries(CT_STATUS).map(([k, l]) => `<option value="${k}"${m.status === k ? " selected" : ""}>${l}</option>`).join("")}</select>
+        <button class="btn btn-sm btn-danger" data-ctdel="${m.id}">Supprimer</button></div>
+      <p class="faint" style="margin:4px 0">${new Date(m.created_at).toLocaleString("fr-FR")} · <a href="mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent("Re: " + m.subject)}">${esc(m.email)}</a>${m.alerts ? ` · alerte : ${esc(m.alerts)}` : ""}</p>
+      <p style="margin:0;white-space:pre-wrap">${esc(m.message)}</p></div>`).join("") : `<p class="muted">Aucun message pour l'instant.</p>`}`;
+}
+document.addEventListener("change", async (e) => {
+  const sel = e.target.closest("[data-ct]"); if (!sel) return;
+  try { await api(`/api/admin/contacts/${sel.dataset.ct}`, { method: "POST", body: { status: sel.value } }); toast("Statut mis à jour"); } catch (err) { toast(err.message); }
+});
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-ctdel]"); if (!b) return;
+  if (!confirm("Supprimer définitivement ce message ?")) return;
+  try { await api(`/api/admin/contacts/${b.dataset.ctdel}`, { method: "DELETE" }); toast("Message supprimé"); loadContacts(); } catch (err) { toast(err.message); }
 });
 
 // ───────── Notifications Telegram et abonnement d'agenda ─────────

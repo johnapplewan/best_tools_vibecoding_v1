@@ -28,6 +28,8 @@ Page de référencement d'outils de vibe-coding sympa - A page listing cool vibe
 | `src/api/checkup.js`, `src/checkup/analyze.js` | Check-up : express (pré-diagnostic IA, membres) et demandes de rappel du complet |
 | `public/checkup.html`, `public/checkup-complet.html` | Check-up express (`/checkup`) et landing du Check-up complet (`/checkup-complet`) |
 | `public/comment-faire.html` | « Comment faire ? » (`/comment-faire`) : GPS, carte, bibliothèque et, pour les membres, « Évoluer » (compétences, certifs, jobs, outils, recrutement, tests et simulateur d'entretien) |
+| `src/api/contact.js`, `public/contact.html` | Formulaire de contact (`/contact`) : enregistrement, alertes Telegram et email, lecture dans `/admin` |
+| `public/aide.html`, `info-site.html`, `accessibilite.html`, `confidentialite.html`, `mentions-legales.html` | Pages du pied de page, rédigées en Markdown dans `public/legal/*.md` (passages `[À COMPLÉTER]` à remplir) |
 | `public/cgu.html`, `public/charte.html` | Pages légales, rendues depuis `public/legal/*.md` |
 | `wrangler.jsonc` | Configuration du Worker et liaison de la base D1 |
 | `docs/sources/source-A-post-X.md` | Tableau des 25 ressources du post X |
@@ -55,6 +57,11 @@ Adresse : https://best-tools-vibecoding-v1.johnapplewan.workers.dev/outils
 **Créer ici** : rien à configurer. Une tâche planifiée horaire (le même déclencheur que la veille) envoie les relances du porteur et des missions, et active les intérims à la fin du délai d'opposition.
 
 **Veille** : secret `ANTHROPIC_API_KEY` (clé API Claude). Si la clé est valable sur plusieurs workspaces, ajoutez aussi la variable `ANTHROPIC_WORKSPACE_ID` (identifiant `wrkspc_…`, visible dans la console Claude → Settings → Workspaces). Optionnel : variable `VEILLE_MODEL` pour changer de modèle (par défaut `claude-opus-5-5`). Une tâche planifiée (`triggers.crons`, toutes les 5 min) analyse la file. Coût indicatif : environ 0,25 à 0,50 $ par analyse avec Claude Opus 5.5 (recherche web comprise).
+
+**Formulaire de contact** (`/contact`) : chaque message est enregistré dans D1 (table `contact_messages`) sous la clé `contacts/AAAA-MM-JJ/identifiant/sujet`, et se lit dans `/admin` (section « Messages de contact »). Limite : 5 envois par heure et par IP.
+- *Alerte Telegram* : automatique si le bot est relié dans `/admin` (sujet et référence seulement, jamais le contenu).
+- *Email (Resend, facultatif)* : secrets `RESEND_API_KEY`, `CONTACT_TO` (votre adresse de réception) et `CONTACT_FROM` (expéditeur sur un domaine vérifié dans Resend, ex. `Vibe Tools <contact@votre-domaine.fr>`). La réponse à l'email part directement vers l'expéditeur du message.
+- *Copie en fichiers (R2, facultatif)* : créez un bucket R2 (ex. `vibe-contacts`), puis ajoutez dans `wrangler.jsonc` : `"r2_buckets": [{ "binding": "CONTACTS", "bucket_name": "vibe-contacts" }]`. Chaque message y est alors aussi rangé en JSON au chemin `contacts/AAAA-MM-JJ/identifiant/sujet`.
 
 **Connexion GitHub** : OAuth App avec l'adresse de retour `https://best-tools-vibecoding-v1.johnapplewan.workers.dev/auth/callback`, et les secrets `GITHUB_CLIENT_ID` et `GITHUB_CLIENT_SECRET` (en Production). Les admins sont désignés par leur **identifiant GitHub numérique** dans `ADMIN_GITHUB_IDS` (`wrangler.jsonc`), qui ne change jamais même si le compte est renommé.
 
@@ -93,4 +100,5 @@ npx wrangler@4 dev --test-scheduled   # puis curl "http://localhost:8787/__sched
 - [`docs/plateforme/checkup.md`](docs/plateforme/checkup.md) : Check-up de ton App (express et complet)
 - [`docs/plateforme/comment-faire.md`](docs/plateforme/comment-faire.md) : page « Comment faire ? » (modes, accès, Évoluer, stockage, prochaines étapes)
 - [`docs/plateforme/comment-faire-videos.md`](docs/plateforme/comment-faire-videos.md) : liste des vidéos à produire (fiches et capsules outils)
+- [`docs/plateforme/charte-video.md`](docs/plateforme/charte-video.md) : charte graphique des vidéos (couleurs, polices, illustrations, motion design, effets, son)
 - [`docs/plateforme/veille.md`](docs/plateforme/veille.md) : module de veille (raccourci iOS, analyse, feu tricolore, script vidéo)

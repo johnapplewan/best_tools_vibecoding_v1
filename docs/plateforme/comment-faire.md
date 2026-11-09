@@ -32,6 +32,20 @@ Les parties réservées sont grisées et proposent « Inscription gratuite avec 
   - Chacune contient : contexte, objectif, niveau, durée, deux emplacements vidéo, les outils utilisés, un pas-à-pas, comment connecter, les erreurs fréquentes, un mini-défi, « Pourquoi c'est important » et « Ce qu'un senior te dirait ».
   - Les outils cités renvoient vers le catalogue (`/outils?q=…`).
 
+## Deux workflows : poste local ou full web
+
+- **🖥️ Poste local** : éditeur, Node et terminal sur l'ordinateur, puis GitHub. **🌐 Full web** : Claude Code en ligne (ordinateur, mobile ou tablette), GitHub pour le code, Cloudflare ou Netlify pour l'aperçu et la mise en ligne.
+- **Sur chaque fiche** :
+  - 6 fiches ont une variante full web, avec le sélecteur « 🖥️ Poste local | 🌐 Full web » : Installer son poste, Git et GitHub, Agent de code, Mettre en ligne, Faire évoluer, Prendre en main Claude Code.
+  - Le sélecteur change les outils, le pas-à-pas, la connexion, le piège et le mini-défi.
+  - Les autres fiches portent une étiquette : « 🖥️ Poste local » pour le LLM local, Codex CLI, Ollama et Playwright MCP (à repasser en full web si Playwright MCP tourne dans l'espace en ligne de Claude Code), « 🌐 Full web » pour toutes les autres.
+- **GPS** :
+  - la question « Où je travaille » (ordinateur, ou mobile et tablette) ;
+  - sur mobile, les fiches s'ouvrent directement en version full web ;
+  - un workflow conseillé selon le type de projet ;
+  - l'encadré « Quel workflow pour quel projet ? ».
+- **Bibliothèque** : un filtre Workflow (poste local, full web). Les fiches qui ont les deux versions apparaissent dans les deux cas.
+
 ## Mode A, le GPS
 
 - Il démarre vide, avec un bouton « Voir un exemple » (jeu de cartes en ligne).

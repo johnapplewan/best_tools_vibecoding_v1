@@ -1,10 +1,12 @@
 # Vidéos à produire : « Comment faire ? » et catalogue d'outils
 
-Liste exhaustive des capsules vidéo de la plateforme : les vidéos de présentation, les deux vidéos de chaque fiche « Comment faire ? » et une capsule de découverte pour chaque outil cité sur le site.
+Liste exhaustive des capsules vidéo de la plateforme : les vidéos de présentation, les deux vidéos de chaque fiche « Comment faire ? », les variantes « full web » (`-W`) et une capsule de découverte pour chaque outil cité sur le site.
 
 Pour chaque vidéo : un code, un titre et son contenu en trois phrases. Ces trois phrases servent de brief à Sonnet pour écrire le script, puis à l'application de motion design pour générer la vidéo.
 
 ## Règles communes
+
+La charte graphique complète (couleurs, polices, motion design, effets, son) est dans [`charte-video.md`](charte-video.md).
 
 - **Ton** : tutoiement, phrases courtes, vocabulaire simple ; chaque terme technique est expliqué en une phrase la première fois.
 - **Structure** : une accroche de 5 secondes (le problème ou la promesse), le contenu, puis un récapitulatif en une phrase.
@@ -17,6 +19,9 @@ Pour chaque vidéo : un code, un titre et son contenu en trois phrases. Ces troi
   - sous-titres toujours ;
   - aucune donnée personnelle, aucune vraie clé d'API (toujours masquée) ;
   - des comptes et projets de démonstration uniquement.
+- **Deux workflows** : poste local ou full web. Chaque vidéo indique son workflow en étiquette à l'écran (« 🖥️ Poste local » ou « 🌐 Full web »).
+- **Format** : les vidéos `-W` sont livrées en 16:9 **et** en 9:16 ; l'intro peut montrer l'écran d'un mobile ou d'une tablette.
+- **Rappel** : les interfaces de Claude Code web, GitHub, Cloudflare et Netlify changent souvent : revérifier les écrans le jour du tournage.
 - **Prompt type pour Sonnet** : « Écris le script d'une vidéo de [durée] pour des débutants en vibe coding, en français, en tutoyant. Titre : [titre]. Contenu attendu : [les 3 phrases]. Découpe en scènes avec, pour chaque scène : la voix off, le texte à l'écran et l'animation à montrer. »
 
 
@@ -26,13 +31,13 @@ Pour chaque vidéo : un code, un titre et son contenu en trois phrases. Ces troi
 On présente les quatre modes de la page : le GPS, la carte, la bibliothèque et Évoluer. On montre en une scène chacun, avec le profil de personne à qui il convient le mieux. On invite à choisir son mode et à poser sa première question « Comment faire… ? ».
 
 **P-02 · Le GPS : de ta question à ton chemin**  
-On tape une destination, on choisit son niveau et où on en est, et le chemin apparaît. On déplie une étape pour montrer le pourquoi, la façon de penser d'un vibe-coder et les conseils d'un senior. On ajoute le chemin à sa feuille de route en un clic.
+On tape une destination, on choisit son niveau, où on en est et où on travaille : ordinateur ou mobile/tablette, et le chemin apparaît. On déplie une étape pour montrer le pourquoi, la façon de penser d'un vibe-coder et les conseils d'un senior. On ajoute le chemin à sa feuille de route en un clic.
 
 **P-03 · La carte : tes premiers pas en cinq mondes**  
 On présente les 20 premiers pas répartis en cinq mondes, du « C'est quoi le vibe coding ? » à « Faire évoluer sans tout casser ». On termine une fiche, on gagne des points d'expérience et on débloque un badge. On montre comment ton objectif éclaire les étapes utiles sur la carte.
 
 **P-04 · La bibliothèque et ta feuille de route**  
-On filtre les fiches par niveau, par type et par setup (Claude, ChatGPT, Codex, IA locale, serveur). On montre la feuille de route qui se remplit seule à partir de ton objectif. On coche une fiche terminée et on voit la progression avancer.
+On filtre les fiches par niveau, par type, par setup (Claude, ChatGPT, Codex, IA locale, serveur) et par workflow : poste local ou full web. On montre la feuille de route qui se remplit seule à partir de ton objectif. On coche une fiche terminée et on voit la progression avancer.
 
 **P-05 · Évoluer : six portes d'entrée**  
 On présente les six portes : publics et projets, compétences, outils, certifs, jobs, où et comment. On ouvre une fiche job et on suit ses liens vers une certif, puis vers une compétence, grâce au fil d'exploration. On montre le bloc « Ce qui te manque » qui dit quoi faire ensuite.
@@ -46,9 +51,12 @@ On choisit un poste, un numéro d'entretien, un interlocuteur et son profil, ave
 **P-08 · Les badges Vibe Tools**  
 On explique qu'un public validé (toutes ses compétences au vert) devient un badge sur ta fiche. On montre l'aperçu de la fiche avec les badges et les tampons de certifications. On explique qu'un badge n'expire pas mais passe en orange si le référentiel évolue de plus de 35 %.
 
+**P-09 · Deux façons de travailler : sur ton poste ou 100 % en ligne** (60 à 90 s, à produire juste après P-01)  
+On présente les deux workflows : le poste local (éditeur, Node et terminal sur ton ordinateur) et le full web (Claude Code en ligne, GitHub pour le code, Cloudflare ou Netlify pour la mise en ligne). On montre pour chacun où vit le code et qui fait quoi, avec le type de projet qui lui convient le mieux. On invite à choisir selon son projet et son appareil, en rappelant que GitHub permet de passer de l'un à l'autre.
+
 ## 2. Fiches « Comment faire ? » : premiers pas
 
-Chaque fiche a deux vidéos : **A · L'essentiel** (2 min) et **B · Pas-à-pas** (1 min).
+Chaque fiche a deux vidéos : **A · L'essentiel** (2 min) et **B · Pas-à-pas** (1 min). Quand la marche à suivre change en full web, une variante **W · Pas-à-pas full web** s'ajoute : une seule vidéo d'1 min, en texte animé sans voix off, livrée en 16:9 et en 9:16.
 
 ### F-01 · 🌈 C'est quoi le vibe coding ?
 
@@ -64,9 +72,9 @@ Tu décris ce que tu veux en français, l'IA écrit le code, toi tu pilotes, tes
 Claude, ChatGPT, Codex, Gemini… ils se ressemblent mais n'ont pas les mêmes forces. Pourquoi c'est important : chaque assistant a ses forces ; en connaître un à fond vaut mieux que d'en survoler quatre. Objectif de la fiche : choisir ton assistant principal selon ton usage et ton budget.
 
 **F-02-B · Pas-à-pas**  
-À l'écran, on montre : compare les offres gratuites et payantes, puis pose la même question aux deux assistants, puis garde celui dont tu comprends le mieux les réponses. Piège à éviter : payer trois abonnements dès le premier jour. Mini-défi pour finir : demande à deux assistants le même mini-site et compare.
+À l'écran, on montre : compare les offres gratuites et payantes, puis pose la même question aux deux assistants, puis garde celui dont tu comprends le mieux les réponses. Piège à éviter : payer trois abonnements dès le premier jour. Mini-défi pour finir : demande à deux assistants le même mini-site et compare. Vérifie que ton offre inclut l'agent en ligne si tu veux travailler en full web.
 
-### F-03 · 🏠 Installer un LLM local
+### F-03 · 🏠 Installer un LLM local · 🖥️ Poste local
 
 **F-03-A · L'essentiel**  
 Un modèle qui tourne sur ton ordinateur : gratuit, privé, hors ligne, mais moins puissant. Pourquoi c'est important : un modèle local protège tes données et coûte zéro à l'usage, au prix de la puissance. Objectif de la fiche : faire tourner ton premier modèle en local et lui parler.
@@ -88,7 +96,7 @@ Le brief, c'est la fiche que tu donnes à l'IA : pour qui, pour quoi, comment ç
 Ton idée entière est trop grosse pour un premier jet. On garde le cœur, le reste attendra. Pourquoi c'est important : une petite version en ligne t'apprend plus qu'une grande version jamais finie. Objectif de la fiche : savoir ce qui est dans la v1, et ce qui ne l'est pas.
 
 **F-05-B · Pas-à-pas**  
-À l'écran, on montre : liste toutes tes idées, puis garde les 3 sans lesquelles l'app n'a pas de sens, puis range le reste dans « plus tard » Piège à éviter : commencer par les comptes, les paiements et les réglages. Mini-défi pour finir : coupe ta liste en deux : v1 et plus tard.
+À l'écran, on montre : liste toutes tes idées, puis garde les 3 sans lesquelles l'app n'a pas de sens, puis range le reste dans « plus tard ». Piège à éviter : commencer par les comptes, les paiements et les réglages. Mini-défi pour finir : coupe ta liste en deux : v1 et plus tard.
 
 ### F-06 · 🎨 Prototyper sans coder
 
@@ -96,7 +104,7 @@ Ton idée entière est trop grosse pour un premier jet. On garde le cœur, le re
 Lovable, Bolt ou v0 te montrent ton app en quelques minutes, directement dans le navigateur. Pourquoi c'est important : voir l'écran révèle les oublis du brief en quelques minutes au lieu de quelques semaines. Objectif de la fiche : voir et cliquer ta première version avant d'installer quoi que ce soit.
 
 **F-06-B · Pas-à-pas**  
-À l'écran, on montre : colle ton brief dans Lovable, Bolt ou v0, puis demande les changements un par un, puis exporte le code vers GitHub. Piège à éviter : tout demander dans un seul message. Mini-défi pour finir : fais générer l'écran d'accueil de ton projet.
+À l'écran, on montre : colle ton brief dans Lovable, Bolt ou v0, puis demande les changements un par un, puis exporte le code vers GitHub, puis continue dans Claude Code en ligne. Piège à éviter : tout demander dans un seul message. Mini-défi pour finir : fais générer l'écran d'accueil de ton projet.
 
 ### F-07 · 💻 Installer son poste
 
@@ -104,7 +112,10 @@ Lovable, Bolt ou v0 te montrent ton app en quelques minutes, directement dans le
 Un éditeur, un terminal et Node : la base pour travailler sur ton ordinateur. Pourquoi c'est important : travailler sur ta machine te rend indépendant d'un outil en ligne qui peut changer ou fermer. Objectif de la fiche : ouvrir un projet et lancer une commande sans stress.
 
 **F-07-B · Pas-à-pas**  
-À l'écran, on montre : installe VS Code ou Cursor, puis installe Node (version LTS), puis ouvre le terminal et tape « node -v » Piège à éviter : avoir peur du terminal : c'est juste une fenêtre où l'on écrit des ordres. Mini-défi pour finir : crée un dossier « mon-projet » et ouvre-le dans ton éditeur.
+À l'écran, on montre : installe VS Code ou Cursor, puis installe Node (version LTS), puis ouvre le terminal et tape « node -v ». Piège à éviter : avoir peur du terminal : c'est juste une fenêtre où l'on écrit des ordres. Mini-défi pour finir : crée un dossier « mon-projet » et ouvre-le dans ton éditeur. Écran de fin : « Ou sans rien installer : version full web » (F-07-W).
+
+**F-07-W · Pas-à-pas full web : travailler sans rien installer** · 🌐 Full web  
+À l'écran, on montre : crée ton compte GitHub, puis ouvre Claude Code en ligne et connecte ton dépôt, puis lance ta première session depuis ton navigateur ou ton téléphone. Piège à éviter : oublier que l'agent ne voit que le dépôt choisi : ce qui n'y est pas n'existe pas pour lui. Mini-défi pour finir : crée un dépôt « mon-projet » et demande à Claude d'y ajouter un fichier README.
 
 ### F-08 · 🌳 Git et GitHub sans douleur
 
@@ -114,6 +125,9 @@ Git, c'est la sauvegarde avec historique de ton code. GitHub, c'est l'endroit o�
 **F-08-B · Pas-à-pas**  
 À l'écran, on montre : crée un compte GitHub, puis crée ton premier dépôt, puis fais ton premier commit et ton premier push. Piège à éviter : mettre des mots de passe dans le code. Mini-défi pour finir : annule une modification avec l'historique Git.
 
+**F-08-W · Pas-à-pas full web : GitHub depuis ton navigateur** · 🌐 Full web  
+À l'écran, on montre : ouvre ton dépôt sur GitHub, puis demande à Claude de travailler sur une branche et de proposer une pull request, puis relis la différence dans GitHub avant de fusionner. Piège à éviter : fusionner sans avoir lu la différence. Mini-défi pour finir : annule une modification avec le bouton « Revert » de GitHub.
+
 ### F-09 · 🧑‍🚀 Travailler avec un agent de code
 
 **F-09-A · L'essentiel**  
@@ -121,6 +135,9 @@ Un agent lit ton projet, modifie plusieurs fichiers et lance les commandes à ta
 
 **F-09-B · Pas-à-pas**  
 À l'écran, on montre : installe Claude Code, Codex CLI ou ouvre Cursor, puis demande-lui d'expliquer ton projet, puis confie une petite tâche, puis relis la différence. Piège à éviter : tout accepter sans lire. Mini-défi pour finir : demande à l'agent d'ajouter un bouton et de l'expliquer.
+
+**F-09-W · Pas-à-pas full web : l'agent de code en ligne** · 🌐 Full web  
+À l'écran, on montre : ouvre Claude Code en ligne et choisis ton dépôt, puis confie-lui une petite tâche, puis relis la différence et crée la pull request. Piège à éviter : croire que l'agent voit ton ordinateur : il travaille dans un espace isolé, avec ton dépôt seulement. Mini-défi pour finir : depuis ton téléphone, demande d'ajouter un bouton et fais-toi expliquer ce qu'il a changé.
 
 ### F-10 · 🔍 Lire le code généré
 
@@ -136,7 +153,7 @@ Pas besoin de savoir coder pour comprendre en gros ce que fait un fichier. Pourq
 Ça plante ? Normal. La compétence clé, c'est de bien décrire le problème. Pourquoi c'est important : un bug bien décrit est à moitié résolu ; un bug mal décrit fait tourner l'IA en rond. Objectif de la fiche : résoudre une erreur sans tourner en rond.
 
 **F-11-B · Pas-à-pas**  
-À l'écran, on montre : copie le message d'erreur exact, puis dis ce que tu attendais et ce qui se passe, puis demande une cause avant une solution. Piège à éviter : dire juste « ça marche pas » Mini-défi pour finir : provoque une erreur volontaire et fais-la corriger.
+À l'écran, on montre : copie le message d'erreur exact, puis dis ce que tu attendais et ce qui se passe, puis demande une cause avant une solution. Piège à éviter : dire juste « ça marche pas ». Mini-défi pour finir : provoque une erreur volontaire et fais-la corriger.
 
 ### F-12 · 🧱 Les bases d'une app web
 
@@ -168,15 +185,18 @@ Se connecter, s'inscrire, rester connecté : à ne jamais coder soi-même de zé
 Quand un joueur joue, les autres doivent le voir tout de suite. C'est le temps réel. Pourquoi c'est important : dès que plusieurs personnes agissent en même temps, il faut un arbitre unique : le serveur. Objectif de la fiche : faire apparaître un message chez tous les participants sans recharger.
 
 **F-15-B · Pas-à-pas**  
-À l'écran, on montre : choisis Supabase Realtime ou Cloudflare Durable Objects, puis crée un « salon » par partie, puis envoie et reçois un premier message. Piège à éviter : faire confiance au navigateur du joueur (triche). Mini-défi pour finir : ouvre deux onglets et fais-les discuter.
+À l'écran, on montre : choisis Supabase Realtime ou Cloudflare Durable Objects, puis crée un « salon » par partie, puis envoie et reçois un premier message. Piège à éviter : faire confiance au navigateur du joueur (triche). Mini-défi pour finir : ouvre deux onglets et fais-les discuter. Cloudflare Durable Objects se publie directement en full web.
 
 ### F-16 · 🚀 Mettre en ligne
 
 **F-16-A · L'essentiel**  
-Ton app sort de ton ordinateur et reçoit une adresse que tout le monde peut ouvrir. Pourquoi c'est important : une app en ligne reçoit de vrais retours ; une app sur ton ordinateur ne reçoit que les tiens. Objectif de la fiche : publier ton app et la mettre à jour à chaque push.
+Ton app sort de ton ordinateur et reçoit une adresse que tout le monde peut ouvrir. Pourquoi c'est important : une app en ligne reçoit de vrais retours ; une app sur ton ordinateur ne reçoit que les tiens. Objectif de la fiche : publier ton app et la mettre à jour à chaque push, depuis ton navigateur ou ton téléphone.
 
 **F-16-B · Pas-à-pas**  
-À l'écran, on montre : connecte ton dépôt GitHub à Cloudflare ou Netlify, puis choisis la commande de build, puis ouvre l'adresse et partage-la. Piège à éviter : oublier les variables d'environnement en ligne. Mini-défi pour finir : mets en ligne ta page de blagues.
+À l'écran, on montre : connecte ton dépôt GitHub à Cloudflare ou Netlify (depuis ton navigateur ou ton téléphone), puis choisis la commande de build, puis ouvre l'adresse et partage-la. Piège à éviter : oublier les variables d'environnement en ligne. Mini-défi pour finir : mets en ligne ta page de blagues.
+
+**F-16-W · Pas-à-pas full web : l'aperçu en ligne de chaque branche** · 🌐 Full web  
+À l'écran, on montre : connecte ton dépôt GitHub à Cloudflare ou Netlify, puis ouvre l'adresse d'aperçu de ta branche sur ton téléphone, puis fusionne et regarde la mise en ligne. Piège à éviter : oublier les variables d'environnement dans l'hébergeur. Mini-défi pour finir : change un titre depuis ton téléphone, vérifie l'aperçu, puis publie.
 
 ### F-17 · 🗝️ Secrets et sécurité de base
 
@@ -210,6 +230,15 @@ La v2 est souvent plus dure que la v1. Petites étapes, branches et tests. Pourq
 **F-20-B · Pas-à-pas**  
 À l'écran, on montre : crée une branche par fonctionnalité, puis écris d'abord la spec avec OpenSpec, puis teste, relis, puis fusionne. Piège à éviter : tout changer d'un coup. Mini-défi pour finir : ajoute une fonctionnalité sur une branche, puis fusionne-la.
 
+**F-20-W · Pas-à-pas full web : une branche, un aperçu, une fusion** · 🌐 Full web  
+À l'écran, on montre : demande une fonctionnalité sur une nouvelle branche, puis ouvre son aperçu en ligne, puis relis et fusionne. Piège à éviter : fusionner sans avoir ouvert l'aperçu. Mini-défi pour finir : ajoute une petite fonctionnalité sur une branche, vérifie l'aperçu, puis fusionne.
+
+### Variantes facultatives (à décider plus tard, non comptées)
+
+- **F-11-W** : copier le journal d'erreur du build Cloudflare ou Netlify dans la session, et demander la cause avant la solution.
+- **F-17-W** : ranger les clés dans les secrets de l'hébergeur et de GitHub, sans fichier `.env` local.
+- **F-18-W** : faire lancer les tests automatiquement à chaque pull request.
+
 ## 3. Fiches « Comment faire ? » : tutos outils
 
 ### T-01 · ✳️ Prendre en main Claude Code
@@ -220,23 +249,26 @@ L'agent de code d'Anthropic, dans ton terminal ou ton éditeur. Pourquoi c'est i
 **T-01-B · Pas-à-pas**  
 À l'écran, on montre : installe Claude Code, puis ouvre ton projet et lance-le, puis ajoute Context7 et Playwright MCP. Piège à éviter : lui donner trop de permissions sans comprendre. Mini-défi pour finir : fais-lui écrire le README de ton projet.
 
+**T-01-W · Pas-à-pas full web : Claude Code sur le web, mobile et tablette** · 🌐 Full web  
+À l'écran, on montre : connecte GitHub à Claude Code en ligne, puis ouvre une session sur ton dépôt depuis ton téléphone, puis suis ses actions et relis la différence. Piège à éviter : lui donner un dépôt sensible sans comprendre ce qu'il peut modifier. Mini-défi pour finir : demande-lui d'écrire le README de ton projet depuis ta tablette.
+
 ### T-02 · 💜 Lovable + Supabase + GitHub
 
 **T-02-A · L'essentiel**  
 Le trio le plus simple pour une vraie app avec données, sans installer quoi que ce soit. Pourquoi c'est important : relier les trois dès le début évite d'être enfermé dans un seul outil. Objectif de la fiche : relier les trois et retrouver ton code sur GitHub.
 
 **T-02-B · Pas-à-pas**  
-À l'écran, on montre : crée ton app dans Lovable, puis clique « Connect Supabase », puis clique « Connect GitHub » Piège à éviter : ne pas exporter vers GitHub (ton code reste coincé). Mini-défi pour finir : ajoute une liste qui se sauvegarde dans Supabase.
+À l'écran, on montre : crée ton app dans Lovable, puis clique « Connect Supabase », puis clique « Connect GitHub », puis continue dans Claude Code en ligne. Piège à éviter : ne pas exporter vers GitHub (ton code reste coincé). Mini-défi pour finir : ajoute une liste qui se sauvegarde dans Supabase.
 
 ### T-03 · ☁️ Déployer sur Cloudflare
 
 **T-03-A · L'essentiel**  
-Hébergement rapide et gratuit pour démarrer, avec Workers et base D1. Pourquoi c'est important : le déploiement automatique transforme chaque push en mise en ligne : rapide, mais à surveiller. Objectif de la fiche : relier ton dépôt et publier à chaque push.
+Hébergement rapide et gratuit pour démarrer, avec Workers et base D1. Pourquoi c'est important : le déploiement automatique transforme chaque push en mise en ligne : rapide, mais à surveiller. Objectif de la fiche : relier ton dépôt et publier à chaque push ; chaque branche reçoit une adresse d'aperçu, et Netlify fonctionne de la même façon.
 
 **T-03-B · Pas-à-pas**  
-À l'écran, on montre : crée un compte Cloudflare, puis workers & Pages → Connecter GitHub, puis ajoute tes secrets dans Réglages. Piège à éviter : mettre les clés dans wrangler.jsonc au lieu des secrets. Mini-défi pour finir : publie ton projet et ouvre son adresse.
+À l'écran, on montre : crée un compte Cloudflare, puis Workers & Pages → Connecter GitHub, puis ajoute tes secrets dans Réglages, puis ouvre l'adresse d'aperçu de ta branche. Piège à éviter : mettre les clés dans wrangler.jsonc au lieu des secrets. Mini-défi pour finir : publie ton projet et ouvre son adresse.
 
-### T-04 · 🧠 Codex CLI avec ChatGPT
+### T-04 · 🧠 Codex CLI avec ChatGPT · 🖥️ Poste local
 
 **T-04-A · L'essentiel**  
 L'agent de code d'OpenAI, utilisable avec ton abonnement ChatGPT. Pourquoi c'est important : connaître deux agents te permet de comparer et de ne pas dépendre d'un seul. Objectif de la fiche : l'installer et lui confier une tâche dans ton projet.
@@ -244,7 +276,7 @@ L'agent de code d'OpenAI, utilisable avec ton abonnement ChatGPT. Pourquoi c'est
 **T-04-B · Pas-à-pas**  
 À l'écran, on montre : installe Codex CLI, puis connecte ton compte ChatGPT, puis lance-le dans ton dossier de projet. Piège à éviter : le lancer hors du dossier du projet. Mini-défi pour finir : demande-lui de corriger une faute dans ta page.
 
-### T-05 · 🦙 Ollama dans ton éditeur
+### T-05 · 🦙 Ollama dans ton éditeur · 🖥️ Poste local
 
 **T-05-A · L'essentiel**  
 Un assistant de code 100 % local et gratuit, sans envoyer ton code en ligne. Pourquoi c'est important : le local, c'est la confidentialité totale : ton code ne quitte pas ta machine. Objectif de la fiche : brancher Ollama sur VS Code avec Cline.
@@ -253,6 +285,8 @@ Un assistant de code 100 % local et gratuit, sans envoyer ton code en ligne. Pou
 À l'écran, on montre : installe Ollama et un modèle de code, puis installe l'extension Cline, puis choisis Ollama comme fournisseur. Piège à éviter : un modèle trop lent : prends plus petit. Mini-défi pour finir : fais expliquer un fichier par ton modèle local.
 
 ### T-06 · 🎭 Playwright MCP : un testeur robot
+
+> À vérifier avant le tournage : si Playwright MCP tourne dans l'espace en ligne de Claude Code, la fiche passe en « 🌐 Full web » ; sinon, étiquette « 🖥️ Poste local ».
 
 **T-06-A · L'essentiel**  
 Ton agent ouvre un vrai navigateur et clique dans ton app comme un humain. Pourquoi c'est important : un robot ne se fatigue pas et ne saute pas d'étape. Objectif de la fiche : faire tester ton app automatiquement par l'agent.
@@ -287,24 +321,24 @@ L'outil de Google pour apprendre à partir de ses propres documents. À l'écran
 ### Coder avec l'IA : agents et éditeurs
 
 **O-007 · Découvrir Claude Code**  
-L'agent de code d'Anthropic, dans le terminal, sur le web et dans les éditeurs. À l'écran : on lui demande d'expliquer un projet, puis d'ajouter une fonctionnalité et de lancer les tests. À retenir : une tâche, une demande, un commit : on relit toujours la différence avant de valider.
+L'agent de code d'Anthropic, dans le terminal, sur le web et dans les éditeurs. À l'écran : on lui demande d'expliquer un projet, puis d'ajouter une fonctionnalité et de lancer les tests. À retenir : une tâche, une demande, un commit : on relit toujours la différence avant de valider, et il fonctionne aussi dans le navigateur, sur mobile et tablette (workflow full web).
 
-**O-008 · Découvrir OpenAI Codex CLI**  
+**O-008 · Découvrir OpenAI Codex CLI** · 🖥️ Poste local  
 L'agent de code d'OpenAI qui s'exécute en local dans le terminal. À l'écran : on le connecte au compte ChatGPT et on lui fait corriger un bug ciblé dans un dossier. À retenir : toujours le lancer à la racine du projet, pour qu'il voie tout le contexte.
 
-**O-009 · Découvrir Cursor**  
+**O-009 · Découvrir Cursor** · 🖥️ Poste local  
 Un éditeur de code avec agent intégré, pour écrire, déboguer et relire. À l'écran : on ouvre un projet, on sélectionne une fonction et on demande une modification guidée, fichier par fichier. À retenir : surveiller sa consommation de requêtes sur les gros projets.
 
 **O-010 · Découvrir GitHub Copilot**  
-L'assistant de code de GitHub, dans les éditeurs et directement sur GitHub. À l'écran : on assigne une petite issue à l'agent Copilot et on relit la pull request qu'il propose. À retenir : c'est l'outil le plus présent en entreprise : souvent déjà payé par l'employeur.
+L'assistant de code de GitHub, dans les éditeurs et directement sur GitHub. À l'écran : on assigne une petite issue à l'agent Copilot et on relit la pull request qu'il propose. À retenir : c'est l'outil le plus présent en entreprise : souvent déjà payé par l'employeur. Workflow full web : tout se passe dans GitHub, sans rien installer.
 
 **O-011 · Découvrir Gemini CLI**  
 L'agent open source de Google, en terminal, avec une très grande fenêtre de contexte. À l'écran : on lui fait analyser un gros dépôt en une seule fois et résumer son architecture. À retenir : il faut prévoir une clé API : l'accès par abonnement grand public a été retiré.
 
-**O-012 · Découvrir Aider**  
+**O-012 · Découvrir Aider** · 🖥️ Poste local  
 Un agent de pair programming en terminal, compatible avec de nombreux modèles. À l'écran : on lui confie une modification et on montre qu'il crée un commit propre pour chaque changement. À retenir : idéal pour choisir librement son modèle, y compris un modèle local.
 
-**O-013 · Découvrir Cline**  
+**O-013 · Découvrir Cline** · 🖥️ Poste local  
 Un agent de code pour VS Code qui demande validation à chaque action. À l'écran : on le branche avec sa propre clé API et on suit le coût affiché à chaque étape. À retenir : sa transparence en fait un excellent outil pour apprendre ce que fait un agent.
 
 **O-014 · Découvrir Goose**  
@@ -316,10 +350,10 @@ L'agent de code d'AWS qui part des spécifications et des tests. À l'écran : o
 **O-016 · Découvrir Pi**  
 Un agent de code minimaliste en terminal, extensible et multi-fournisseurs. À l'écran : on montre son SDK en construisant un petit agent personnalisé. À retenir : pour les profils qui aiment bricoler leur propre outillage.
 
-**O-017 · Découvrir Ollama**  
+**O-017 · Découvrir Ollama** · 🖥️ Poste local  
 Un outil pour faire tourner des modèles d'IA sur sa propre machine. À l'écran : on installe un modèle de 8 milliards de paramètres et on lui parle hors ligne. À retenir : gratuit et privé, mais moins puissant : choisir un modèle adapté à sa machine.
 
-**O-018 · Découvrir LM Studio**  
+**O-018 · Découvrir LM Studio** · 🖥️ Poste local  
 Une application de bureau pour télécharger et utiliser des modèles locaux en un clic. À l'écran : on cherche un modèle, on le télécharge et on lance une conversation sans terminal. À retenir : la porte d'entrée la plus douce vers l'IA locale.
 
 **O-019 · Découvrir Hugging Face**  
@@ -328,7 +362,7 @@ Le grand hub des modèles, jeux de données et démos d'IA ouverts. À l'écran 
 **O-020 · Découvrir Model Context Protocol (MCP)**  
 Le standard ouvert qui permet de brancher une IA à des outils et des données. À l'écran : on ajoute un serveur MCP à Claude Code et on montre l'agent l'utiliser pour lire un vrai service. À retenir : c'est la compétence clé pour construire des agents utiles : à comprendre absolument.
 
-**O-021 · Découvrir VS Code**  
+**O-021 · Découvrir VS Code** · 🖥️ Poste local  
 L'éditeur de code gratuit de Microsoft, le plus utilisé au monde. À l'écran : on l'installe, on ouvre un dossier, on découvre le terminal intégré et les extensions. À retenir : c'est la base sur laquelle se greffent Copilot, Cline et bien d'autres.
 
 **O-022 · Découvrir Warp Terminal**  
@@ -337,16 +371,16 @@ Un terminal moderne pensé pour travailler avec des agents. À l'écran : on tap
 ### Créer des apps sans tout coder
 
 **O-023 · Découvrir Lovable**  
-Un générateur d'applications complètes, branché à Supabase et GitHub. À l'écran : on décrit une app, on la génère, puis on connecte Supabase et GitHub en deux clics. À retenir : les crédits partent vite en itérations de design : préparer son brief avant.
+Un générateur d'applications complètes, branché à Supabase et GitHub. À l'écran : on décrit une app, on la génère, puis on connecte Supabase et GitHub en deux clics. À retenir : les crédits partent vite en itérations de design : préparer son brief avant. Exporte vers GitHub pour continuer en full web.
 
 **O-024 · Découvrir Bolt.new**  
-Le créateur d'applications de StackBlitz, directement dans le navigateur. À l'écran : on génère un prototype en quelques minutes, puis on l'exporte vers GitHub. À retenir : exporter vers GitHub dès que le projet grossit.
+Le créateur d'applications de StackBlitz, directement dans le navigateur. À l'écran : on génère un prototype en quelques minutes, puis on l'exporte vers GitHub. À retenir : exporter vers GitHub dès que le projet grossit. Exporte vers GitHub pour continuer en full web.
 
 **O-025 · Découvrir v0**  
-L'IA de Vercel qui génère des interfaces React de qualité. À l'écran : on génère un tableau de bord, on ajuste un composant, puis on déploie en un clic. À retenir : parfait pour des écrans soignés ; la logique métier se fait ensuite ailleurs.
+L'IA de Vercel qui génère des interfaces React de qualité. À l'écran : on génère un tableau de bord, on ajuste un composant, puis on déploie en un clic. À retenir : parfait pour des écrans soignés ; la logique métier se fait ensuite ailleurs. Exporte vers GitHub pour continuer en full web.
 
 **O-026 · Découvrir Replit**  
-Un environnement en ligne avec agent, hébergement et base de données inclus. À l'écran : on demande un outil interne à Replit Agent et on le publie sans quitter la page. À retenir : pratique pour apprendre et pour les petits outils internes.
+Un environnement en ligne avec agent, hébergement et base de données inclus. À l'écran : on demande un outil interne à Replit Agent et on le publie sans quitter la page. À retenir : pratique pour apprendre et pour les petits outils internes. Exporte vers GitHub pour continuer en full web.
 
 **O-027 · Découvrir Dyad**  
 Une alternative locale et open source à Lovable et Bolt. À l'écran : on crée une app sur sa machine avec son propre fournisseur de modèle. À retenir : le code reste chez soi : on ne paie que le modèle utilisé.
@@ -455,7 +489,7 @@ Un outil qui génère et synchronise les règles d'agents pour Claude Code, Curs
 Le serveur MCP de référence pour donner à un agent un accès contrôlé aux fichiers. À l'écran : on autorise un seul dossier et on montre l'agent y lire et écrire. À retenir : toujours limiter les dossiers autorisés.
 
 **O-059 · Découvrir GitHub + GitHub MCP**  
-Les dépôts, issues et pull requests accessibles aux agents. À l'écran : l'agent ouvre une pull request, et le site se déploie automatiquement après la fusion. À retenir : le dépôt GitHub est le pivot de tout projet sérieux.
+Les dépôts, issues et pull requests accessibles aux agents. À l'écran : l'agent ouvre une pull request, et le site se déploie automatiquement après la fusion. À retenir : le dépôt GitHub est le pivot de tout projet sérieux. Workflow full web : tout se passe dans GitHub, sans rien installer.
 
 **O-060 · Découvrir Notion MCP**  
 Le MCP officiel pour lire et mettre à jour Notion depuis un agent. À l'écran : l'agent lit une spec dans Notion et coche la tâche une fois le code écrit. À retenir : ne partager que les pages nécessaires.
@@ -472,10 +506,10 @@ Postgres, comptes, stockage et fonctions, avec un MCP officiel. À l'écran : on
 Une base Postgres serverless avec des branches de base de données. À l'écran : on crée une branche pour tester une migration générée par l'IA, sans risque. À retenir : son offre gratuite est généreuse pour démarrer.
 
 **O-064 · Découvrir Cloudflare**  
-Hébergement, Workers, base D1 et protection, déployés à chaque push. À l'écran : on relie un dépôt GitHub et on publie un site, puis on ajoute un secret. À retenir : les clés vont dans les secrets, jamais dans le code.
+Hébergement, Workers, base D1 et protection, déployés à chaque push. À l'écran : on relie un dépôt GitHub et on publie un site, puis on ajoute un secret. À retenir : les clés vont dans les secrets, jamais dans le code. Chaque branche reçoit un aperçu : c'est le cœur du workflow full web.
 
 **O-065 · Découvrir Netlify**  
-Hébergement et déploiement continu pour sites et apps front-end. À l'écran : on publie un site et on montre la prévisualisation automatique par branche. À retenir : les aperçus par branche facilitent la relecture avant mise en ligne.
+Hébergement et déploiement continu pour sites et apps front-end. À l'écran : on publie un site et on montre la prévisualisation automatique par branche. À retenir : les aperçus par branche facilitent la relecture avant mise en ligne. Chaque branche reçoit un aperçu : c'est le cœur du workflow full web.
 
 **O-066 · Découvrir E2B**  
 Des bacs à sable cloud pour exécuter le code généré par une IA en sécurité. À l'écran : on fait tourner un script généré dans une sandbox isolée. À retenir : indispensable dès qu'on construit ses propres agents.
@@ -637,10 +671,12 @@ La 3D et la réalité augmentée directement dans le navigateur. À l'écran : o
 
 | Série | Nombre |
 |---|---|
-| P · Présentation de la plateforme | 8 |
-| F · Premiers pas (2 vidéos par fiche) | 40 |
-| T · Tutos outils (2 vidéos par fiche) | 12 |
+| P · Présentation (P-01 à P-09) | 9 |
+| F · Premiers pas (40) + variantes `-W` (5) | 45 |
+| T · Tutos outils (12) + variante `-W` (1) | 13 |
 | O · Capsules outils | 113 |
-| **Total** | **173** |
+| **Total** | **180** |
 
-Ordre de production conseillé : P-01 et P-05, puis les vidéos A des fiches F-01 à F-10 (les plus vues par les débutants), puis les capsules O des outils les plus cités (Claude, ChatGPT, Claude Code, Cursor, Lovable, Supabase, GitHub, Cloudflare, n8n, Make).
+*Les variantes facultatives F-11-W, F-17-W et F-18-W en ajouteraient 3.*
+
+Ordre de production conseillé : P-01 et **P-09**, puis P-05, puis les vidéos A de F-01 à F-10, **puis F-07-W, F-09-W, F-16-W, F-08-W, F-20-W et T-01-W**, puis les capsules O des outils les plus cités (Claude, ChatGPT, Claude Code, Cursor, Lovable, Supabase, GitHub, Cloudflare, n8n, Make).
